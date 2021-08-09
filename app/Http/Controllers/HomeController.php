@@ -42,14 +42,14 @@ class HomeController extends Controller
             // ->where('FieldId', 'GBIResolverGroup')
             // ->groupby('value')
             // ->get()->all());
-            try {
-                DB::connection()
-                    ->getPdo();
-            } catch (Exception $e) {
-                // abort($e instanceof PDOException ? 503 : 500);
-                // return "Connection to database failed"
-                return abort(403, 'There was a problem connecting to the server. Please try again later.');
-            }
+            // try {
+            //     DB::connection()
+            //         ->getPdo();
+            // } catch (Exception $e) {
+            //     // abort($e instanceof PDOException ? 503 : 500);
+            //     // return "Connection to database failed"
+            //     return abort(403, 'There was a problem connecting to the server. Please try again later.');
+            // }
             $TopIssue = FormField::query()->select(
                 DB::raw(
                     'SUM(CASE WHEN value = \'avr\' THEN 1 ELSE 0 END) as avr'
