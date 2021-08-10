@@ -11,7 +11,6 @@ use App\Models\Form;
 use Response;
 use DB;
 use DateTime;
-Use Exception;
 use Illuminate\Support\Arr;
 
 
@@ -50,6 +49,7 @@ class HomeController extends Controller
             //     // return "Connection to database failed"
             //     return abort(403, 'There was a problem connecting to the server. Please try again later.');
             // }
+            // return view('gbi');
             $TopIssue = FormField::query()->select(
                 DB::raw(
                     'SUM(CASE WHEN value = \'avr\' THEN 1 ELSE 0 END) as avr'
@@ -423,7 +423,6 @@ class HomeController extends Controller
 
     public function getticket()
     {
-        
         $openticket =  Task::query()->select(
             'DateCreated',
             'TaskNumber',
@@ -498,11 +497,12 @@ class HomeController extends Controller
                 $keys->gbisbu = '';
             }
         }
+        return response()->json(['data' => $openticket]);
 
         return DataTables::of($openticket)
-        ->addColumn('DateCreated', function ($task){
-            return Carbon::parse($task->DateCreated)->isoFormat('lll');
-        })
+        // ->addColumn('DateCreated', function ($task){
+        //     return Carbon::parse($task->DateCreated)->isoFormat('lll');
+        // })
 
         // ->addColumn('Resolver', function ($task){
         //     $Issue = FormField::query()->select('value')
@@ -626,6 +626,7 @@ class HomeController extends Controller
         array_push($grandtotal, $strtotal+$plnttotal+$ofctotal);
         return view('dailychart', compact('dates', 'plnt', 'str', 'ofc', 'strtotal', 'plnttotal', 'ofctotal', 'grandtotal'));
     }
+
     public function monthlyticketsdata(Request $request)
     {
         // return Carbon::now()->weekOfYear.'/'.Carbon::now()->endOfweek();
@@ -666,7 +667,7 @@ class HomeController extends Controller
             // return $Store;
         $Plant = Task::query()
             ->select(DB::raw('COUNT(Task.Id) as count'), DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US') as Date"))
-            ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
+            // ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
             ->join('Form', 'TaskId', 'Task.Id')
             ->join('FormField', 'FormId', 'Form.Id')
             ->where('FieldId', 'GBISBU')
@@ -677,7 +678,7 @@ class HomeController extends Controller
             ->get();
         $PlantW = Task::query()
             ->select(DB::raw('COUNT(Task.Id) as count'), DB::raw("DATENAME(week, DateCreated) as Date"))
-            ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
+            // ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
             ->join('Form', 'TaskId', 'Task.Id')
             ->join('FormField', 'FormId', 'Form.Id')
             ->where('FieldId', 'GBISBU')
@@ -688,7 +689,7 @@ class HomeController extends Controller
             ->get();
         $Office = Task::query()
             ->select(DB::raw('COUNT(Task.Id) as count'), DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US') as Date"))
-            ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
+            // ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
             ->join('Form', 'TaskId', 'Task.Id')
             ->join('FormField', 'FormId', 'Form.Id')
             // ->orderBy('DateCreated', 'Asc')
@@ -700,7 +701,7 @@ class HomeController extends Controller
             ->get();
         $OfficeW = Task::query()
             ->select(DB::raw('COUNT(Task.Id) as count'), DB::raw("DATENAME(week, DateCreated) as Date"))
-            ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
+            // ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
             ->join('Form', 'TaskId', 'Task.Id')
             ->join('FormField', 'FormId', 'Form.Id')
             // ->orderBy('DateCreated', 'Asc')
@@ -712,7 +713,7 @@ class HomeController extends Controller
             ->get();
         $date = Task::query()
             ->select(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US') as date"))
-            ->whereDate('DateCreated', '>', Carbon::now()->subMonths(1))
+            // ->whereDate('DateCreated', '>', Carbon::now()->subMonths(1))
             ->join('Form', 'TaskId', 'Task.Id')
             ->join('FormField', 'FormId', 'Form.Id')
             // ->orderBy('DateCreated', 'Asc')
@@ -724,7 +725,7 @@ class HomeController extends Controller
             ->get();
         $dateW = Task::query()
             ->select(DB::raw("DATENAME(week, DateCreated) as date"))
-            ->whereDate('DateCreated', '>', Carbon::now()->subMonths(1))
+            // ->whereDate('DateCreated', '>', Carbon::now()->subMonths(1))
             ->join('Form', 'TaskId', 'Task.Id')
             ->join('FormField', 'FormId', 'Form.Id')
             // ->orderBy('DateCreated', 'Asc')
@@ -735,8 +736,8 @@ class HomeController extends Controller
             ->groupBy(DB::raw("DATENAME(week, DateCreated)"))
             ->get();
         $dates = Task::query()
-            ->select(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US') as date"))
-            ->whereDate('DateCreated', '>', Carbon::now()->subMonths(1))
+            ->select(DB::raw("Format(DateCreated, 'dd', 'en-US') as date"))
+            // ->whereDate('DateCreated', '>', Carbon::now()->subMonths(1))
             ->join('Form', 'TaskId', 'Task.Id')
             ->join('FormField', 'FormId', 'Form.Id')
             // ->orderBy('DateCreated', 'Asc')
@@ -744,11 +745,11 @@ class HomeController extends Controller
             ->whereYear('DateCreated', $request->year)
             ->whereMonth('DateCreated', $request->month)
             ->whereNotNull('Value')
-            ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
+            ->groupBy(DB::raw("Format(DateCreated, 'dd', 'en-US')"))
             ->pluck('date');
         $datesW = Task::query()
             ->select(DB::raw("DATENAME(week, DateCreated) as date"))
-            ->whereDate('DateCreated', '>', Carbon::now()->subMonths(1))
+            // ->whereDate('DateCreated', '>', Carbon::now()->subMonths(1))
             ->join('Form', 'TaskId', 'Task.Id')
             ->join('FormField', 'FormId', 'Form.Id')
             // ->orderBy('DateCreated', 'Asc')
@@ -778,10 +779,9 @@ class HomeController extends Controller
             if ($Store->where('Date', $key->date)->first()) {
                 array_push($str, $Store->where('Date', $key->date)->pluck('count')->first());
             }else{
-                array_push($str, '0');
+                array_push($str, 0);
             }
         }
-
         foreach ($dateW as $key) {
             if ($OfficeW->where('Date', $key->date)->first()) {
                 array_push($ofcW, $OfficeW->where('Date', $key->date)->pluck('count')->first());
@@ -799,6 +799,7 @@ class HomeController extends Controller
                 array_push($strW, '0');
             }
         }
+
         // $datas=array();
         // for ($i=0; $i < $date->count(); $i++) { 
         //     array_push($datas, 0);
@@ -813,6 +814,7 @@ class HomeController extends Controller
         $plnt = collect($plnt);
         $str = collect($str);
         $ofc = collect($ofc);
+
         $strtotal = $str->sum(function($item) {
             return $item;
         });
@@ -827,9 +829,11 @@ class HomeController extends Controller
             array_push($grandtotal, $str[$key]+$plnt[$key]+$ofc[$key]);
         }
         array_push($grandtotal, $strtotal+$plnttotal+$ofctotal);
+
         $plntW = collect($plntW);
         $strW = collect($strW);
         $ofcW = collect($ofcW);
+
         $strtotalW = $strW->sum(function($item) {
             return $item;
         });
@@ -843,13 +847,23 @@ class HomeController extends Controller
         foreach ($strW as $key => $value) {
             array_push($grandtotalW, $strW[$key]+$plntW[$key]+$ofcW[$key]);
         }
-
         array_push($grandtotalW, $strtotalW+$plnttotalW+$ofctotalW);
+        // dd($grandtotalW);
         $percent = array();
-        array_push($percent, round(($strtotalW/$grandtotalW[4])*100,2).'%');
-        array_push($percent, round(($plnttotalW/$grandtotalW[4])*100,2).'%');
-        array_push($percent, round(($ofctotalW/$grandtotalW[4])*100,2).'%');
-
+        if (count($grandtotalW) < 6) {
+            array_push($percent, round(($strtotalW/$grandtotalW[4])*100,2).'%');
+            array_push($percent, round(($plnttotalW/$grandtotalW[4])*100,2).'%');
+            array_push($percent, round(($ofctotalW/$grandtotalW[4])*100,2).'%');
+        }else{
+            array_push($percent, round(($strtotalW/$grandtotalW[5])*100,2).'%');
+            array_push($percent, round(($plnttotalW/$grandtotalW[5])*100,2).'%');
+            array_push($percent, round(($ofctotalW/$grandtotalW[5])*100,2).'%');
+        }
+        $weekslabel = array();
+        for ($i=1; $i <= count($datesW); $i++) { 
+           array_push($weekslabel, 'Week '.$i);
+        }
+        $weekslabel=collect($weekslabel);
         $data = [
             'plnt'=>$plnt,
             'str'=>$str,
@@ -867,7 +881,9 @@ class HomeController extends Controller
             'plnttotalW'=>$plnttotalW,
             'ofctotalW'=>$ofctotalW,
             'grandtotalW'=>$grandtotalW,
-            'percent'=>$percent
+            'percent'=>$percent,
+            'weekcount'=>count($datesW),
+            'weekslabel'=>$weekslabel
         ];
 
         return response()->json($data);
@@ -1216,7 +1232,9 @@ class HomeController extends Controller
             }
         }
         // data
-        return DataTables::of($issue)->make(true);
+        return response()->json(['data'=>$issue]);
+
+        // return DataTables::of($issue)->make(true);
     }
 
     public function taskdata(Request $request)

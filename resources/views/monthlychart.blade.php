@@ -33,11 +33,11 @@
             <tfoot id="datafoot">
             </tfoot>
         </table>
-        <canvas id="dailyChart" height="200" width='900' style="margin:0 auto"></canvas>
     </div>
+    <canvas id="dailyChart" height="200" width='900' style="margin:0 auto"></canvas>
 </div>
 <hr>
-{{-- <div class="text-center" id="byweeks">
+<div class="text-center" id="byweeks" style="display:none">
     <div class="container-fluid" style="width:100%;height:100%">
         <table id="dataW" style="margin: 0 auto;">
             <thead id="dataheadW" style="background-color:#00127f;color:white">
@@ -47,8 +47,8 @@
             <tfoot id="datafootW">
             </tfoot>
         </table>
-        <canvas id="dailyChartW" height="200" width='900' style="margin:0 auto"></canvas>
     </div>
-</div> --}}
+    <canvas id="dailyChartW" height="200" width='900' style="margin:0 auto"></canvas>
+</div>
 <hr>
 @endsection
