@@ -9,9 +9,9 @@
                     <input type="button" class="btn btn-secondary DetailsBtn" BtnName="Details" value="Ticket Details">
                     <input type="button" class="btn bg-blue DetailsBtn" BtnName="Remarks" value="Remarks">
                     <input type="button" class="btn bg-blue DetailsBtn" BtnName="History" value="History">
-                    <button class="close cancel" aria-label="Close">
+                    <a class="close cancel" aria-label="Close" data-dismiss="modal">
                         <span aria-hidden="true">&times;</span>
-                    </button>
+                    </a>
                 </div>
             </div>
             <div class="modal-body" id="Details" style="max-height:400px;overflow-y:auto;">

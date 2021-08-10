@@ -3,9 +3,9 @@
         <div class="modal-content text-center">
             <div class="modal-header">
                 <h6 class="modal-title w-100 text-center">TOP ISSUES</h6>
-                <button class="close cancel" aria-label="Close">
+                <a class="close cancel" aria-label="Close" data-dismiss="modal">
                     <span aria-hidden="true">&times;</span>
-                </button>
+                </a>
             </div>
             {{-- <div class="modal-header">
                 <div class="modal-title w-100 text-center">

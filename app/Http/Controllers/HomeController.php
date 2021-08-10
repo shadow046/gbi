@@ -458,19 +458,34 @@ class HomeController extends Controller
             ->where('FieldId', 'GBISubCategory')
             ->whereNotIN('TaskStatus', ['Submitted','Closed'])
             ->get();
-        $gbi = Task::query()->select(
+        $GBIStoreCode = Task::query()->select(
                 'TaskNumber',
                 DB::raw('(CASE
-                    WHEN FormField.FieldId = \'GBISBU\'
+                    WHEN FormField.FieldId = \'GBIStoreCode\'
                     THEN
                     FormField.Value
-                    END) as gbisbu'
+                    END) as GBIStoreCode'
                 )
             )
             ->join('form', 'taskid', 'task.id')
             ->join('formfield', 'formid', 'form.id')
             ->where('TaskNumber', 'LIKE', 'GBI%')
-            ->where('FieldId', 'GBISBU')
+            ->where('FieldId', 'GBIStoreCode')
+            ->whereNotIN('TaskStatus', ['Submitted','Closed'])
+            ->get();
+        $GBIStoreName = Task::query()->select(
+                'TaskNumber',
+                DB::raw('(CASE
+                    WHEN FormField.FieldId = \'GBIStoreName\'
+                    THEN
+                    FormField.Value
+                    END) as GBIStoreName'
+                )
+            )
+            ->join('form', 'taskid', 'task.id')
+            ->join('formfield', 'formid', 'form.id')
+            ->where('TaskNumber', 'LIKE', 'GBI%')
+            ->where('FieldId', 'GBIStoreName')
             ->whereNotIN('TaskStatus', ['Submitted','Closed'])
             ->get();
             // 
@@ -490,11 +505,17 @@ class HomeController extends Controller
             }
             //
             // return $gbi;
-            $gbi = collect($gbi);
-            if ($gbi->where('TaskNumber', $keys->TaskNumber)) {
-                $keys->gbisbu = $gbi->where('TaskNumber', $keys->TaskNumber)->pluck('gbisbu')->first();
+            $GBIStoreName = collect($GBIStoreName);
+            if ($GBIStoreName->where('TaskNumber', $keys->TaskNumber)) {
+                $keys->GBIStoreName = $GBIStoreName->where('TaskNumber', $keys->TaskNumber)->pluck('GBIStoreName')->first();
             }else{
-                $keys->gbisbu = '';
+                $keys->GBIStoreName = '';
+            }
+            $GBIStoreCode = collect($GBIStoreCode);
+            if ($GBIStoreCode->where('TaskNumber', $keys->TaskNumber)) {
+                $keys->GBIStoreCode = $GBIStoreCode->where('TaskNumber', $keys->TaskNumber)->pluck('GBIStoreCode')->first();
+            }else{
+                $keys->GBIStoreCode = '';
             }
         }
         return response()->json(['data' => $openticket]);

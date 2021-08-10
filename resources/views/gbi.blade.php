@@ -16,7 +16,8 @@
                 <th>TICKET NUMBER</th>
                 <th>ISSUE</th>
                 {{-- <th>Store Type</th> --}}
-                <th>GBI SBU</th> 
+                <th>STORE CODE</th>
+                <th>STORE NAME</th>
                 <th>INCIDENT STATUS</th>
             </tr>
         </thead>

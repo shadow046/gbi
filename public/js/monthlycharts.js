@@ -120,8 +120,10 @@ $(document).on('change', '#monthselect', function(){
             databodyW += '<tr><td>Week 4</td><td>'+data.strW[3]+'</td><td>'+data.plntW[3]+'</td><td>'+data.ofcW[3]+'</td><td>'+data.grandtotalW[3].toLocaleString()+'</td>';
             if (data.weekcount == 5) {
                 databodyW += '<tr><td>Week 5</td><td>'+data.strW[4]+'</td><td>'+data.plntW[4]+'</td><td>'+data.ofcW[4]+'</td><td>'+data.grandtotalW[4].toLocaleString()+'</td>';
+                databodyW += '<tr><td>Grand Total</td><td>'+data.strtotalW.toLocaleString()+'</td><td>'+data.plnttotalW.toLocaleString()+'</td><td>'+data.ofctotalW.toLocaleString()+'</td><td>'+data.grandtotalW[5].toLocaleString()+'</td>';
+            }else{
+                databodyW += '<tr><td>Grand Total</td><td>'+data.strtotalW.toLocaleString()+'</td><td>'+data.plnttotalW.toLocaleString()+'</td><td>'+data.ofctotalW.toLocaleString()+'</td><td>'+data.grandtotalW[4].toLocaleString()+'</td>';
             }
-            databodyW += '<tr><td>Grand Total</td><td>'+data.strtotalW.toLocaleString()+'</td><td>'+data.plnttotalW.toLocaleString()+'</td><td>'+data.ofctotalW.toLocaleString()+'</td><td>'+data.grandtotalW[4].toLocaleString()+'</td>';
             var datafootW = '<tr><td>Percentage</td><td>'+data.percent[0]+'</td><td>'+data.percent[1]+'</td><td>'+data.percent[2]+'</td><td>100%</td>';
             data.dates.forEach(element => {
                 // let d = new Date(element);
@@ -311,7 +313,7 @@ $(document).on('click', '#dailyBtn', function () {
     $('#loading').show();
     window.location.href = '/dailytickets';
 });
-$(document).on('click', '#weeklyBtn', function () {
+$(document).on('click', '#graphBtn', function () {
     $('#loading').show();
-    window.location.href = '/weeklytickets';
+    window.location.href = '/';
 });

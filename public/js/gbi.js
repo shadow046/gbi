@@ -19,10 +19,17 @@ $(document).ready(function()
         serverSide: false,
         ajax: 'getticket',
         columns: [
-            { data: 'DateCreated', name:'DateCreated'},
+            { data: 'DateCreated',
+                "render": function ( data, type, row, meta) 
+                {
+                    var dates = new Date(data);
+                    return moment(dates).format('MMMM Do YYYY, h:mm:ss A');
+                }
+            },
             { data: 'TaskNumber', name:'TaskNumber'},
             { data: 'Issue', name:'Issue'},
-            { data: 'gbisbu', name:'gbisbu'},
+            { data: 'GBIStoreCode', name:'GBIStoreCode'},
+            { data: 'GBIStoreName', name:'GBIStoreName'},
             // { data: 'Location', name:'Location'},
             { data: 'IncidentStatus', name:'IncidentStatus'}
         ]
