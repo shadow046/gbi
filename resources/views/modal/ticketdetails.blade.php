@@ -1,6 +1,6 @@
 <div id="ticketdetailsModal" class="modal fade">
     <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content text-center">
+        <div class="modal-content" style="width:100%;height:100%">
             {{-- <div class="modal-header">
                 <h6 class="modal-title w-100 text-center">STOCK REQUEST FORM</h6>
             </div> --}}
@@ -9,7 +9,7 @@
                     <input type="button" class="btn btn-secondary DetailsBtn" BtnName="Details" value="Ticket Details">
                     <input type="button" class="btn bg-blue DetailsBtn" BtnName="Remarks" value="Remarks">
                     <input type="button" class="btn bg-blue DetailsBtn" BtnName="History" value="History">
-                    <a class="close cancel" aria-label="Close" data-dismiss="modal">
+                    <a class="close cancel" aria-label="Close" data-dismiss="modal" style="cursor: pointer">
                         <span aria-hidden="true">&times;</span>
                     </a>
                 </div>
@@ -25,12 +25,12 @@
                         <input class="input col" style="font-size:11px;font-family:Arial;width:100%;" id="StoreCode" type="text" name="StoreCode" disabled>
                     </div>
                     <div class="col text-left">
-                        <label class="label" for="gbisbu">GBI SBU</label>
+                        <label class="label" for="gbisbu">SBU</label>
                         <input class="input col" style="font-size:11px;font-family:Arial;width:100%;" id="gbisbu" type="text" name="gbisbu" disabled>
                     </div>
                     <div class="col text-left">
-                        <label class="label" for="Status">Incident Status</label>
-                        <input class="input col" style="font-size:11px;font-family:Arial;width:100%;" id="Status" type="text" name="Status" disabled>
+                        <label class="label" for="StoreType">Store Type</label>
+                        <input class="input col" style="font-size:11px;font-family:Arial;width:100%;" id="StoreType" type="text" name="StoreType" disabled>
                     </div>
                 </div>
                 <div class="container row">
@@ -81,17 +81,35 @@
                         <input class="input col" style="font-size:11px;font-family:Arial;width:100%;" id="RootCause" type="text" name="RootCause" disabled>
                     </div>
                     <div class="col text-left">
+                        <label class="label" for="IncidentStatus">Incident Status</label>
+                        <input class="input col" style="font-size:11px;font-family:Arial;width:100%;" id="IncidentStatus" type="text" name="IncidentStatus" disabled>
+                    </div>
+                </div>
+                <div class="container row">
+                    <div class="col text-left">
                         <label class="label" for="LatestNotes">Latest Notes</label>
                         <input class="input col" style="font-size:11px;font-family:Arial;width:100%;" id="LatestNotes" type="text" name="LatestNotes" disabled>
                     </div>
                 </div>
-                <div class="container row">
-                    
-                </div>
-
             </div>
-            <div class="modal-body" id="Remarks" style="max-height:400px;overflow-y:auto;display:none;">Remarks</div>
-            <div class="modal-body" id="History" style="max-height:400px;overflow-y:auto;display:none;">History</div>
+            <div class="modal-body" id="Remarks" style="max-height:400px;overflow-y:auto;display:none;">
+                <div id="remarks-details">
+                </div>
+            </div>
+            <div class="modal-body" id="History" style="max-height:400px;overflow-y:auto;display:none;">
+                <table id="tablehistory" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Action/Field</th>
+                            <th>Original</th>
+                            <th>Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyhistory">
+                    </tbody>
+                </table>    
+            </div>
             
             <hr>
             <div class="modal-footer">

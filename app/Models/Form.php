@@ -9,14 +9,6 @@ class Form extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $connection = 'sqlsrv';
     protected $table = 'form';
-
-    function SubCategory()
-    {
- 
-
-            return $this->hasMany("App\Models\FormField", 'FormId', 'Id')
-            ->where('Label','Ownership')->select('Value');
-        
-    }
 }

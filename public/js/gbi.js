@@ -5,38 +5,58 @@ var serverTime = new Date();
 
 $(document).ready(function()
 {
+    $('#gbiTable thead tr:eq(0) th').each( function () {
+        var title = $(this).text();
+        if (title == "TICKET NUMBER") {
+            $(this).html( '<input type="text" style="width:100%" placeholder="Search by date [YYYY][MM][DD]" class="column_search" />' );
+        }else{
+            $(this).html( '<input type="text" style="width:100%" placeholder="Search '+title+'" class="column_search" />' );
+        }
+    });
+    
     gbitable =
     $('table.gbiTable').DataTable({ 
-        "dom": 'ftip',
+        "dom": 'tip',
         "language": {
                 "emptyTable": " ",
                 // "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw"><span class="sr-only">Searching...</span></i>',
                 "loadingRecords": "Please wait - loading..."
             },
         "pageLength": 5,
-        "order": [[ 1, "desc" ]],
+        "order": [[ 0, "desc" ]],
         processing: false,
         serverSide: false,
-        ajax: 'getticket',
+        ajax: {
+            url: 'getticket'
+        },
         columns: [
-            { data: 'DateCreated',
-                "render": function ( data, type, row, meta) 
-                {
-                    var dates = new Date(data);
-                    return moment(dates).format('MMMM Do YYYY, h:mm:ss A');
-                }
-            },
+            // { data: 'DateCreated',
+            //     "render": function ( data, type, row, meta) 
+            //     {
+            //         var dates = new Date(data);
+            //         return moment(dates).format('LLL');
+            //     }
+            // },
             { data: 'TaskNumber', name:'TaskNumber'},
             { data: 'Issue', name:'Issue'},
             { data: 'GBIStoreCode', name:'GBIStoreCode'},
-            { data: 'GBIStoreName', name:'GBIStoreName'},
+            { data: 'GBIStoreName', name:'GBIStoreName', "width": "17%"},
             // { data: 'Location', name:'Location'},
-            { data: 'IncidentStatus', name:'IncidentStatus'}
+            { data: 'IncidentStatus', name:'IncidentStatus', "width": "17%"},
+            { data: 'GBILatestNotes', name:'GBILatestNotes', "width": "17%"}
         ]
     });
 
-    
+    $('#gbiTable thead').on( 'keyup', ".column_search",function () {
+        gbitable
+            .column( $(this).parent().index() )
+            .search( this.value )
+            .draw();
+    });
     //Store Top Issue
+    $("#StoreTopIssueTable").append(
+       $('<tfoot/>').append( $("#StoreTopIssueTable thead tr").clone())
+   );
     StoreTopIssueTable =
     $('table.StoreTopIssueTable').DataTable({ 
         "dom": 'itp',
@@ -50,6 +70,7 @@ $(document).ready(function()
         processing: false,
         serverSide: false,
         ajax: 'storetopissue',
+        
         columns: [
             // { data: 'DateCreated', name:'DateCreated'},
             { data: 'key', name:'key'},
@@ -110,9 +131,15 @@ $(document).on("click", '.DetailsBtn', function () {
         BtnSelected = BtnName;
     }
 });
+
+
 $(document).on('click', '#graphBtn', function () {
     $('#loading').show();
     window.location.href = '/dailytickets';
+});
+$(document).on('click', '#closeTicketBtn', function () {
+    $('#loading').show();
+    window.location.href = '/closed';
 });
 
 $(document).on("click", '.TopIssueLocationBtn', function () {
@@ -131,6 +158,15 @@ $(document).on("click", '.TopIssueLocationBtn', function () {
 $(document).on("click", "#TopIssueMore", function () {
     $('#topissueModal').modal('show');
     
+});
+$(document).on("click", ".close", function () {
+    location.reload()    
+});
+
+$(document).on("click", "#StoreTopIssueTable tbody tr", function () {
+    var trdata = StoreTopIssueTable.row(this).data();
+    console.log(trdata);
+
 });
 $(document).on("click", "#gbiTable tbody tr", function () {
     $('#loading').show();
@@ -159,6 +195,7 @@ $(document).on("click", "#gbiTable tbody tr", function () {
             $('#StoreName').val(data.Store_Name);
             $('#Address').val(data.Store_Address);
             $('#Ownership').val(data.Ownership);
+            $('#gbisbu').val(data.Sbu);
             $('#ContactPerson').val(data.Contact_Person);
             $('#ContactNumber').val(data.Contact_Number);
             $('#Email_Address').val(data.Email_Address);
@@ -166,27 +203,56 @@ $(document).on("click", "#gbiTable tbody tr", function () {
             $('#Issue').val(trdata.Issue);
             $('#RootCause').val(data.Root_Cause);
             $('#LatestNotes').val(data.Latest_Notes);
-            $('#Response_Time').val('Response Time: '+data.Response_Time);
-            $('#Created_By').val('Created By: '+data.Created_By);
-            $('#Problem_Category').val('Problem Category: '+data.Problem_Category);
-            $('#Sub_Category').text('Sub Category: '+data.Sub_Category);
-            $('#Machine_Model').text('Machine Model: '+data.Machine_Model);
-            $('#Incident_Status').text('Incident Status: '+data.Incident_Status);
+            $('#IncidentStatus').val(data.IncidentStatus);
+            $('#StoreType').val(data.GBIStoreType);
+            $('#ActionTaken').val(data.GBIActionTaken);
+            var remarks = ' ';
+            if (data.Remarks.length > 0) {
+                for (let index = 0; index < data.Remarks.length; index++) {
+                    var remarksdate = new Date(data.Remarks[index].Timestamp);
+                    remarks +='<div class="container row"><label class="col-sm-3 control-label">'+data.Remarks[index].Author+'<br><small>'+moment(remarksdate).format('lll')+'</small></label><div class="col-sm-9"><div class="text-break">'+data.Remarks[index].Message+'</div></div><hr></div>';
+                }
+                $('#remarks-details').append(remarks);
+            }
+            var history = '';
+            console.log(data.History);
+
+            for (let index = 0; index < data.History.length; index++) {
+                var historydate = new Date(data.History[index].Timestamp);
+                if (index != 0) {
+                    if (data.History[index].Timestamp != data.History[index-1].Timestamp) {
+                        history +='<tr><td>'+data.History[index].Source+'<br><small><i>'+moment(historydate).format('lll')+'</i></small></td>';
+                    }else{
+                        history +='<tr><td></td>';
+                    }
+                }else{
+                    history +='<tr><td>'+data.History[index].Source+'<br><small><i>'+moment(historydate).format('lll')+'</i></small></td>';
+                }
+                if (data.History[index].AuditLevel == '1') {
+                    history +='<td>'+data.History[index].Message+'</td><td></td><td></td></tr>';
+                }else{
+                    if (data.History[index].Updated) {
+                        history +='<td>'+data.History[index].Action+'</td>';
+                        if (data.History[index].Original) {
+                            history +='<td>'+data.History[index].Original+'</td>';
+                        }else{
+                            history +='<td></td>';
+                        }
+                        if (data.History[index].Updated) {
+                            history +='<td>'+data.History[index].Updated+'</td></tr>';
+                        }else{
+                            history +='<td></td></tr>';
+                        }
+                    }
+                }
+            }
+            $('#tbodyhistory').append(history);
+            console.log(history);
             $('#gbidiv').hide();
         },
         error: function (data) {
             alert(data.responseText);
         }
     });
-    // if($('#editBtn').val() == 'Cancel'){
-    //     $('#myid').val(id);
-    //     $('#subBtn').val('Update');
-    //     $('#customer_code').val(trdata.code);
-    //     $('#customer_name').val(trdata.customer);
-    //     $('#customerModal').modal('show');
-    // }else{
-    // window.location.href = 'customer/'+id;
-    // }
-    
 });
 

@@ -3,11 +3,13 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">{{\Carbon\Carbon::now()->format('F d, Y')}}</a>
     <a class="navbar-brand" id="navtime" href="#"></a>
-    <input type="button" class="ml-auto btn btn-secondary" id="graphBtn" value="DASHBOARD">
+    <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="graphBtn" value="DASHBOARD">&nbsp;&nbsp;
+    <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="dailyBtn" value="VIEW LAST 30 DAYS">&nbsp;&nbsp;
+    <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;display:none" id="exportBtn" value="EXPORT" >
     <div class="ml-auto"id="search"></div>
 </nav><hr>
-<div class="container-fluid text-center" style="width:100%;height:100%">
-        <input type="button" id="dailyBtn" value="LAST 30 DAYS">
+<div class="container-fluid ptext text-center" style="width:100%;height:100%;display:none">
+    <p class="ml-auto" id="ptext"></p>
 </div>
 <hr>
 <div class="container-fluid text-center">
@@ -34,7 +36,7 @@
             </tfoot>
         </table>
     </div>
-    <canvas id="dailyChart" height="200" width='900' style="margin:0 auto"></canvas>
+    <canvas id="dailyChart" height="250" width='900' style="margin:0 auto"></canvas>
 </div>
 <hr>
 <div class="text-center" id="byweeks" style="display:none">
@@ -48,7 +50,7 @@
             </tfoot>
         </table>
     </div>
-    <canvas id="dailyChartW" height="200" width='900' style="margin:0 auto"></canvas>
+    <canvas id="dailyChartW" height="250" width='900' style="margin:0 auto"></canvas>
 </div>
 <hr>
 @endsection

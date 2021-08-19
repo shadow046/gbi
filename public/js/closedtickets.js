@@ -1,0 +1,237 @@
+var gbitable, StoreTopIssueTable;
+var BtnSelected = 'Details', TopIssueLocationNameSelected = 'Store';
+var serverTime = new Date();
+
+
+$(document).ready(function()
+{
+    gbitable =
+    $('table.gbiTable').DataTable({ 
+        "dom": 'ftip',
+        "language": {
+                "emptyTable": " ",
+                // "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw"><span class="sr-only">Searching...</span></i>',
+                "loadingRecords": "Please wait - loading..."
+            },
+        "pageLength": 5,
+        "order": [[ 1, "desc" ]],
+        processing: false,
+        serverSide: false,
+        ajax: 'closedtickets',
+        columns: [
+            { data: 'DateCreated',
+                "render": function ( data, type, row, meta) 
+                {
+                    var dates = new Date(data);
+                    return moment(dates).format('LLL');
+                }
+            },
+            { data: 'TaskNumber', name:'TaskNumber'},
+            { data: 'Issue', name:'Issue'}
+            // { data: 'GBIStoreCode', name:'GBIStoreCode'},
+            // { data: 'GBIStoreName', name:'GBIStoreName'},
+            // { data: 'Location', name:'Location'},
+            // { data: 'IncidentStatus', name:'IncidentStatus'}
+        ]
+    });
+
+    
+    //Store Top Issue
+    StoreTopIssueTable =
+    $('table.StoreTopIssueTable').DataTable({ 
+        "dom": 'itp',
+        "language": {
+                "emptyTable": " ",
+                // "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw"><span class="sr-only">Searching...</span></i>',
+                "loadingRecords": "Please wait - loading..."
+            },
+        "pageLength": 10,
+        "order": [[ 1, "desc" ]],
+        processing: false,
+        serverSide: false,
+        ajax: 'storetopissue',
+        columns: [
+            // { data: 'DateCreated', name:'DateCreated'},
+            { data: 'key', name:'key'},
+            { data: 'open', name:'open'},
+            { data: 'closed', name:'closed'},
+            { data: 'total', name:'total'}
+            // { data: 'IncidentStatus', name:'IncidentStatus'}
+        ]
+    });
+    $('div.dataTables_filter').appendTo('#search');
+    function updateTime() {
+        var currtime = new Date();
+        var currtime1 = new Date(currtime.getTime());
+        var mintime = currtime.getMinutes();
+        var minsecs = currtime.getSeconds();
+        if (currtime.getHours() == 0) {
+            var mytime = 12;
+            var am = "AM";
+        }else if (currtime.getHours() > 12) {
+            var mytime = currtime.getHours() - 12;
+            var am = "PM";
+            if (mytime < 10) {
+                var mytime = '0'+mytime;
+            }
+        }else if (currtime.getHours() < 12) {
+            var am = "AM";
+            var mytime = currtime.getHours();
+            if (currtime.getHours() < 10) {
+                var mytime = '0'+currtime.getHours();
+            }
+        }else if (currtime.getHours() == 12) {
+            var am = "PM";
+            var mytime = currtime.getHours();
+        }
+        if (currtime.getMinutes() < 10) {
+            var mintime = '0'+mintime;
+        }
+        if (currtime.getSeconds() < 10) {
+            var minsecs = '0'+minsecs;
+        }
+        $('#navtime').html(mytime + ":"+ mintime + ":" + minsecs + " " + am);
+    }
+    
+    setInterval(updateTime, 1000); 
+    $('#service_report').hide();
+    
+});
+    // $('#ticketdetailsModal').modal('show');
+$(document).on("click", '.DetailsBtn', function () {
+    var BtnName = $(this).attr('BtnName');
+    if (BtnSelected != BtnName) {
+        $('.DetailsBtn[BtnName=\''+BtnSelected+'\']').removeClass('btn-secondary');
+        $('.DetailsBtn[BtnName=\''+BtnSelected+'\']').toggleClass('bg-blue');
+        $(this).removeClass('bg-blue');
+        $(this).toggleClass('btn-secondary');
+        $('#'+BtnSelected).hide()
+        $('#'+BtnName).show();
+        BtnSelected = BtnName;
+    }
+});
+
+
+$(document).on('click', '#graphBtn', function () {
+    $('#loading').show();
+    window.location.href = '/dailytickets';
+});
+$(document).on('click', '#openTicketBtn', function () {
+    $('#loading').show();
+    window.location.href = '/';
+});
+
+$(document).on("click", '.TopIssueLocationBtn', function () {
+    var TopIssueLocationName = $(this).attr('TopIssueLocationName');
+    if (TopIssueLocationNameSelected != TopIssueLocationName) {
+        $('.TopIssueLocationBtn[TopIssueLocationName=\''+TopIssueLocationNameSelected+'\']').removeClass('btn-secondary');
+        $('.TopIssueLocationBtn[TopIssueLocationName=\''+TopIssueLocationNameSelected+'\']').toggleClass('bg-blue');
+        $(this).removeClass('bg-blue');
+        $(this).toggleClass('btn-secondary');
+        $('.'+TopIssueLocationNameSelected).hide()
+        $('.'+TopIssueLocationName).show();
+        TopIssueLocationNameSelected = TopIssueLocationName;
+    }
+});
+
+$(document).on("click", "#TopIssueMore", function () {
+    $('#topissueModal').modal('show');
+    
+});
+$(document).on("click", ".close", function () {
+    location.reload()    
+});
+
+$(document).on("click", "#StoreTopIssueTable tbody tr", function () {
+    var trdata = StoreTopIssueTable.row(this).data();
+    console.log(trdata);
+
+});
+$(document).on("click", "#gbiTable tbody tr", function () {
+    $('#loading').show();
+    var trdata = gbitable.row(this).data();
+    var TaskNumber = trdata.TaskNumber;
+    $('#TicketNumber').val(trdata.TaskNumber);
+    $('#gbisbu').val(trdata.gbisbu);
+    $('#Status').val(trdata.IncidentStatus);
+
+    $.ajax({
+        type: "GET",
+        url: "taskdata",
+        data: {
+            TaskNumber: TaskNumber
+        },
+        success: function(data){
+            $('#loading').hide();
+            $('#ticketdetailsModal').modal('show');
+            if (trdata.gbisbu == "Plant") {
+                $('.Location').show();
+                $('#Location').val(data.Location);
+            }else{
+                $('.Location').hide();
+            }
+            $('#StoreCode').val(data.Store_Code);
+            $('#StoreName').val(data.Store_Name);
+            $('#Address').val(data.Store_Address);
+            $('#Ownership').val(data.Ownership);
+            $('#gbisbu').val(data.Sbu);
+            $('#ContactPerson').val(data.Contact_Person);
+            $('#ContactNumber').val(data.Contact_Number);
+            $('#Email_Address').val(data.Email_Address);
+            $('#Problem').val(data.Problem_Reported);
+            $('#Issue').val(trdata.Issue);
+            $('#RootCause').val(data.Root_Cause);
+            $('#LatestNotes').val(data.Latest_Notes);
+            $('#IncidentStatus').val(data.IncidentStatus);
+            $('#StoreType').val(data.GBIStoreType);
+            $('#ActionTaken').val(data.GBIActionTaken);
+            var remarks = ' ';
+            if (data.Remarks.length > 0) {
+                for (let index = 0; index < data.Remarks.length; index++) {
+                    var remarksdate = new Date(data.Remarks[index].Timestamp);
+                    remarks +='<div class="container row"><label class="col-sm-3 control-label">'+data.Remarks[index].Author+'<br><small>'+moment(remarksdate).format('lll')+'</small></label><div class="col-sm-9"><div class="text-break">'+data.Remarks[index].Message+'</div></div><hr></div>';
+                }
+                $('#remarks-details').append(remarks);
+            }
+            var history = '';
+            console.log(data.History);
+
+            for (let index = 0; index < data.History.length; index++) {
+                var historydate = new Date(data.History[index].Timestamp);
+                if (index != 0) {
+                    if (data.History[index].Timestamp != data.History[index-1].Timestamp) {
+                        history +='<tr><td>'+data.History[index].Source+'<br><small><i>'+moment(historydate).format('lll')+'</i></small></td>';
+                    }else{
+                        history +='<tr><td></td>';
+                    }
+                }else{
+                    history +='<tr><td>'+data.History[index].Source+'<br><small><i>'+moment(historydate).format('lll')+'</i></small></td>';
+                }
+                if (data.History[index].AuditLevel == '1') {
+                    history +='<td>'+data.History[index].Message+'</td><td></td><td></td></tr>';
+                }else{
+                    if (data.History[index].Updated) {
+                        history +='<td>'+data.History[index].Action+'</td>';
+                        if (data.History[index].Original) {
+                            history +='<td>'+data.History[index].Original+'</td>';
+                        }else{
+                            history +='<td></td>';
+                        }
+                        if (data.History[index].Updated) {
+                            history +='<td>'+data.History[index].Updated+'</td></tr>';
+                        }else{
+                            history +='<td></td></tr>';
+                        }
+                    }
+                }
+            }
+            $('#tbodyhistory').append(history);
+            console.log(history);
+            $('#gbidiv').hide();
+        },
+        error: function (data) {
+            alert(data.responseText);
+        }
+    });
+});
+

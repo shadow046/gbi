@@ -9,5 +9,6 @@ class FormField extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $connection = 'sqlsrv';
     protected $table = 'FormField';
 }

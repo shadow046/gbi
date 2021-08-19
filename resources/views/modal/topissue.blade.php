@@ -3,7 +3,7 @@
         <div class="modal-content text-center">
             <div class="modal-header">
                 <h6 class="modal-title w-100 text-center">TOP ISSUES</h6>
-                <a class="close cancel" aria-label="Close" data-dismiss="modal">
+                <a class="close cancel" aria-label="Close" data-dismiss="modal" style="cursor: pointer">
                     <span aria-hidden="true">&times;</span>
                 </a>
             </div>
@@ -15,7 +15,7 @@
                 </div>
             </div> --}}
             <div class="modal-body" style="max-height:400px;overflow-y:auto;">
-                <div class="container Store">
+                <div class="container Store" id="toptable">
                     <table class="table-hover table StoreTopIssueTable" id="StoreTopIssueTable" style="font-size:70%;width:100%">
                         <thead style="background-color:#00127f;color:white">
                             <tr>
@@ -28,6 +28,7 @@
                         </thead>
                     </table>
                 </div>
+                
                 <div class="container Plant">
                     <table class="table-hover table PlantTopIssueTable" id="PlantTopIssueTable" style="font-size:70%;width:100%;display:none">
                         <thead style="background-color:#00127f;color:white">
@@ -40,6 +41,13 @@
                                 <th>TOTAL</th>
                             </tr>
                         </thead>
+                        <tfoot>
+                            <th>ISSUE</th>
+                            <th>GBI SBU</th>
+                            <th>OPEN</th>
+                            <th>CLOSED</th> 
+                            <th>TOTAL</th>
+                        </tfoot>
                     </table>
                 </div>
                 <div class="container Office">

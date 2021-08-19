@@ -13,12 +13,20 @@ use App\Http\Controllers\HomeController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Route::get('createuserlyka', [HomeController::class, 'createuserlyka']);
+Route::any('check', [HomeController::class, 'check']);
+Route::get('sendotp', [HomeController::class, 'sendotp']);
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
+
 Route::get('/', [HomeController::class, 'index'])->name('home.index');//->middleware('ajax');
 Route::get('getticket', [HomeController::class, 'getticket']);
+Route::get('closedtickets', [HomeController::class, 'closedtickets']);
+Route::get('closed', [HomeController::class, 'closed']);
+Route::get('createuserlyka', [HomeController::class, 'createuserlyka']);
+Route::any('createuser', [HomeController::class, 'createuser']);
 Route::get('taskdata', [HomeController::class, 'taskdata']);
 Route::get('storetopissue', [HomeController::class, 'storetopissue']);
 Route::get('planttopissue', [HomeController::class, 'planttopissue']);
@@ -29,6 +37,8 @@ Route::get('weeklytickets', [HomeController::class, 'weeklytickets'])->name('gbi
 Route::get('dailyticketsdata', [HomeController::class, 'dailyticketsdata']);
 Route::get('monthlyticketsdata', [HomeController::class, 'monthlyticketsdata']);
 Route::get('aging', [HomeController::class, 'aging']);
+Route::get('ExportData/{year}/{month}/{monthname}', [HomeController::class, 'ExportData']);
+
 
 
 Auth::routes();

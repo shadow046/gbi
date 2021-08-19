@@ -92,6 +92,10 @@
             table, th, td {
                 border: 1px solid  #d3d3d3;;
             }
+            tfoot {
+                background-color:#00127f;
+                color:white
+            }
         </style>
     </head>
     <body>
@@ -102,6 +106,11 @@
         </div>
 
         @if(Request::is('/'))
+            @include('modal.ticketdetails')
+            @include('modal.topissue')
+        @endif
+
+        @if(Request::is('closed'))
             @include('modal.ticketdetails')
             @include('modal.topissue')
         @endif
@@ -124,6 +133,9 @@
         {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/6.0.6/highcharts.js" charset="utf-8"></script> --}}
         @if (Request::is('/'))
             <script src="{{asset('js/gbi.js')}}"></script>
+        @endif
+        @if (Request::is('closed'))
+            <script src="{{asset('js/closedtickets.js')}}"></script>
         @endif
         @if (Request::is('dailytickets'))
             <script src="{{asset('js/dailycharts.js')}}"></script>

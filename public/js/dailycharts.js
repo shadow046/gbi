@@ -2,6 +2,8 @@ var dates;
 var Store;
 var Plant;
 var Office;
+var start = 0;
+var barChartData;
 $(document).ready(function()
 {
     function updateTime() {
@@ -9,6 +11,7 @@ $(document).ready(function()
         var currtime1 = new Date(currtime.getTime());
         var mintime = currtime.getMinutes();
         var minsecs = currtime.getSeconds();
+
         if (currtime.getHours() == 0) {
             var mytime = 12;
             var am = "AM";
@@ -38,14 +41,14 @@ $(document).ready(function()
             updateGraph();
         }
         $('#navtime').html(mytime + ":"+ mintime + ":" + minsecs + " " + am);
+        // if (start <= 2) {
     }
-    
     function updateGraph() {
         $.ajax({
             type: "GET",
             url: "dailyticketsdata",
+            async: false,
             success: function(data){
-                console.log(data)
                 $('#datahead').empty();
                 $('#databody').empty();
                 $('#datafoot').empty();
@@ -59,7 +62,7 @@ $(document).ready(function()
                     let ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
                     let mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(d);
                     let da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
-                    datahead+='<th style="font-size:9px">'+`${da}-${mo}`+'</th>';
+                    datahead+='<th style="font-size:9px">&nbsp;&nbsp;&nbsp;'+`${mo}`+'&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;'+`${da}`+'&nbsp;&nbsp;&nbsp;</th>';
                 });
                 data.str.forEach(element => {
                     databodystore +='<td>'+element+'</td>';
@@ -73,7 +76,7 @@ $(document).ready(function()
                 data.grandtotal.forEach(element => {
                     datafoot +='<td>'+element+'</td>';
                 });
-                datahead+='<th style="font-size:12px">Grand Total</th></tr>';
+                datahead+='<th style="font-size:12px">&nbsp;&nbsp;Grand Total&nbsp;&nbsp;</th></tr>';
                 databodystore +='<td>'+data.strtotal+'</td></tr>';
                 databodyplant +='<td>'+data.plnttotal+'</td></tr>';
                 databodyoffice +='<td>'+data.ofctotal+'</td></tr>';
@@ -83,59 +86,78 @@ $(document).ready(function()
                 $('#databody').append(databodyplant);
                 $('#databody').append(databodyoffice);
                 $('#datafoot').append(datafoot);
-                var barChartData = {
-                    labels: data.dates,
-                    datasets: [
-                        {
-                            label: 'Store',
-                            fill: false,
-                            borderColor: '#D4CFCF',
-                            data: data.str,
-                        },
-                        {
-                            label: 'Plant',
-                            fill: false,
-                            borderColor: '#E88406',
-                            data: data.plnt,
-                        },
-                        {
-                            label: 'Office',
-                            fill: false,
-                            borderColor: '#4496F3',
-                            data: data.ofc,
-                            datalabels: {
-                                align: 'end',
-                                anchor: 'end'
-                            }
+                barChartData = {
+                labels: data.dates,
+                datasets: [
+                    {
+                        label: 'Store',
+                        fill: false,
+                        borderColor: '#D4CFCF',
+                        data: data.str,
+                    },
+                    {
+                        label: 'Plant',
+                        fill: false,
+                        borderColor: '#E88406',
+                        data: data.plnt,
+                    },
+                    {
+                        label: 'Office',
+                        fill: false,
+                        borderColor: '#4496F3',
+                        data: data.ofc,
+                        datalabels: {
+                            align: 'end',
+                            anchor: 'end'
                         }
-                    ]
-                };
-                var ctx = $('#dailyChart');
-                var myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: barChartData,
-                    options: {
-                        elements: {
-                            rectangle: {
-                                borderWidth: 2,
-                                borderColor: '#c1c1c1',
-                                borderSkipped: 'bottom'
+                    }
+                ]
+            };
+            var ctx = $('#dailyChart');
+            var progress = $('#animationProgress');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: barChartData,
+                options: {
+                    elements: {
+                        rectangle: {
+                            borderWidth: 2,
+                            borderColor: '#c1c1c1',
+                            borderSkipped: 'bottom'
+                        }
+                    },
+                    responsive: false,
+                    title: {
+                        display: true,
+                        text: 'Daily Tickets'
+                    },
+                    animation: {
+                        duration: 2000,
+                        onProgress: function(animation) {
+                            if (animation.initial) {
+                                progress.value = animation.currentStep / animation.numSteps;
+                            }else{
+                                progress.value = animation.currentStep / animation.numSteps;
                             }
                         },
-                        responsive: false,
-                        title: {
-                            display: true,
-                            text: 'Daily Tickets'
-                        },
+                        onComplete: function(animation) {
+                            window.setTimeout(function() {
+                                progress.value = 0;
+                            }, 2000);
+                        }
                     }
-                });
+                }
+            });
             }
         });
         $('#dailyChart').width($('#data').width());
         $('#dailyChartW').width($('#dataW').width());
-
+        $('#loading').hide();
     }
-    updateGraph();
+    $('#loading').show();
+    setTimeout(function(){
+        updateGraph();
+    },3000);
     setInterval(updateTime, 1000);
 });
 

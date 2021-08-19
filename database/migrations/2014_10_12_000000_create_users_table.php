@@ -11,6 +11,8 @@ class CreateUsersTable extends Migration
      *
      * @return void
      */
+    protected $connection = 'mysql';
+
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {

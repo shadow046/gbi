@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\Sheets\DataExports;
 use Carbon\Carbon;
 use App\Models\Task;
 use App\Models\FormField;
 use App\Models\Form;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Response;
 use DB;
 use DateTime;
@@ -23,7 +27,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        // $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     /**
@@ -31,6 +35,768 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+    public function ExportData(Request $request, $year, $month, $monthname) 
+    {
+        return Excel::download(new DataExports($year,$month,$monthname), $monthname.' - '.$year.'.xlsx');
+    }
+    public function createuser(){
+        
+        $user = User::create([
+            'name' => 'Jerome',
+            'email'=> 'emorej046@gmail.com',
+            'password'=> Hash::make('123456')
+        ]);
+        return $user;
+    }
+    public function createuserlyka()
+    {
+        $fullnamex = $this->randomName();
+        $username = $this->random_username($fullnamex);
+        $devid = dechex(mt_rand()).dechex(mt_rand());
+        return view('createuser', compact('devid', 'username'));
+    }
+    public function randomName() {
+        $firstname = array(
+            'Johnathon',
+            'Anthony',
+            'Erasmo',
+            'Raleigh',
+            'Nancie',
+            'Tama',
+            'Camellia',
+            'Augustine',
+            'Christeen',
+            'Luz',
+            'Diego',
+            'Lyndia',
+            'Thomas',
+            'Georgianna',
+            'Leigha',
+            'Alejandro',
+            'Marquis',
+            'Joan',
+            'Stephania',
+            'Elroy',
+            'Zonia',
+            'Buffy',
+            'Sharie',
+            'Blythe',
+            'Gaylene',
+            'Elida',
+            'Randy',
+            'Margarete',
+            'Margarett',
+            'Dion',
+            'Tomi',
+            'Arden',
+            'Clora',
+            'Laine',
+            'Becki',
+            'Margherita',
+            'Bong',
+            'Jeanice',
+            'Qiana',
+            'Lawanda',
+            'Rebecka',
+            'Maribel',
+            'Tami',
+            'Yuri',
+            'Michele',
+            'Rubi',
+            'Larisa',
+            'Lloyd',
+            'Tyisha',
+            'Samatha',
+        );
+    
+        $lastname = array(
+            'Mischke',
+            'Serna',
+            'Pingree',
+            'Mcnaught',
+            'Pepper',
+            'Schildgen',
+            'Mongold',
+            'Wrona',
+            'Geddes',
+            'Lanz',
+            'Fetzer',
+            'Schroeder',
+            'Block',
+            'Mayoral',
+            'Fleishman',
+            'Roberie',
+            'Latson',
+            'Lupo',
+            'Motsinger',
+            'Drews',
+            'Coby',
+            'Redner',
+            'Culton',
+            'Howe',
+            'Stoval',
+            'Michaud',
+            'Mote',
+            'Menjivar',
+            'Wiers',
+            'Paris',
+            'Grisby',
+            'Noren',
+            'Damron',
+            'Kazmierczak',
+            'Haslett',
+            'Guillemette',
+            'Buresh',
+            'Center',
+            'Kucera',
+            'Catt',
+            'Badon',
+            'Grumbles',
+            'Antes',
+            'Byron',
+            'Volkman',
+            'Klemp',
+            'Pekar',
+            'Pecora',
+            'Schewe',
+            'Ramage',
+        );
+        $name = $firstname[rand ( 0 , count($firstname) -1)];
+        $name .= ' ';
+        $name .= $lastname[rand ( 0 , count($lastname) -1)];
+        return $name;
+    }
+    public function notkens(){
+        $notiTokn = "";
+        for ($x = 1; $x <= 163; $x++) {
+            if($x==22){
+                $notiTokn .= ":";
+            } else if(random_int(1,163)>$x&& random_int(1,163)<$x-20){
+                if(random_int(1,2)==2){
+                    $notiTokn .= "_";
+                } else {
+                    $notiTokn .= "-";
+                }
+            } else {
+            $sme = random_int(1,3);
+            switch ($sme) {
+                case 1:
+                    $notiTokn .= chr(random_int(48,57));
+                case 2:
+                    $notiTokn .= chr(random_int(65,90));
+                case 3:
+                    $notiTokn .= chr(random_int(97,122));
+              }
+            }
+        }
+        return $notiTokn;
+    }
+    public function random_username($string) {
+        $pattern = " ";
+        $firstPart = strstr(strtolower($string), $pattern, true);
+        $secondPart = substr(strstr(strtolower($string), $pattern, false), 0,3);
+        $nrRand = rand(0, 100);
+        
+        $username = trim($firstPart).trim($secondPart).trim($nrRand);
+        return $username;
+    }
+        
+    public function sendotp(Request $request)
+    {
+        $DevIdx = $request->devid;
+        $phoneNumberx = $request->pn;
+        $passwordx = 'Maricaris24';
+        $sendOTP =$request->otpid;
+        $xOTP = $request->otp;
+        $notificationTokenx = $this->notkens();
+        $min = strtotime("47 years ago");
+        $max = strtotime("18 years ago");
+        $rand_time = mt_rand($min, $max);
+        $fullnamex = $this->randomName();
+        $usernamex = $request->un;
+        $birthDatex = date('m/d/Y', $rand_time);
+        $genderx ="male";
+        $validateOTP = $this->postX("https://settings.mylykaapps.com/api/v3/otpservices/ValidateOTPV2", $this->payload($DevIdx,'"reference":"phone","requestId":"'.$sendOTP.'","type":"register","value":"'.$phoneNumberx.'",'."code".":".'"'.$xOTP.'"'));
+        // return $xOTP.'---'.$sendOTP.'---'.$validateOTP->message.'--'.$phoneNumberx.'---'.$validateOTP->data->signedToken;
+        if( $validateOTP->data) {
+            $signedTokenx = $validateOTP->data->signedToken;
+            $otpMess = $validateOTP->message;
+            if($otpMess == "Invalid passcode."){
+                return response($validateOTP->message);
+            }else{
+                $codex = $xOTP;
+                if($signedTokenx!=""){
+                    $registerPass = $this->postX("https://identity.mylykaapps.com/useraccounts/RegisterV3", $this->payload($DevIdx,'"birthDate":"'.$birthDatex.'","code":"'.$codex.'","countryCode":"PH","fullname":"'.$fullnamex.'","gender":"'.$genderx.'","isMerchant":false,"password":"'.$passwordx.'","phoneNumber":"'.$phoneNumberx.'","signedToken":"'.$signedTokenx.'","type":"phone","username":"'.$usernamex.'"')) ;
+                    return response($registerPass->Message);
+                }
+            }
+        } else {
+            $otpMess = "invalid OTP";
+            return response($otpMess);
+        }
+        // $validURL = 'https://settings.mylykaapps.com/api/v3/otpservices/GenerateOTPV2';
+        // $validHeader = array(
+        //     "Content-Type: application/json; charset=UTF-8",
+        //     "user-agent: Lyka/3.6.29 (com.thingsilikeapp; build:829 Android R 30)"
+        // );
+        // $payloader= array(
+        //     "device"=>array(
+        //         "deviceId"=>$request->devid,
+        //         "deviceImei"=>"",
+        //         "deviceModel"=>"unknown unknown",
+        //         "deviceName"=>"android",
+        //         "deviceOs"=>"Android R ",
+        //         "isEmulator"=>false,
+        //         "osVersion"=>"30",
+        //         "notificationToken"=>$request->notifid
+        //     ),
+
+        //     "reference"=>"phone",
+        //     "requestId"=>$request->otpid,
+        //     "type"=>"register",
+        //     "value"=>$request->pn,
+        //     "code"=>$request->otp
+        // );
+        // $validCurl = curl_init($validURL);
+        // curl_setopt($validCurl, CURLOPT_URL, $validURL);
+        // curl_setopt($validCurl, CURLOPT_POST, true);
+        // curl_setopt($validCurl, CURLOPT_RETURNTRANSFER, true);
+        // curl_setopt($validCurl, CURLOPT_HTTPHEADER, $validHeader);
+        // curl_setopt($validCurl, CURLOPT_POSTFIELDS, json_encode($payloader));
+        // $validResp = curl_exec($validCurl);
+        // curl_close($validCurl);
+        // $valjson = json_decode($validResp);
+        // return response()->json($valjson->data);
+    }
+
+    function postX($urlx, $payloader){
+        $uAgent = "Lyka/3.6.29 (com.thingsilikeapp; build:829 Android R 30)";
+        $validURL = $urlx;
+        $validHeader = 
+        array(
+            "Content-Type: application/json; charset=UTF-8",
+            "user-agent: $uAgent"
+        );
+        $validCurl = curl_init($validURL);
+        curl_setopt($validCurl, CURLOPT_URL, $validURL);
+        curl_setopt($validCurl, CURLOPT_POST, true);
+        curl_setopt($validCurl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($validCurl, CURLOPT_HTTPHEADER, $validHeader);
+        curl_setopt($validCurl, CURLOPT_POSTFIELDS, $payloader);
+        $validResp = curl_exec($validCurl);
+        curl_close($validCurl);
+        $valjson = json_decode($validResp);
+        return $valjson;
+    }
+
+    public function payload($devIDx, $xtraPay, $rTokenx = ""){
+        if($rTokenx!=""){
+            $wtoken = ",notificationToken: $rTokenx";
+        } else {
+            $wtoken=$rTokenx;
+        }
+        $valdata = <<<DATA
+               {"device": {
+                   "deviceId": "$devIDx",
+                   "deviceImei": "",
+                   "deviceModel": "unknown unknown",
+                   "deviceName": "android",
+                   "deviceOs": "Android R ",
+                   "isEmulator": false,
+                   "osVersion": "30"
+                   $wtoken
+               },
+               $xtraPay
+               }
+               DATA; 
+       return $valdata;
+    }
+    public function check(Request $request)
+    {
+        $DevIdx = $request->devid;
+        $usernamex = $request->un;
+        $phoneNumberx = $request->pn;
+        $notif = $request->notif;
+
+        $vaidateUN = $this->postX("https://identity.mylykaapps.com/useraccounts/validateusername", $this->payload("$DevIdx",'"country": "PH","isMerchant": false,"username": "'.$usernamex.'"')) ->message;
+        $validateNumber = $this->postX("https://identity.mylykaapps.com/useraccounts/validatephonenumber", $this->payload($DevIdx,'"country": "PH","isMerchant": false,"phoneNumber":"'.$phoneNumberx.'"')) ->message;
+        
+        if(strpos($vaidateUN,'does not') && strpos($validateNumber,'does not')){
+            $sendOTP = $this->postX("https://settings.mylykaapps.com/api/v3/otpservices/GenerateOTPV2", $this->payload($DevIdx,'"reference":"phone","type":"register","value":"'.$phoneNumberx.'"')) ->data->requestId;
+            return response($sendOTP);
+        }else if (!strpos($vaidateUN,'does not')) {
+            return response($vaidateUN);
+        }else{
+            return response($validateNumber);
+        }
+        // $validURL = 'https://identity.mylykaapps.com/useraccounts/validatephonenumber';
+        // $validHeader = array(
+        //     "Content-Type: application/json; charset=UTF-8",
+        //     "user-agent: Lyka/3.6.29 (com.thingsilikeapp; build:829 Android R 30)"
+        // );
+        // $payloader= array(
+        //     "device"=>array(
+        //         "deviceId"=>$request->devid,
+        //         "deviceImei"=>"",
+        //         "deviceModel"=>"unknown unknown",
+        //         "deviceName"=>"android",
+        //         "deviceOs"=>"Android R ",
+        //         "isEmulator"=>false,
+        //         "osVersion"=>"30",
+        //         "notificationToken"=>$request->notifid
+        //     ),
+        //     "country"=>"PH",
+        //     "isMerchant"=>false,
+        //     "phoneNumber"=>$request->pn
+        // );
+        // $validCurl = curl_init($validURL);
+        // curl_setopt($validCurl, CURLOPT_URL, $validURL);
+        // curl_setopt($validCurl, CURLOPT_POST, true);
+        // curl_setopt($validCurl, CURLOPT_RETURNTRANSFER, true);
+        // curl_setopt($validCurl, CURLOPT_HTTPHEADER, $validHeader);
+        // curl_setopt($validCurl, CURLOPT_POSTFIELDS, json_encode($payloader));
+        // $validResp = curl_exec($validCurl);
+        // curl_close($validCurl);
+        // $valjson = json_decode($validResp);
+        // if (!strpos($valjson->message,'does not')) {
+        //     return response()->json($validResp);
+        // }
+
+        // $validURL = 'https://identity.mylykaapps.com/useraccounts/validateusername';
+        // $validHeader = array(
+        //     "Content-Type: application/json; charset=UTF-8",
+        //     "user-agent: Lyka/3.6.29 (com.thingsilikeapp; build:829 Android R 30)"
+        // );
+        // $payloader= array(
+        //     "device"=>array(
+        //         "deviceId"=>$request->devid,
+        //         "deviceImei"=>"",
+        //         "deviceModel"=>"unknown unknown",
+        //         "deviceName"=>"android",
+        //         "deviceOs"=>"Android R ",
+        //         "isEmulator"=>false,
+        //         "osVersion"=>"30",
+        //         "notificationToken"=>$request->notifid
+        //     ),
+        //     "country"=>"PH",
+        //     "isMerchant"=>false,
+        //     "username"=>$request->un
+        // );
+        // $validCurl = curl_init($validURL);
+        // curl_setopt($validCurl, CURLOPT_URL, $validURL);
+        // curl_setopt($validCurl, CURLOPT_POST, true);
+        // curl_setopt($validCurl, CURLOPT_RETURNTRANSFER, true);
+        // curl_setopt($validCurl, CURLOPT_HTTPHEADER, $validHeader);
+        // curl_setopt($validCurl, CURLOPT_POSTFIELDS, json_encode($payloader));
+        // $validResp = curl_exec($validCurl);
+        // curl_close($validCurl);
+        // $valjson = json_decode($validResp);
+        // if (!strpos($valjson->message,'does not')) {
+        //     return response()->json($validResp);
+        // }
+        // $validURL = 'https://settings.mylykaapps.com/api/v3/otpservices/GenerateOTPV2';
+        // $validHeader = array(
+        //     "Content-Type: application/json; charset=UTF-8",
+        //     "user-agent: Lyka/3.6.29 (com.thingsilikeapp; build:829 Android R 30)"
+        // );
+        // $payloader= array(
+        //     "device"=>array(
+        //         "deviceId"=>$request->devid,
+        //         "deviceImei"=>"",
+        //         "deviceModel"=>"unknown unknown",
+        //         "deviceName"=>"android",
+        //         "deviceOs"=>"Android R ",
+        //         "isEmulator"=>false,
+        //         "osVersion"=>"30",
+        //         "notificationToken"=>$request->notifid
+        //     ),
+        //     "reference"=>"phone",
+        //     "type"=>"register",
+        //     "value"=>$request->pn
+        // );
+        // $validCurl = curl_init($validURL);
+        // curl_setopt($validCurl, CURLOPT_URL, $validURL);
+        // curl_setopt($validCurl, CURLOPT_POST, true);
+        // curl_setopt($validCurl, CURLOPT_RETURNTRANSFER, true);
+        // curl_setopt($validCurl, CURLOPT_HTTPHEADER, $validHeader);
+        // curl_setopt($validCurl, CURLOPT_POSTFIELDS, json_encode($payloader));
+        // $validResp = curl_exec($validCurl);
+        // curl_close($validCurl);
+        // $valjson = json_decode($validResp);
+        // return response()->json($valjson->data);
+    }
+
+    public function closed(Request $request)
+        {$TopIssue = FormField::query()->select(
+            DB::raw(
+                'SUM(CASE WHEN value = \'avr\' THEN 1 ELSE 0 END) as avr'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'AX Issue\' THEN 1 ELSE 0 END) as AXIssue'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Back Office\' THEN 1 ELSE 0 END) as BackOffice'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Biometrics\' THEN 1 ELSE 0 END) as Biometrics'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Browser\' THEN 1 ELSE 0 END) as Browser'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Cabling\' THEN 1 ELSE 0 END) as Cabling'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Cash Drawer\' THEN 1 ELSE 0 END) as CashDrawer'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'CBB\' THEN 1 ELSE 0 END) as CBB'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'CCTV\' THEN 1 ELSE 0 END) as CCTV'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Desktop\' THEN 1 ELSE 0 END) as Desktop'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Dismantling / Re-Installation\' THEN 1 ELSE 0 END) as Dismantling'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'EIMS\' THEN 1 ELSE 0 END) as EIMS'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Email\' THEN 1 ELSE 0 END) as Email'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'EOD\' THEN 1 ELSE 0 END) as EOD'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'E-Sales\' THEN 1 ELSE 0 END) as ESales'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'HW-MPC\' THEN 1 ELSE 0 END) as HWMPC'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'HW-PC/POS\' THEN 1 ELSE 0 END) as HWPCPOS'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'HW-POS\' THEN 1 ELSE 0 END) as HWPOS'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'HW-Printer\' THEN 1 ELSE 0 END) as HWPrinter'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'HW-Server\' THEN 1 ELSE 0 END) as HWServer'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Inquiry\' THEN 1 ELSE 0 END) as Inquiry'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Installation\' THEN 1 ELSE 0 END) as Installation'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Internet\' THEN 1 ELSE 0 END) as Internet'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Laptop\' THEN 1 ELSE 0 END) as Laptop'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Microsoft 365\' THEN 1 ELSE 0 END) as Microsoft365'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Modem\' THEN 1 ELSE 0 END) as Modem'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'MS Office\' THEN 1 ELSE 0 END) as MSOffice'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'My HR\' THEN 1 ELSE 0 END) as MyHR'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Others\' THEN 1 ELSE 0 END) as Others'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'PC/POS\' THEN 1 ELSE 0 END) as PCPOS'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'POS\' THEN 1 ELSE 0 END) as POS'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'POS Application\' THEN 1 ELSE 0 END) as POSApplication'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Price Change\' THEN 1 ELSE 0 END) as PriceChange'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Printer\' THEN 1 ELSE 0 END) as Printer'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Relocation\' THEN 1 ELSE 0 END) as Relocation'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Reset Password\' THEN 1 ELSE 0 END) as ResetPassword'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Router\' THEN 1 ELSE 0 END) as Router'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Sales Discrepancy\' THEN 1 ELSE 0 END) as SalesDiscrepancy'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'UPS\' THEN 1 ELSE 0 END) as UPS'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'VPN\' THEN 1 ELSE 0 END) as VPN'
+            )
+        )
+        ->where('FieldId', 'GBISubCategory')
+        ->get();
+
+        $top = [
+            'AVR'=>$TopIssue[0]->avr,
+            'AX Issue'=>$TopIssue[0]->Axissue,
+            'Back Office'=>$TopIssue[0]->Backoffice,
+            'Biometrics'=>$TopIssue[0]->Biometrics,
+            'Browser'=>$TopIssue[0]->Browser,
+            'Cabling'=>$TopIssue[0]->Cabling,
+            'Cash Drawer'=>$TopIssue[0]->CashDrawer,
+            'CBB'=>$TopIssue[0]->CBB,
+            'Cctv'=>$TopIssue[0]->CCTV,
+            'Desktop'=>$TopIssue[0]->Desktop,
+            'Dismantling / Re-Installation'=>$TopIssue[0]->Dismantling,
+            'EIMS'=>$TopIssue[0]->EIMS,
+            'Email'=>$TopIssue[0]->Email,
+            'EOD'=>$TopIssue[0]->EOD,
+            'E-Sales'=>$TopIssue[0]->ESales,
+            'HW-MPC'=>$TopIssue[0]->HWMPC,
+            'HW-PC/POS'=>$TopIssue[0]->HWPCPOS,
+            'HW-POS"'=>$TopIssue[0]->HWPOS,
+            'HW-Printer'=>$TopIssue[0]->HWPrinter,
+            'HW-Server'=>$TopIssue[0]->HWServer,
+            'Inquiry'=>$TopIssue[0]->Inquiry,
+            'Installation'=>$TopIssue[0]->Installation,
+            'Internet'=>$TopIssue[0]->Internet,
+            'Laptop'=>$TopIssue[0]->Laptop,
+            'Microsoft 365'=>$TopIssue[0]->Microsoft365,
+            'Modem'=>$TopIssue[0]->Modem,
+            'MS Office'=>$TopIssue[0]->MSOffice,
+            'My HR'=>$TopIssue[0]->MyHR,
+            'Others'=>$TopIssue[0]->Others,
+            'PC/POS'=>$TopIssue[0]->PCPOS,
+            'POS'=>$TopIssue[0]->POS,
+            'POS Application'=>$TopIssue[0]->POSApplication,
+            'Price Change'=>$TopIssue[0]->PriceChange,
+            'Printer'=>$TopIssue[0]->Printer,
+            'Relocation'=>$TopIssue[0]->Relocation,
+            'Reset Password'=>$TopIssue[0]->ResetPassword,
+            'Router'=>$TopIssue[0]->Router,
+            'Sales Discrepancy'=>$TopIssue[0]->SalesDiscrepancy,
+            'UPS'=>$TopIssue[0]->UPS,
+            'VPN'=>$TopIssue[0]->VPN
+        ];
+
+    $filtered = array_filter($top);
+    arsort($filtered);
+    //
+
+    //resolver group
+
+    $resolvergroup = FormField::query()->select(
+        DB::raw(
+            'SUM(CASE WHEN value = \'avr\' THEN 1 ELSE 0 END) as avr'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'AX Issue\' THEN 1 ELSE 0 END) as AXIssue'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Back Office\' THEN 1 ELSE 0 END) as BackOffice'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Biometrics\' THEN 1 ELSE 0 END) as Biometrics'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Browser\' THEN 1 ELSE 0 END) as Browser'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Cabling\' THEN 1 ELSE 0 END) as Cabling'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Cash Drawer\' THEN 1 ELSE 0 END) as CashDrawer'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'CBB\' THEN 1 ELSE 0 END) as CBB'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'CCTV\' THEN 1 ELSE 0 END) as CCTV'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Desktop\' THEN 1 ELSE 0 END) as Desktop'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Dismantling / Re-Installation\' THEN 1 ELSE 0 END) as Dismantling'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'EIMS\' THEN 1 ELSE 0 END) as EIMS'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Email\' THEN 1 ELSE 0 END) as Email'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'EOD\' THEN 1 ELSE 0 END) as EOD'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'E-Sales\' THEN 1 ELSE 0 END) as ESales'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'HW-MPC\' THEN 1 ELSE 0 END) as HWMPC'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'HW-PC/POS\' THEN 1 ELSE 0 END) as HWPCPOS'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'HW-POS\' THEN 1 ELSE 0 END) as HWPOS'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'HW-Printer\' THEN 1 ELSE 0 END) as HWPrinter'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'HW-Server\' THEN 1 ELSE 0 END) as HWServer'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Inquiry\' THEN 1 ELSE 0 END) as Inquiry'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Installation\' THEN 1 ELSE 0 END) as Installation'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Internet\' THEN 1 ELSE 0 END) as Internet'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Laptop\' THEN 1 ELSE 0 END) as Laptop'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Microsoft 365\' THEN 1 ELSE 0 END) as Microsoft365'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Modem\' THEN 1 ELSE 0 END) as Modem'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'MS Office\' THEN 1 ELSE 0 END) as MSOffice'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'My HR\' THEN 1 ELSE 0 END) as MyHR'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Others\' THEN 1 ELSE 0 END) as Others'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'PC/POS\' THEN 1 ELSE 0 END) as PCPOS'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'POS\' THEN 1 ELSE 0 END) as POS'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'POS Application\' THEN 1 ELSE 0 END) as POSApplication'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Price Change\' THEN 1 ELSE 0 END) as PriceChange'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Printer\' THEN 1 ELSE 0 END) as Printer'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Relocation\' THEN 1 ELSE 0 END) as Relocation'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Reset Password\' THEN 1 ELSE 0 END) as ResetPassword'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Router\' THEN 1 ELSE 0 END) as Router'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'Sales Discrepancy\' THEN 1 ELSE 0 END) as SalesDiscrepancy'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'UPS\' THEN 1 ELSE 0 END) as UPS'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN value = \'VPN\' THEN 1 ELSE 0 END) as VPN'
+        )
+    )
+    ->where('FieldId', 'GBIResolverGroup')
+    ->get();
+    //
+
+    //aging
+
+    $lessthan5 = Task::query()->select('TaskNumber')
+        ->where('TaskNumber', 'LIKE', 'GBI%')
+        ->join('form', 'taskid', 'task.id')
+        ->join('formfield', 'formid', 'form.id')
+        // ->whereNotIN('value', ['Closed', 'Resolved'])
+        ->whereNotIN('Value', ['Resolved','Closed'])
+        ->where('FieldId', 'GBIIncidentStatus')
+        ->whereDate('DateCreated', '>=', Carbon::now()->subDays(5))
+        ->whereDate('DateCreated', '<=', Carbon::now())
+        ->count();
+    $sixto10 = Task::query()->select('TaskNumber')
+        ->where('TaskNumber', 'LIKE', 'GBI%')
+        ->join('form', 'taskid', 'task.id')
+        ->join('formfield', 'formid', 'form.id')
+        // ->whereNotIN('value', ['Closed', 'Resolved'])
+        ->whereNotIN('Value', ['Resolved','Closed'])
+        // ->whereNotIN('TaskStatus', ['Submitted','Closed'])
+        ->where('FieldId', 'GBIIncidentStatus')
+        ->whereDate('DateCreated', '>=', Carbon::now()->subDays(10))
+        ->whereDate('DateCreated', '<=', Carbon::now()->subDays(6))
+        ->count();
+    $elevento15 = Task::query()->select('TaskNumber')
+        ->where('TaskNumber', 'LIKE', 'GBI%')
+        ->join('form', 'taskid', 'task.id')
+        ->join('formfield', 'formid', 'form.id')
+        // ->whereNotIN('value', ['Closed', 'Resolved'])
+        ->whereNotIN('Value', ['Resolved','Closed'])
+        // ->whereNotIN('TaskStatus', ['Submitted','Closed'])
+        ->where('FieldId', 'GBIIncidentStatus')
+        ->whereDate('DateCreated', '>=', Carbon::now()->subDays(15))
+        ->whereDate('DateCreated', '<=', Carbon::now()->subDays(11))
+        ->count();
+    $sixteento20 = Task::query()->select('TaskNumber')
+        ->where('TaskNumber', 'LIKE', 'GBI%')
+        ->join('form', 'taskid', 'task.id')
+        ->join('formfield', 'formid', 'form.id')
+        ->whereNotIN('Value', ['Resolved','Closed'])
+        // ->whereNotIN('TaskStatus', ['Submitted','Closed'])
+        // ->whereNotIN('value', ['Closed', 'Resolved'])
+        ->where('FieldId', 'GBIIncidentStatus')
+        ->whereDate('DateCreated', '>=', Carbon::now()->subDays(20))
+        ->whereDate('DateCreated', '<=', Carbon::now()->subDays(16))
+        ->count();
+    $greaterthan20 = Task::query()->select('TaskNumber')
+        ->where('TaskNumber', 'LIKE', 'GBI%')
+        ->join('form', 'taskid', 'task.id')
+        ->join('formfield', 'formid', 'form.id')
+        ->whereNotIN('Value', ['Resolved','Closed'])
+        // ->whereNotIN('TaskStatus', ['Submitted','Closed'])
+        // ->whereNotIN('value', ['Closed', 'Resolved'])
+        ->where('FieldId', 'GBIIncidentStatus')
+        ->whereDate('DateCreated', '>=', Carbon::now()->subDays(399))
+        ->whereDate('DateCreated', '<=', Carbon::now()->subDays(21))
+        ->count();
+
+    // $lessthanfive = collect($lessthanfive);
+    // foreach ($lessthanfive as $key) {
+    //     $date = explode(' ',$key->DateCreated);
+    //     // return $date[0];
+    //     return Carbon::parse($date[0]);
+    //     return (Carbon::parse($date[0]) < Carbon::parse(Carbon::now()));
+    // }
+
+    //
+    return view('closedtickets', compact('filtered', 'lessthan5', 'sixto10', 'elevento15', 'sixteento20','greaterthan20'));
+    // 20210628-50585
+    }
+
     public function index()
     {
         // return view('home');
@@ -170,6 +936,9 @@ class HomeController extends Controller
                 ),
                 DB::raw(
                     'SUM(CASE WHEN value = \'VPN\' THEN 1 ELSE 0 END) as VPN'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN value = \'Linksys\' THEN 1 ELSE 0 END) as Linksys'
                 )
             )
             ->where('FieldId', 'GBISubCategory')
@@ -200,6 +969,7 @@ class HomeController extends Controller
                 'Installation'=>$TopIssue[0]->Installation,
                 'Internet'=>$TopIssue[0]->Internet,
                 'Laptop'=>$TopIssue[0]->Laptop,
+                'Linksys'=>$TopIssue[0]->Linksys,
                 'Microsoft 365'=>$TopIssue[0]->Microsoft365,
                 'Modem'=>$TopIssue[0]->Modem,
                 'MS Office'=>$TopIssue[0]->MSOffice,
@@ -344,6 +1114,9 @@ class HomeController extends Controller
             ),
             DB::raw(
                 'SUM(CASE WHEN value = \'VPN\' THEN 1 ELSE 0 END) as VPN'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Linksys\' THEN 1 ELSE 0 END) as Linksys'
             )
         )
         ->where('FieldId', 'GBIResolverGroup')
@@ -416,9 +1189,108 @@ class HomeController extends Controller
         // }
 
         //
-        return view('gbi', compact('filtered', 'lessthan5', 'sixto10', 'elevento15', 'sixteento20','greaterthan20'));
+        return view('opentickets', compact('filtered', 'lessthan5', 'sixto10', 'elevento15', 'sixteento20','greaterthan20'));
         // 20210628-50585
         
+    }
+
+    public function closedtickets(){
+        $openticket =  Task::query()->select(
+            'DateCreated',
+            'TaskNumber',
+            'TaskStatus',
+            'CreatedBy',
+            DB::raw('(CASE
+                WHEN FormField.FieldId = \'GBISubCategory\'
+                THEN
+                FormField.Value
+                END) as Issue'
+            )
+        )
+        ->join('form', 'taskid', 'task.id')
+        ->join('formfield', 'formid', 'form.id')
+        ->where('FieldId', 'GBISubCategory')
+        ->whereIN('TaskStatus', ['Submitted','Closed'])
+        ->get();
+//
+        // $subcategory =  Task::query()->select(
+        //         'DateCreated',
+        //         'TaskNumber',
+        //         'CreatedBy',
+        //         'TaskStatus',
+        //         DB::raw('(CASE
+        //             WHEN FormField.FieldId = \'GBISubCategory\'
+        //         THEN
+        //             FormField.Value
+        //             END) as Issue'
+        //         )
+        //     )
+        //     ->join('form', 'taskid', 'task.id')
+        //     ->join('formfield', 'formid', 'form.id')
+        //     ->where('FieldId', 'GBISubCategory')
+        //     ->whereIN('TaskStatus', ['Submitted','Closed'])
+        //     ->get();
+        // $GBIStoreCode = Task::query()->select(
+        //         'TaskNumber',
+        //         DB::raw('(CASE
+        //             WHEN FormField.FieldId = \'GBIStoreCode\'
+        //             THEN
+        //             FormField.Value
+        //             END) as GBIStoreCode'
+        //         )
+        //     )
+        //     ->join('form', 'taskid', 'task.id')
+        //     ->join('formfield', 'formid', 'form.id')
+        //     ->where('TaskNumber', 'LIKE', 'GBI%')
+        //     ->where('FieldId', 'GBIStoreCode')
+        //     ->whereIN('TaskStatus', ['Submitted','Closed'])
+        //     ->get();
+        // $GBIStoreName = Task::query()->select(
+        //         'TaskNumber',
+        //         DB::raw('(CASE
+        //             WHEN FormField.FieldId = \'GBIStoreName\'
+        //             THEN
+        //             FormField.Value
+        //             END) as GBIStoreName'
+        //         )
+        //     )
+        //     ->join('form', 'taskid', 'task.id')
+        //     ->join('formfield', 'formid', 'form.id')
+        //     ->where('TaskNumber', 'LIKE', 'GBI%')
+        //     ->where('FieldId', 'GBIStoreName')
+        //     ->whereNotIN('TaskStatus', ['Submitted','Closed'])
+        //     ->get();
+            // 
+        // foreach ($openticket as $keys){
+        //     // return $keys;
+        //     // $openticket = collect($openticket);
+        //     // if ($openticket->where('TaskNumber', $keys->TaskNumber)) {
+        //     //     $keys->IncidentStatus = $openticket->where('TaskNumber', $keys->TaskNumber)->pluck('IncidentStatus')->first();
+        //     // }else{
+        //     //     $keys->IncidentStatus = '';
+        //     // }
+        //     $subcategory = collect($subcategory);
+        //     if ($subcategory->where('TaskNumber', $keys->TaskNumber)) {
+        //         $keys->Issue = $subcategory->where('TaskNumber', $keys->TaskNumber)->pluck('Issue')->first();
+        //     }else{
+        //         $keys->Issue = '';
+        //     }
+        //     //
+        //     // return $gbi;
+        //     // $GBIStoreName = collect($GBIStoreName);
+        //     // if ($GBIStoreName->where('TaskNumber', $keys->TaskNumber)) {
+        //     //     $keys->GBIStoreName = $GBIStoreName->where('TaskNumber', $keys->TaskNumber)->pluck('GBIStoreName')->first();
+        //     // }else{
+        //     //     $keys->GBIStoreName = '';
+        //     // }
+        //     // $GBIStoreCode = collect($GBIStoreCode);
+        //     // if ($GBIStoreCode->where('TaskNumber', $keys->TaskNumber)) {
+        //     //     $keys->GBIStoreCode = $GBIStoreCode->where('TaskNumber', $keys->TaskNumber)->pluck('GBIStoreCode')->first();
+        //     // }else{
+        //     //     $keys->GBIStoreCode = '';
+        //     // }
+        // }
+        return response()->json(['data' => $openticket]);
     }
 
     public function getticket()
@@ -488,6 +1360,21 @@ class HomeController extends Controller
             ->where('FieldId', 'GBIStoreName')
             ->whereNotIN('TaskStatus', ['Submitted','Closed'])
             ->get();
+        $GBILatestNotes = Task::query()->select(
+                'TaskNumber',
+                DB::raw('(CASE
+                    WHEN FormField.FieldId = \'GBILatestNotes\'
+                    THEN
+                    FormField.Value
+                    END) as GBILatestNotes'
+                )
+            )
+            ->join('form', 'taskid', 'task.id')
+            ->join('formfield', 'formid', 'form.id')
+            ->where('TaskNumber', 'LIKE', 'GBI%')
+            ->where('FieldId', 'GBILatestNotes')
+            ->whereNotIN('TaskStatus', ['Submitted','Closed'])
+            ->get();
             // 
         foreach ($openticket as $keys){
             // return $keys;
@@ -516,6 +1403,13 @@ class HomeController extends Controller
                 $keys->GBIStoreCode = $GBIStoreCode->where('TaskNumber', $keys->TaskNumber)->pluck('GBIStoreCode')->first();
             }else{
                 $keys->GBIStoreCode = '';
+            }
+
+            $GBILatestNotes = collect($GBILatestNotes);
+            if ($GBILatestNotes->where('TaskNumber', $keys->TaskNumber)) {
+                $keys->GBILatestNotes = $GBILatestNotes->where('TaskNumber', $keys->TaskNumber)->pluck('GBILatestNotes')->first();
+            }else{
+                $keys->GBILatestNotes = '';
             }
         }
         return response()->json(['data' => $openticket]);
@@ -869,16 +1763,18 @@ class HomeController extends Controller
             array_push($grandtotalW, $strW[$key]+$plntW[$key]+$ofcW[$key]);
         }
         array_push($grandtotalW, $strtotalW+$plnttotalW+$ofctotalW);
+        $weekcount = count($grandtotalW);
+
         // dd($grandtotalW);
         $percent = array();
         if (count($grandtotalW) < 6) {
-            array_push($percent, round(($strtotalW/$grandtotalW[4])*100,2).'%');
-            array_push($percent, round(($plnttotalW/$grandtotalW[4])*100,2).'%');
-            array_push($percent, round(($ofctotalW/$grandtotalW[4])*100,2).'%');
+            array_push($percent, round(($strtotalW/$grandtotalW[$weekcount-1])*100,2).'%');
+            array_push($percent, round(($plnttotalW/$grandtotalW[$weekcount-1])*100,2).'%');
+            array_push($percent, round(($ofctotalW/$grandtotalW[$weekcount-1])*100,2).'%');
         }else{
-            array_push($percent, round(($strtotalW/$grandtotalW[5])*100,2).'%');
-            array_push($percent, round(($plnttotalW/$grandtotalW[5])*100,2).'%');
-            array_push($percent, round(($ofctotalW/$grandtotalW[5])*100,2).'%');
+            array_push($percent, round(($strtotalW/$grandtotalW[$weekcount-1])*100,2).'%');
+            array_push($percent, round(($plnttotalW/$grandtotalW[$weekcount-1])*100,2).'%');
+            array_push($percent, round(($ofctotalW/$grandtotalW[$weekcount-1])*100,2).'%');
         }
         $weekslabel = array();
         for ($i=1; $i <= count($datesW); $i++) { 
@@ -1152,6 +2048,9 @@ class HomeController extends Controller
             ),
             DB::raw(
                 'SUM(CASE WHEN value = \'VPN\' THEN 1 ELSE 0 END) as VPN'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN value = \'Linksys\' THEN 1 ELSE 0 END) as Linksys'
             )
         )
         ->where('FieldId', 'GBISubCategory')
@@ -1167,7 +2066,7 @@ class HomeController extends Controller
             'Cabling'=>$TopIssue[0]->Cabling,
             'Cash Drawer'=>$TopIssue[0]->CashDrawer,
             'CBB'=>$TopIssue[0]->CBB,
-            'Cctv'=>$TopIssue[0]->CCTV,
+            'CCTV'=>$TopIssue[0]->CCTV,
             'Desktop'=>$TopIssue[0]->Desktop,
             'Dismantling / Re-Installation'=>$TopIssue[0]->Dismantling,
             'EIMS'=>$TopIssue[0]->EIMS,
@@ -1176,13 +2075,14 @@ class HomeController extends Controller
             'E-Sales'=>$TopIssue[0]->ESales,
             'HW-MPC'=>$TopIssue[0]->HWMPC,
             'HW-PC/POS'=>$TopIssue[0]->HWPCPOS,
-            'HW-POS"'=>$TopIssue[0]->HWPOS,
+            'HW-POS'=>$TopIssue[0]->HWPOS,
             'HW-Printer'=>$TopIssue[0]->HWPrinter,
             'HW-Server'=>$TopIssue[0]->HWServer,
             'Inquiry'=>$TopIssue[0]->Inquiry,
             'Installation'=>$TopIssue[0]->Installation,
             'Internet'=>$TopIssue[0]->Internet,
             'Laptop'=>$TopIssue[0]->Laptop,
+            'Linksys'=>$TopIssue[0]->Linksys,
             'Microsoft 365'=>$TopIssue[0]->Microsoft365,
             'Modem'=>$TopIssue[0]->Modem,
             'MS Office'=>$TopIssue[0]->MSOffice,
@@ -1219,7 +2119,7 @@ class HomeController extends Controller
                 ->join('formfield', 'formid', 'form.id')
                 ->whereNotIN('TaskStatus',['Closed', 'Submitted'])
                 ->where('FieldId', 'GBISBU')
-                ->where('value', 'Store')
+                ->whereIN('value', ['Store','Plant','Office'])
                 ->get();
         
         foreach ($storeopengbisbu as $keys) {
@@ -1260,176 +2160,173 @@ class HomeController extends Controller
 
     public function taskdata(Request $request)
     {
-            if(DB::connection()->getDatabaseName()){
-                $storecode = Task::query()
-                    ->join('form', 'taskid', 'task.id')
-                    ->join('formfield', 'formid', 'form.id')
-                    ->where('TaskNumber', $request->TaskNumber)
-                    ->where('FieldId', 'GBIStoreCode')
-                    ->select('value')
-                    ->first()->value;
-                $storename = Task::query()
-                    ->join('form', 'taskid', 'task.id')
-                    ->join('formfield', 'formid', 'form.id')
-                    ->where('TaskNumber', $request->TaskNumber)
-                    ->where('FieldId', 'GBIStoreName')
-                    ->select('value')
-                    ->first()->value;
-                $storeaddress = Task::query()
-                    ->join('form', 'taskid', 'task.id')
-                    ->join('formfield', 'formid', 'form.id')
-                    ->where('TaskNumber', $request->TaskNumber)
-                    ->where('FieldId', 'GBIStoreAddress')
-                    ->select('value')
-                    ->first()->value;
-                $ownership = Task::query()
-                    ->join('form', 'taskid', 'task.id')
-                    ->join('formfield', 'formid', 'form.id')
-                    ->where('TaskNumber', $request->TaskNumber)
-                    ->where('FieldId', 'GBIOwnership')
-                    ->select('value')
-                    ->first()->value;
-                $contactperson = Task::query()
-                    ->join('form', 'taskid', 'task.id')
-                    ->join('formfield', 'formid', 'form.id')
-                    ->where('TaskNumber', $request->TaskNumber)
-                    ->where('FieldId', 'GBIContactPerson')
-                    ->select('value')
-                    ->first()->value;
-                $contactnumber = Task::query()
-                    ->join('form', 'taskid', 'task.id')
-                    ->join('formfield', 'formid', 'form.id')
-                    ->where('TaskNumber', $request->TaskNumber)
-                    ->where('FieldId', 'GBIContactNumber')
-                    ->select('value')
-                    ->first()->value;
-                $email = Task::query()
-                    ->join('form', 'taskid', 'task.id')
-                    ->join('formfield', 'formid', 'form.id')
-                    ->where('TaskNumber', $request->TaskNumber)
-                    ->where('FieldId', 'GBIEmailAddress')
-                    ->select('value')
-                    ->first()->value;
-                $problemreported = Task::query()
-                    ->join('form', 'taskid', 'task.id')
-                    ->join('formfield', 'formid', 'form.id')
-                    ->where('TaskNumber', $request->TaskNumber)
-                    ->where('FieldId', 'GBIProblemReported')
-                    ->select('value')
-                    ->first()->value;
-                $location = Task::query()
-                    ->join('form', 'taskid', 'task.id')
-                    ->join('formfield', 'formid', 'form.id')
-                    ->where('TaskNumber', $request->TaskNumber)
-                    ->where('FieldId', 'GBILocation')
-                    ->select('value')
-                    ->first()->value;
-                $rootcause = Task::query()
-                    ->join('form', 'taskid', 'task.id')
-                    ->join('formfield', 'formid', 'form.id')
-                    ->where('TaskNumber', $request->TaskNumber)
-                    ->where('FieldId', 'GBIRootCause')
-                    ->select('value')
-                    ->first()->value;
-                $latestnotes = Task::query()
-                    ->join('form', 'taskid', 'task.id')
-                    ->join('formfield', 'formid', 'form.id')
-                    ->where('TaskNumber', $request->TaskNumber)
-                    ->where('FieldId', 'GBILatestNotes')
-                    ->select('value')
-                    ->first()->value;
-                // $responsetime = Task::query()
-                //     ->join('form', 'taskid', 'task.id')
-                //     ->join('formfield', 'formid', 'form.id')
-                //     ->where('TaskNumber', $request->TaskNumber)
-                //     ->where('label', 'Response Time')
-                //     ->select('value')
-                //     ->first()->value;
-                // $createdby = Task::query()
-                //     ->join('form', 'taskid', 'task.id')
-                //     ->join('formfield', 'formid', 'form.id')
-                //     ->where('TaskNumber', $request->TaskNumber)
-                //     ->where('label', 'Created By')
-                //     ->select('value')
-                //     ->first()->value;
-                
-                // $problemcategory = Task::query()
-                //     ->join('form', 'taskid', 'task.id')
-                //     ->join('formfield', 'formid', 'form.id')
-                //     ->where('TaskNumber', $request->TaskNumber)
-                //     ->where('label', 'Problem Category')
-                //     ->select('value')
-                //     ->first()->value;
-                // $subcategory = Task::query()
-                //     ->join('form', 'taskid', 'task.id')
-                //     ->join('formfield', 'formid', 'form.id')
-                //     ->where('TaskNumber', $request->TaskNumber)
-                //     ->where('label', 'Sub Category')
-                //     ->select('value')
-                //     ->first()->value;
-                // $machinemodel = Task::query()
-                //     ->join('form', 'taskid', 'task.id')
-                //     ->join('formfield', 'formid', 'form.id')
-                //     ->where('TaskNumber', $request->TaskNumber)
-                //     ->where('label', 'Machine Model')
-                //     ->select('value')
-                //     ->first()->value;
-                // $incidentstatus = Task::query()
-                //     ->join('form', 'taskid', 'task.id')
-                //     ->join('formfield', 'formid', 'form.id')
-                //     ->where('TaskNumber', $request->TaskNumber)
-                //     ->where('label', 'Incident Status')
-                //     ->select('value')
-                //     ->first()->value;
+        if(DB::connection()->getDatabaseName()){
+            $storecode = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBIStoreCode')
+                ->select('value')
+                ->pluck('value')->first();
+            $storename = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBIStoreName')
+                ->select('value')
+                ->pluck('value')->first();
+            $storeaddress = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBIStoreAddress')
+                ->select('value')
+                ->pluck('value')->first();
+            $ownership = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBIOwnership')
+                ->select('value')
+                ->pluck('value')->first();
 
-                return response()->json(
-                    [
-                        'Store_Code'=>$storecode,
-                        'Store_Address'=>$storeaddress,
-                        'Ownership'=>$ownership,
-                        'Contact_Person'=>$contactperson,
-                        'Contact_Number'=>$contactnumber,
-                        'Store_Name'=>$storename,
-                        'Email_Address'=>$email,
-                        'Location'=>$location,
-                        'Latest_Notes'=>$latestnotes,
-                        // 'Response_Time'=>$responsetime,
-                        // 'Created_By'=>$createdby,
-                        'Problem_Reported'=>$problemreported,
-                        // 'Problem_Category'=>$problemcategory,
-                        // 'Sub_Category'=>$subcategory,
-                        // 'Machine_Model'=>$machinemodel,
-                        'Root_Cause'=>$rootcause,
-                        // 'Incident_Status'=>$incidentstatus
-                    ]
-                );
-                $taskdata = DB::table('task')->select('label','value')
-                    ->where('TaskNumber', 'LIKE', '%20210626-50365')
-                    ->wherein('label', 
-                        [
-                            'Store Code',
-                            'Store Name',
-                            'Store Address',
-                            'Region',
-                            'Province / Municipality',
-                            'Contact Person',
-                            'Contact Number',
-                            'Email Address',
-                            'Response Time',
-                            'Created By',
-                            'Problem Reported',
-                            'Problem Category',
-                            'Sub Category',
-                            'Machine Model',
-                            'Root Cause',
-                            'Incident Status'
-                        ]
-                    )
-                    ->join('form', 'taskid', 'task.id')
-                    ->join('formfield', 'formid', 'form.id')
-                    ->get();
-            }
-        return DataTables::of($task)->make(true);
+            $contactperson = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBIContactPerson')
+                ->select('value')
+                ->pluck('value')->first();
+
+            $contactnumber = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBIContactNumber')
+                ->select('value')
+                ->pluck('value')->first();
+
+            $email = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBIEmailAddress')
+                ->select('value')
+                ->pluck('value')->first();
+
+            $problemreported = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBIProblemReported')
+                ->select('value')
+                ->pluck('value')->first();
+
+            $location = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBILocation')
+                ->select('value')
+                ->pluck('value')->first();
+            
+            $rootcause = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBIRootCause')
+                ->select('value')
+                ->pluck('value')->first();
+
+            $latestnotes = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBILatestNotes')
+                ->select('value')
+                ->pluck('value');
+            $SBU = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBISBU')
+                ->select('value')
+                ->pluck('value')->first();
+
+            $IncidentStatus = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBIIncidentStatus')
+                ->select('value')
+                ->pluck('value')->first();
+
+            $GBIActionTaken = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBIActionTaken')
+                ->select('value')
+                ->pluck('value')->first();
+
+            $GBIResolverGroup = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBIResolverGroup')
+                ->select('value')
+                ->pluck('value')->first();
+
+            $GBIResolvedBy = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBIResolvedBy')
+                ->select('value')
+                ->pluck('value')->first();
+            $GBIStoreType = Task::query()
+                ->join('form', 'taskid', 'task.id')
+                ->join('formfield', 'formid', 'form.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->where('FieldId', 'GBIStoreType')
+                ->select('value')
+                ->pluck('value')->first();
+
+            $Remarks = Task::query()
+                ->select('Author', 'Message', 'Timestamp')
+                ->join('Remark', 'taskid', 'task.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->get();
+            $History = Task::query()
+                ->select('Label as Action', 'Snapshotvalue as Original','Source','Timestamp','UpdatedValue as Updated', 'Message','AuditLevel')
+                ->join('taskauditlog', 'taskid', 'task.id')
+                ->where('TaskNumber', $request->TaskNumber)
+                ->get();
+            return response()->json(
+                [
+                    'Store_Code'=>$storecode,
+                    'Store_Address'=>$storeaddress,
+                    'Ownership'=>$ownership,
+                    'Contact_Person'=>$contactperson,
+                    'Contact_Number'=>$contactnumber,
+                    'Store_Name'=>$storename,
+                    'Email_Address'=>$email,
+                    'Location'=>$location,
+                    'Latest_Notes'=>$latestnotes,
+                    'Sbu'=>$SBU,
+                    'IncidentStatus'=>$IncidentStatus,
+                    'Problem_Reported'=>$problemreported,
+                    'GBIActionTaken'=>$GBIActionTaken,
+                    'GBIResolverGroup'=>$GBIResolverGroup,
+                    'GBIResolvedBy'=>$GBIResolvedBy,
+                    'Root_Cause'=>$rootcause,
+                    'Remarks'=>$Remarks,
+                    'History'=>$History,
+                    'GBIStoreType'=>$GBIStoreType
+                    // 'Incident_Status'=>$incidentstatus
+                ]
+            );
+        }
         
     }
 }
