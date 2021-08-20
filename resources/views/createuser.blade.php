@@ -28,7 +28,7 @@ $(document).on('click', '#submitBtn', function(){
                 otpid: $('#otpid').val(),
             },
             success: function(result){
-                if(result == 'Too many requests, try again later'){}
+                if(result == 'Too many requests, try again later'){
                     alert(result);
                     alert('Failed');
                 }
