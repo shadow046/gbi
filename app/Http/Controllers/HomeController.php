@@ -27,7 +27,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
     }
 
     /**
@@ -205,7 +205,7 @@ class HomeController extends Controller
     {
         $DevIdx = $request->devid;
         $phoneNumberx = $request->pn;
-        $passwordx = 'Maricaris24';
+        $passwordx = 'salamat';
         $sendOTP =$request->otpid;
         $xOTP = $request->otp;
         $notificationTokenx = $this->notkens();
@@ -227,7 +227,11 @@ class HomeController extends Controller
                 $codex = $xOTP;
                 if($signedTokenx!=""){
                     $registerPass = $this->postX("https://identity.mylykaapps.com/useraccounts/RegisterV3", $this->payload($DevIdx,'"birthDate":"'.$birthDatex.'","code":"'.$codex.'","countryCode":"PH","fullname":"'.$fullnamex.'","gender":"'.$genderx.'","isMerchant":false,"password":"'.$passwordx.'","phoneNumber":"'.$phoneNumberx.'","signedToken":"'.$signedTokenx.'","type":"phone","username":"'.$usernamex.'"')) ;
-                    return response($registerPass->Message);
+                    if ($registerPass->message == 'Too many requests, try again later') {
+                        return response($registerPass->message);
+                    }else{
+
+                    }
                 }
             }
         } else {

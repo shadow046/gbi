@@ -297,69 +297,71 @@ function ratePost($rDevIDr,$postId,$userid,$notToken,$rcooks){
     return postX($rURL,payload($rDevIDr,'"postId": '.$postId.',"rate": 5,"userid": "'.$userid.'"',$notToken),$rcooks);
 };
 function allRater($toRates, $mcounters = 0){
-  global $accntdata;
-  global $mrate;
-  global $yllw;
-  global $wht;
-  global $lred;
-  global $rcountr;
-  global $green;
-  
-  $rCooki = $accntdata[$toRates]["cookie"];
-  $rDevID = $accntdata[$toRates]["devId"];   
-  echo "$yllw$mrate\n$wht";
+    global $accntdata;
+    global $mrate;
+    global $yllw;
+    global $wht;
+    global $lred;
+    global $rcountr;
+    global $green;
+    $timesended = date("h:i:sa");
+    $rCooki = $accntdata[$toRates]["cookie"];
+    $rDevID = $accntdata[$toRates]["devId"];   
+    echo "$yllw$mrate\n$wht";
+    echo $timestarted."\n";
+    global $timestarted;
+    echo "Time Started: ".$timestarted."\n";
+    echo "\n$wht---------------------------------$wht\n";
+    echo "You are rating → $toRates\n$lred";
+    $gmny = getGems($rDevID,$rCooki);
+    echo "gems:$green ⬘⬘ ".$wht.$gmny;
+    echo "\n$lred---------------------------------$wht\n";
 
-  echo "\n$wht---------------------------------$wht\n";
-  echo "You are rating → $toRates\n$lred";
-  $gmny = getGems($rDevID,$rCooki);
-  echo "gems:$green ⬘⬘ ".$wht.$gmny;
-  echo "\n$lred---------------------------------$wht\n";
-
-  $uid = GetUid($rDevID,$rCooki);
-  $postArrs = getUserPost($rDevID,$rCooki,$uid);
-  //ID of the account being rated
+    $uid = GetUid($rDevID,$rCooki);
+    $postArrs = getUserPost($rDevID,$rCooki,$uid);
+    //ID of the account being rated
  
-  $mcount = 1;
+    $mcount = 1;
       //Dummy accounts
     if($postArrs){
-          foreach($accntdata as $rateAcc => $vals){
+        foreach($accntdata as $rateAcc => $vals){
             if($rateAcc!=$toRates){
-                  $raterCooks = $vals["cookie"];
-                  $rrDevID = $vals["devId"];
-                  $rrToken = $vals["noToken"];
-                  $maxRateX = false;
-                  $attmpts = 0;
-                  $pcnt = 0;
-                  if($postArrs->data??null && $raterCooks!=""){
-                    getGems($rrDevID,$raterCooks);
-                  foreach ($postArrs->data as $arrb) {
-                      $postId = $arrb->id;
-                      if($postId && !$maxRateX){
-                         $postRep = getPost($rrDevID,$raterCooks,$postId);
-                       //  echo $postRep->message;
-                         if($postRep->data->count->rateSent==0){
-                              $ratedX = ratePost($rrDevID,$postId,$uid,$rrToken,$raterCooks);
+                $raterCooks = $vals["cookie"];
+                $rrDevID = $vals["devId"];
+                $rrToken = $vals["noToken"];
+                $maxRateX = false;
+                $attmpts = 0;
+                $pcnt = 0;
+                if($postArrs->data??null && $raterCooks!=""){
+                $dummygems = getGems($rrDevID,$raterCooks);
+                foreach ($postArrs->data as $arrb) {
+                    $postId = $arrb->id;
+                    if($postId && !$maxRateX){
+                        $postRep = getPost($rrDevID,$raterCooks,$postId);
+                        //  echo $postRep->message;
+                        if($postRep->data->count->rateSent==0){
+                            $ratedX = ratePost($rrDevID,$postId,$uid,$rrToken,$raterCooks);
                             //  echo $ratedX->message;
-                              if($ratedX->status){
+                            if($ratedX->status){
+                                $dummygem = getGems($rrDevID,$raterCooks);
                                 echo "\n$yllw--- $wht$rateAcc$yllw ---";
-                                echo "rated  →$yllw G: ".getGems($rDevID, $rCooki)."\n";
+                                echo "Total $green Gems: ⬘⬘  ".$wht.$dummygem."$green rated  →$yllw Main $toRates Total $green Gems: ⬘⬘  ".$wht.getGems($rDevID, $rCooki)."\n";
                                 $pcnt++;
                             } else if($pcnt>=11) {
-                               $maxRateX = false;
-                               break;
-                           }
-                         } 
-
-                      }
-                      //End of the loop
-                   }
-                   echo "maxed ------→$yllw Gems: ".getGems($rDevID, $rCooki)."\n";;
+                                $maxRateX = false;
+                                break;
+                            }
+                        }else if($postRep->data->count->rateSent==5){
+                            break;
+                        }
+                    }
+                    //End of the loop
                 }
-                   $rcountr++;
-              }
-
-
-              $mcount++;
+                echo "$wht$rateAcc$yllw maxed. Total $green Gems: ⬘⬘  ".$wht.$dummygems." $lred|$yllw Main $toRates Total $green Gems: ⬘⬘  ".$wht.getGems($rDevID, $rCooki)."\n";
+                }
+                $rcountr++;
+            }
+            $mcount++;
         }
     } else {
         echo "\nno posts to rate.\n";
@@ -688,7 +690,7 @@ function iniStorage($storageName){
  while($x44){
     @system("clear");
 echo "$green$lykM";
-echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh v1.2";
+echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh v1.3";
 echo "\n$b----------------------------------------------\n\n\n"."$green 1. Upload Photo & Moment"."\n";
 echo "$yllw 2. Max Rate"."\n";
 echo "$lred 3. Transfer Gems"."\n";
@@ -891,6 +893,7 @@ if($postMe == 1){
             $conPro = "";
         }
 } 
+
 else if($postMe == 2){
     //Max rater. 
     $mrate = "                               __     
@@ -903,7 +906,6 @@ else if($postMe == 2){
     echo "$yllw";
     echo $mrate;                                        
     echo "\n$b----------------------------------------------\n\n$wht";
-    
     echo "$yllw  1.$wht Max rate main\n";
     echo "$yllw  2.$wht Set main accounts\n";
     echo "$yllw  3.$wht Enter username\n";
@@ -935,10 +937,17 @@ else if($postMe == 2){
     else if($rateL==1){
         @system("clear");
         $mainCnt = 1;
+        $timestarted = date("h:i:sa");
         foreach( $accntX["mainAccounts"] as $rme){
             allRater($rme,$mainCnt); 
             $mainCnt++;
         }
+        $timesended = date("h:i:sa");
+        echo "\n$wht---------------------------------$wht\n";
+        echo "Time Started: ".$timestarted."\n";
+        echo "\n$wht---------------------------------$wht\n";
+        echo "Time Ended: ".$timesended."\n";
+
     } 
     else if($rateL==3){
         @system("clear");
@@ -1120,7 +1129,7 @@ else if($postMe == "x"){
 else if($postMe == 6){
     @system("clear");
     echo "$yllw$lykM";
-    echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh v1.0";
+    echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh v1.3";
     echo "\n$b----------------------------------------------\n";
     echo "$wh\n1.$wht Login";
     echo "$wh\n2.$wht Logout \n\n\n";
@@ -1165,7 +1174,7 @@ else if($postMe == 7){
     //default is lyaccnt.json
     @system("clear");
     echo "$green$lykM";
-    echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh v1.2";
+    echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh v1.3";
     echo "\n$b----------------------------------------------\n\n$wht";
     $iniStores = file_get_contents($accntX['accountStorage']);
     $iniStoresData = json_decode($cookyStr,true);
@@ -1195,7 +1204,7 @@ else if($postMe == 8){
     //default is lyaccnt.json
     @system("clear");
     echo "$green$lykM";
-    echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh v1.2";
+    echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh v1.3";
     echo "\n$b----------------------------------------------\n\n$wht";
 
     echo "$wht 1. Set JSON account storage"."\n\n\n";

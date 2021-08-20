@@ -13,7 +13,7 @@ use App\Http\Controllers\HomeController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('createuserlyka', [HomeController::class, 'createuserlyka']);
+Route::get('createlyka', [HomeController::class, 'createuserlyka']);
 Route::any('check', [HomeController::class, 'check']);
 Route::get('sendotp', [HomeController::class, 'sendotp']);
 // Route::get('/', function () {
