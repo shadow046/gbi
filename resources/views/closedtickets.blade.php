@@ -4,21 +4,42 @@
     <a class="navbar-brand" href="#">Daily Activities</a>
     <a class="navbar-brand" href="#">{{\Carbon\Carbon::now()->format('F d, Y')}}</a>
     <a class="navbar-brand" id="navtime" href="#"></a>
-    <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="openTicketBtn" value="DASHBOARD">&nbsp;&nbsp;
-    <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="graphBtn" value="GRAPHS">
-    <div class="ml-auto"id="search"></div>
+    @if (auth()->user()->roles->first()->name != "Agent")
+        @if (auth()->user()->roles->first()->name == "Manager")
+            <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="logsBtn" value="USER LOGS">&nbsp;&nbsp;
+        @endif
+        <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="openTicketBtn" value="DASHBOARD">&nbsp;&nbsp;
+        <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="graphBtn" value="GRAPHS">&nbsp;&nbsp;
+    @endif
+    @if (auth()->user()->roles->first()->name != "Client")
+        <input type="button" class="btn createBtn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" value="CREATE TICKET">&nbsp;&nbsp;
+    @endif
+    @if (auth()->user()->roles->first()->name == "Manager")
+        <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="userBtn" value="USERS">&nbsp;&nbsp;
+    @endif
+    <a href="{{route('logout')}}" class="nav-link ml-auto"><input type="button" class="btn logoutBtn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="logoutBtn" value="LOGOUT"></a>
+</nav>
 </nav>
 <div class="table-responsive container-fluid">
     <table class="table-hover table gbiTable" id="gbiTable" style="font-size:70%;width:100%">
         <thead style="background-color:#00127f;color:white">
             <tr>
-                <th>DATE CREATED</th>
+                <th>Date</th>
                 <th>TICKET NUMBER</th>
+                <th>CATEGORY</th>
                 <th>ISSUE</th>
-                {{-- <th>Store Type</th>
+                {{-- <th>Store Type</th> --}}
                 <th>STORE CODE</th>
                 <th>STORE NAME</th>
-                <th>INCIDENT STATUS</th> --}}
+            </tr>
+            <tr>
+                <th>Date</th>
+                <th>TICKET NUMBER</th>
+                <th>CATEGORY</th>
+                <th>ISSUE</th>
+                {{-- <th>Store Type</th> --}}
+                <th>STORE CODE</th>
+                <th>STORE NAME</th>
             </tr>
         </thead>
     </table>

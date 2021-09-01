@@ -31,7 +31,7 @@ $(document).ready(function()
     //         d.setDate(d.getDate() - d.getDay() + ++diff);
     // console.log(d);   
     // console.log(d.getWeek);   
-    
+    $('#loading').show();
     function updateTime() {
         var currtime = new Date();
         var mintime = currtime.getMinutes();
@@ -62,6 +62,7 @@ $(document).ready(function()
             var minsecs = '0'+minsecs;
         }
         $('#navtime').html(mytime + ":"+ mintime + ":" + minsecs + " " + am);
+        $('#loading').hide();
     }
     setInterval(updateTime, 1000);
     var yearoption = '<option selected disabled>select year</option>';
@@ -91,6 +92,8 @@ $(document).on('change', '#yearselect', function(){
     $('#exportBtn').hide();
 });
 $(document).on('change', '#monthselect', function(){
+    $('#groupselect').val('day');
+    $('#bydays').show();
     $('#loading').show();
     $('.ptext').hide();
     monthselected = $(this).val();
@@ -128,12 +131,7 @@ $(document).on('change', '#monthselect', function(){
                     // databodyW += '<tr><td>Week 3</td><td>'+data.strW[2]+'</td><td>'+data.plntW[2]+'</td><td>'+data.ofcW[2]+'</td><td>'+data.grandtotalW[2].toLocaleString()+'</td>';
                     // databodyW += '<tr><td>Week 4</td><td>'+data.strW[3]+'</td><td>'+data.plntW[3]+'</td><td>'+data.ofcW[3]+'</td><td>'+data.grandtotalW[3].toLocaleString()+'</td>';
                 }
-                if (data.weekcount == 5) {
-                    databodyW += '<tr><td>Week 5</td><td>'+data.strW[4]+'</td><td>'+data.plntW[4]+'</td><td>'+data.ofcW[4]+'</td><td>'+data.grandtotalW[4].toLocaleString()+'</td>';
-                    databodyW += '<tr><td>Grand Total</td><td>'+data.strtotalW.toLocaleString()+'</td><td>'+data.plnttotalW.toLocaleString()+'</td><td>'+data.ofctotalW.toLocaleString()+'</td><td>'+data.grandtotalW[data.weekcount].toLocaleString()+'</td>';
-                }else{
-                    databodyW += '<tr><td>Grand Total</td><td>'+data.strtotalW.toLocaleString()+'</td><td>'+data.plnttotalW.toLocaleString()+'</td><td>'+data.ofctotalW.toLocaleString()+'</td><td>'+data.grandtotalW[data.weekcount].toLocaleString()+'</td>';
-                }
+                databodyW += '<tr><td>Grand Total</td><td>'+data.strtotalW.toLocaleString()+'</td><td>'+data.plnttotalW.toLocaleString()+'</td><td>'+data.ofctotalW.toLocaleString()+'</td><td>'+data.grandtotalW[data.weekcount].toLocaleString()+'</td>';
                 var datafootW = '<tr><td>Percentage</td><td>'+data.percent[0]+'</td><td>'+data.percent[1]+'</td><td>'+data.percent[2]+'</td><td>100%</td>';
                 data.dates.forEach(element => {
                     // let d = new Date(element);
@@ -306,8 +304,8 @@ $(document).on('change', '#monthselect', function(){
                 },
             }
         );
-        $('#dailyChart').width($('#data').width());
-        $('#dailyChartW').width($('#data').width()*.80);
+        $('#dailyChart').width('900');
+        $('#dailyChartW').width('900');
         $('#ptext').text('MONTHLY VIEW '+optionmonthselected.toUpperCase()+' '+$('#yearselect').val()).css({'font-weight':'bold'});;
         $('.ptext').show();
         if (curmonth == monthselected) {

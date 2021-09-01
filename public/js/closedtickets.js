@@ -5,6 +5,15 @@ var serverTime = new Date();
 
 $(document).ready(function()
 {
+    $('#loading').show();
+    $('#gbiTable thead tr:eq(0) th').each( function () {
+        var title = $(this).text();
+        if (title == "TICKET NUMBER") {
+            $(this).html( '<input type="text" style="width:100%" placeholder="Search by date [YYYY][MM][DD]" class="column_search" />' );
+        }else{
+            $(this).html( '<input type="text" style="width:100%" placeholder="Search '+title+'" class="column_search" />' );
+        }
+    });
     gbitable =
     $('table.gbiTable').DataTable({ 
         "dom": 'ftip',
@@ -19,22 +28,27 @@ $(document).ready(function()
         serverSide: false,
         ajax: 'closedtickets',
         columns: [
-            { data: 'DateCreated',
-                "render": function ( data, type, row, meta) 
-                {
-                    var dates = new Date(data);
-                    return moment(dates).format('LLL');
-                }
-            },
+            // { data: 'DateCreated',
+            //     "render": function ( data, type, row, meta) 
+            //     {
+            //         var dates = new Date(data);
+            //         return moment(dates).format('LLL');
+            //     }
+            // },
+            { data: 'DateCreated', name:'DateCreated'},
             { data: 'TaskNumber', name:'TaskNumber'},
-            { data: 'Issue', name:'Issue'}
-            // { data: 'GBIStoreCode', name:'GBIStoreCode'},
-            // { data: 'GBIStoreName', name:'GBIStoreName'},
-            // { data: 'Location', name:'Location'},
-            // { data: 'IncidentStatus', name:'IncidentStatus'}
+            { data: 'ProblemCategory', name:'ProblemCategory'},
+            { data: 'Issue', name:'Issue'},
+            { data: 'StoreCode', name:'StoreCode'},
+            { data: 'StoreName', name:'StoreName', "width": "17%"}
         ]
     });
-
+    $('#gbiTable thead').on( 'keyup', ".column_search",function () {
+        gbitable
+            .column( $(this).parent().index() )
+            .search( this.value )
+            .draw();
+    });
     
     //Store Top Issue
     StoreTopIssueTable =
@@ -52,10 +66,10 @@ $(document).ready(function()
         ajax: 'storetopissue',
         columns: [
             // { data: 'DateCreated', name:'DateCreated'},
-            { data: 'key', name:'key'},
-            { data: 'open', name:'open'},
-            { data: 'closed', name:'closed'},
-            { data: 'total', name:'total'}
+            { data: 'SubCategory', name:'SubCategory'},
+            { data: 'Open', name:'Open'},
+            { data: 'Closed', name:'Closed'},
+            { data: 'Total', name:'Total'}
             // { data: 'IncidentStatus', name:'IncidentStatus'}
         ]
     });
@@ -91,6 +105,7 @@ $(document).ready(function()
             var minsecs = '0'+minsecs;
         }
         $('#navtime').html(mytime + ":"+ mintime + ":" + minsecs + " " + am);
+        $('#loading').hide();
     }
     
     setInterval(updateTime, 1000); 
@@ -121,6 +136,41 @@ $(document).on('click', '#openTicketBtn', function () {
     window.location.href = '/';
 });
 
+$(document).on('click', '#logsBtn', function () {
+    $('#userlogsTable thead tr:eq(0) th').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" style="width:100%" placeholder="Search '+title+'" class="column_search" />' );
+    });
+    userlogsTable =
+    $('table.userlogsTable').DataTable({ 
+        "dom": 'itp',
+        "language": {
+                "emptyTable": " ",
+                "loadingRecords": "Please wait - loading..."
+            },
+        "pageLength": 10,
+        processing: false,
+        serverSide: true,
+        ajax: 'userlogs',
+        columns: [
+            { data: 'Date', name:'Date'},
+            { data: 'fullname', name:'fullname'},
+            { data: 'Access_Level', name:'Access_Level'},
+            { data: 'activity', name:'activity'}
+        ]
+    });
+    $('#userlogsModal').modal('show');
+});
+
+$(document).on('click', '#userBtn', function () {
+    $('#loading').show();
+    window.location.href = '/users';
+});
+
+$(document).on('click', '.createBtn', function () {
+    window.open('http://wf.ideaserv.com.ph/#/GBI/task/assignment/new?tab=Service%20Report%20-%20GBI&status=For%20Verification', '_blank');
+});
+
 $(document).on("click", '.TopIssueLocationBtn', function () {
     var TopIssueLocationName = $(this).attr('TopIssueLocationName');
     if (TopIssueLocationNameSelected != TopIssueLocationName) {
@@ -139,7 +189,7 @@ $(document).on("click", "#TopIssueMore", function () {
     
 });
 $(document).on("click", ".close", function () {
-    location.reload()    
+    // location.reload()    
 });
 
 $(document).on("click", "#StoreTopIssueTable tbody tr", function () {

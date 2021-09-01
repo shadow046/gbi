@@ -6,7 +6,7 @@
     <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="graphBtn" value="DASHBOARD">&nbsp;&nbsp;
     <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="dailyBtn" value="VIEW LAST 30 DAYS">&nbsp;&nbsp;
     <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;display:none" id="exportBtn" value="EXPORT" >
-    <div class="ml-auto"id="search"></div>
+    <a href="{{route('logout')}}" class="nav-link ml-auto"><input type="button" class="btn logoutBtn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="logoutBtn" value="LOGOUT"></a>
 </nav><hr>
 <div class="container-fluid ptext text-center" style="width:100%;height:100%;display:none">
     <p class="ml-auto" id="ptext"></p>

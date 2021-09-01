@@ -1,10 +1,11 @@
 var gbitable, StoreTopIssueTable;
 var BtnSelected = 'Details', TopIssueLocationNameSelected = 'Store';
 var serverTime = new Date();
-
-
+var gbistatus;
+var userlogsTable;
 $(document).ready(function()
 {
+    $('#loading').show();
     $('#gbiTable thead tr:eq(0) th').each( function () {
         var title = $(this).text();
         if (title == "TICKET NUMBER") {
@@ -38,12 +39,13 @@ $(document).ready(function()
             //     }
             // },
             { data: 'TaskNumber', name:'TaskNumber'},
+            { data: 'ProblemCategory', name:'ProblemCategory'},
             { data: 'Issue', name:'Issue'},
-            { data: 'GBIStoreCode', name:'GBIStoreCode'},
-            { data: 'GBIStoreName', name:'GBIStoreName', "width": "17%"},
+            { data: 'StoreCode', name:'StoreCode'},
+            { data: 'StoreName', name:'StoreName', "width": "17%"},
             // { data: 'Location', name:'Location'},
             { data: 'IncidentStatus', name:'IncidentStatus', "width": "17%"},
-            { data: 'GBILatestNotes', name:'GBILatestNotes', "width": "17%"}
+            { data: 'LatestNotes', name:'LatestNotes', "width": "17%"}
         ]
     });
 
@@ -66,21 +68,20 @@ $(document).ready(function()
                 "loadingRecords": "Please wait - loading..."
             },
         "pageLength": 10,
-        "order": [[ 1, "desc" ]],
+        "order": [[ 3, "desc" ]],
         processing: false,
         serverSide: false,
         ajax: 'storetopissue',
         
         columns: [
             // { data: 'DateCreated', name:'DateCreated'},
-            { data: 'key', name:'key'},
-            { data: 'open', name:'open'},
-            { data: 'closed', name:'closed'},
-            { data: 'total', name:'total'}
+            { data: 'SubCategory', name:'SubCategory'},
+            { data: 'Open', name:'Open'},
+            { data: 'Closed', name:'Closed'},
+            { data: 'Total', name:'Total'}
             // { data: 'IncidentStatus', name:'IncidentStatus'}
         ]
     });
-    $('div.dataTables_filter').appendTo('#search');
     function updateTime() {
         var currtime = new Date();
         var currtime1 = new Date(currtime.getTime());
@@ -112,6 +113,7 @@ $(document).ready(function()
             var minsecs = '0'+minsecs;
         }
         $('#navtime').html(mytime + ":"+ mintime + ":" + minsecs + " " + am);
+        $('#loading').hide();
     }
     
     setInterval(updateTime, 1000); 
@@ -131,17 +133,60 @@ $(document).on("click", '.DetailsBtn', function () {
         BtnSelected = BtnName;
     }
 });
-
-
+$('#userlogsTable thead').on( 'keyup', ".column_search",function () {
+        userlogsTable
+            .column( $(this).parent().index() )
+            .search( this.value )
+            .draw();
+});
 $(document).on('click', '#graphBtn', function () {
     $('#loading').show();
     window.location.href = '/dailytickets';
 });
-$(document).on('click', '#closeTicketBtn', function () {
+$(document).on('click', '#userBtn', function () {
     $('#loading').show();
-    window.location.href = '/closed';
+    window.location.href = '/users';
 });
 
+$(document).on('click', '#logsBtn', function () {
+    $('#userlogsTable thead tr:eq(0) th').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" style="width:100%" placeholder="Search '+title+'" class="column_search" />' );
+    });
+    userlogsTable =
+    $('table.userlogsTable').DataTable({ 
+        "dom": 'itp',
+        "language": {
+                "emptyTable": " ",
+                "loadingRecords": "Please wait - loading..."
+            },
+        "pageLength": 10,
+        processing: false,
+        serverSide: true,
+        ajax: 'userlogs',
+        columns: [
+            { data: 'Date', name:'Date'},
+            { data: 'fullname', name:'fullname'},
+            { data: 'Access_Level', name:'Access_Level'},
+            { data: 'activity', name:'activity'}
+        ]
+    });
+    $('#userlogsModal').modal('show');
+});
+
+$(document).on('click', '#closeTicketBtn', function () {
+    $('#loading').show();
+    // window.location.href = '/closed';
+});
+$(document).on('click', '.createBtn', function () {
+    window.open('http://wf.ideaserv.com.ph/#/GBI/task/assignment/new?tab=Service%20Report%20-%20GBI&status=For%20Verification', '_blank');
+});
+$(document).on('click', '#EditBtn', function () {
+    var ticket = $('#TicketNumber').val();
+    var status = gbistatus;
+    window.open('http://wf.ideaserv.com.ph/#/GBI/task/assignment/'+ticket+'?tab=Service%20Report%20-%20GBI&status='+gbistatus, '_blank');
+    window.open('http://wf.ideaserv.com.ph/#/GBI/task/assignment/new?tab=Service%20Report%20-%20GBI&status=For%20Verification', '_blank');
+});
 $(document).on("click", '.TopIssueLocationBtn', function () {
     var TopIssueLocationName = $(this).attr('TopIssueLocationName');
     if (TopIssueLocationNameSelected != TopIssueLocationName) {
@@ -160,13 +205,12 @@ $(document).on("click", "#TopIssueMore", function () {
     
 });
 $(document).on("click", ".close", function () {
-    location.reload()    
+    // location.reload()    
 });
 
 $(document).on("click", "#StoreTopIssueTable tbody tr", function () {
     var trdata = StoreTopIssueTable.row(this).data();
     console.log(trdata);
-
 });
 $(document).on("click", "#gbiTable tbody tr", function () {
     $('#loading').show();
@@ -175,7 +219,7 @@ $(document).on("click", "#gbiTable tbody tr", function () {
     $('#TicketNumber').val(trdata.TaskNumber);
     $('#gbisbu').val(trdata.gbisbu);
     $('#Status').val(trdata.IncidentStatus);
-
+    gbistatus = trdata.TaskStatus;
     $.ajax({
         type: "GET",
         url: "taskdata",
@@ -183,8 +227,8 @@ $(document).on("click", "#gbiTable tbody tr", function () {
             TaskNumber: TaskNumber
         },
         success: function(data){
-            $('#loading').hide();
-            $('#ticketdetailsModal').modal('show');
+             $('#loading').hide();
+            $('#ticketdetailsModal').modal('show'); 
             if (trdata.gbisbu == "Plant") {
                 $('.Location').show();
                 $('#Location').val(data.Location);
@@ -212,7 +256,10 @@ $(document).on("click", "#gbiTable tbody tr", function () {
                     var remarksdate = new Date(data.Remarks[index].Timestamp);
                     remarks +='<div class="container row"><label class="col-sm-3 control-label">'+data.Remarks[index].Author+'<br><small>'+moment(remarksdate).format('lll')+'</small></label><div class="col-sm-9"><div class="text-break">'+data.Remarks[index].Message+'</div></div><hr></div>';
                 }
-                $('#remarks-details').append(remarks);
+                $('#remarks-details').empty().append(remarks);
+                $('.DetailsBtn[BtnName=\'Remarks\']').show();
+            }else{
+                $('.DetailsBtn[BtnName=\'Remarks\']').hide();
             }
             var history = '';
             console.log(data.History);
@@ -246,7 +293,7 @@ $(document).on("click", "#gbiTable tbody tr", function () {
                     }
                 }
             }
-            $('#tbodyhistory').append(history);
+            $('#tbodyhistory').empty().append(history);
             console.log(history);
             $('#gbidiv').hide();
         },
@@ -254,5 +301,6 @@ $(document).on("click", "#gbiTable tbody tr", function () {
             alert(data.responseText);
         }
     });
+
 });
 

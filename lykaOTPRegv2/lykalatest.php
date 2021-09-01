@@ -174,6 +174,8 @@ function getGems($devIDgem, $accCookie, $uname =""){
     global $totalGms,$notActivWall,$green;
     $getGemsURL1= "https://wallets.mylykaapps.com/api/v3/wallets/getgems?os=android";
     $gemJSON = getX($getGemsURL1, $devIDgem, $accCookie);
+    $new= json_encode($gemJSON);
+    file_put_contents('gems.json', $new);
     if(!$gemJSON->data->isWalletActivated){
         activateWallet($devIDgem,$accCookie,$uname);
         $notActivWall++;
@@ -344,6 +346,7 @@ function allRater($toRates, $mcounters = 0){
                             //  echo $ratedX->message;
                             if($ratedX->status){
                                 $dummygem = getGems($rrDevID,$raterCooks);
+                                $dummygems = $dummygem;
                                 echo "\n$yllw--- $wht$rateAcc$yllw ---";
                                 echo "Total $green Gems: ⬘⬘  ".$wht.$dummygem."$green rated  →$yllw Main $toRates Total $green Gems: ⬘⬘  ".$wht.getGems($rDevID, $rCooki)."\n";
                                 $pcnt++;
@@ -663,14 +666,20 @@ function uploaderMoment($fdevIds,$fcookie, $fuid, $xmain = false){
 
     return null;
 };
+
 function activateWallet($devId, $cookw, $uname){
     global $walletErr;
     $url = "https://wallets.mylykaapps.com/api/v3/wallets/activatewallet";
     $jsonreps =  postX($url,payload($devId,""),$cookw);
     echo "\n$jsonreps->message\n";
     $walletErr .= $uname."--".$jsonreps->message."\n";
-
+    $wal = file_get_contents('foractivation.json');
+    $wall = json_decode($wal, true);
+    $wall[$uname] = "$walletErr";
+    $walldata = json_encode($wall);
+    file_put_contents('foractivation.json', $walldata);
 }
+
 function iniStorage($storageName){
     $accntCnt = 0;
     foreach($storageName as $acct=>$vals){
@@ -893,7 +902,6 @@ if($postMe == 1){
             $conPro = "";
         }
 } 
-
 else if($postMe == 2){
     //Max rater. 
     $mrate = "                               __     
@@ -1174,6 +1182,7 @@ else if($postMe == 7){
     //default is lyaccnt.json
     @system("clear");
     echo "$green$lykM";
+    $totalGms = 0;
     echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh v1.3";
     echo "\n$b----------------------------------------------\n\n$wht";
     $iniStores = file_get_contents($accntX['accountStorage']);

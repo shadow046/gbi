@@ -31,6 +31,8 @@ $(document).on('click', '#submitBtn', function(){
                 if(result == 'Too many requests, try again later'){
                     alert(result);
                     alert('Failed');
+                }else{
+                    alert('Registration Completed!');
                 }
                 location.reload();
             },

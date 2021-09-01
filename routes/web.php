@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\GetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,11 +21,19 @@ Route::get('sendotp', [HomeController::class, 'sendotp']);
 //     return view('welcome');
 // });
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
+Route::post('adduser', [HomeController::class, 'adduser']);
+Route::put('updateuser/{id}', [HomeController::class, 'updateuser']);
+Route::get('users', [HomeController::class, 'users']);
+Route::get('getusers', [HomeController::class, 'getusers']);
 
 Route::get('/', [HomeController::class, 'index'])->name('home.index');//->middleware('ajax');
+Route::get('table', [HomeController::class, 'table']);//->middleware('ajax');
+Route::get('/test', [GetController::class, 'index']);//->middleware('ajax');
+Route::get('/update', [GetController::class, 'updatedata']);//->middleware('ajax');
 Route::get('getticket', [HomeController::class, 'getticket']);
 Route::get('closedtickets', [HomeController::class, 'closedtickets']);
-Route::get('closed', [HomeController::class, 'closed']);
+Route::get('userlogs', [HomeController::class, 'userlogs']);
+Route::get('closed', [HomeController::class, 'closed'])->name('closed');
 Route::get('createuserlyka', [HomeController::class, 'createuserlyka']);
 Route::any('createuser', [HomeController::class, 'createuser']);
 Route::get('taskdata', [HomeController::class, 'taskdata']);

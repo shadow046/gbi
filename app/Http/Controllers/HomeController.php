@@ -6,17 +6,22 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\Sheets\DataExports;
+use Spatie\Permission\Models\Role;
 use Carbon\Carbon;
 use App\Models\Task;
 use App\Models\FormField;
 use App\Models\Form;
 use App\Models\User;
+use App\Models\Ticket;
+use App\Models\Data;
+use App\Models\Schem;
+use App\Models\UserLog;
 use Illuminate\Support\Facades\Hash;
 use Response;
 use DB;
 use DateTime;
 use Illuminate\Support\Arr;
-
+use Validator;
 
 class HomeController extends Controller
 {
@@ -27,7 +32,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        // $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     /**
@@ -35,6 +40,83 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+    public function users(Request $request)
+    {
+        return view('users');
+    }
+    public function getusers(Request $request)
+    {
+        $users = User::all();
+        return DataTables::of($users)
+        ->addColumn('Access_Level', function (User $users){
+            return $users->roles->first()->name;
+        })
+        ->addColumn('status', function (User $users){
+            if ($users->status == 1) {
+                return 'Active';
+            }else{
+                return 'Inactive';
+            }
+        })
+        ->make(true);
+    }
+    public function updateuser(Request $request, $id)
+    {
+        $user = User::where('id', $id)->first();
+        if ($user->email != $request->input('email')) {
+            $validator = Validator::make($request->all(), [
+                'first_name' => ['required', 'string', 'min:7', 'max:255'],
+                'email' => 'required|regex:/(.+)@(.+)\.(.+)/i|unique:users',
+                'role' => ['required', 'string']
+            ]);
+        }else{
+            $validator = Validator::make($request->all(), [
+                'first_name' => ['required', 'string', 'min:7', 'max:255'],
+                'role' => ['required', 'string']
+            ]);
+        }
+        
+        if ($validator->passes()) {
+            $user = User::where('id', $id)->first();
+            $log = new UserLog;
+            $log->activity = 'UPDATE USER '.$user->name;
+            $log->user_id = auth()->user()->id;
+            $log->fullname = auth()->user()->name;
+            $log->save();
+            $user->name = ucwords(mb_strtolower($request->input('first_name')));
+            $user->email = $request->input('email');
+            $user->status = $request->input('status');
+            $user->assignRole($request->input('role'));
+            $data = $user->save();
+            return response()->json($data);
+        }
+        return response()->json(['error'=>$validator->errors()->first()]);
+    }
+    public function adduser(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'first_name' => ['required', 'string', 'min:7', 'max:255'],
+            'email' => 'required|regex:/(.+)@(.+)\.(.+)/i|unique:users',
+            'role' => ['required', 'string']
+        ]);
+        if ($validator->passes()) {
+            $user = new User;
+            $user->name = ucwords(mb_strtolower($request->input('first_name')));
+            $user->email = $request->input('email');
+            $user->password = Hash::make('123456');
+            $user->status = $request->input('status');
+            $user->assignRole($request->input('role'));
+            $log = new UserLog;
+            $log->activity = 'ADD NEW USER '.$user->name;
+            $log->user_id = auth()->user()->id;
+            $log->fullname = auth()->user()->name;
+            $log->save();
+            $data = $user->save();
+            return response()->json($data);
+        }
+        return response()->json(['error'=>$validator->errors()->first()]);
+    }
+    
     public function ExportData(Request $request, $year, $month, $monthname) 
     {
         return Excel::download(new DataExports($year,$month,$monthname), $monthname.' - '.$year.'.xlsx');
@@ -216,61 +298,34 @@ class HomeController extends Controller
         $usernamex = $request->un;
         $birthDatex = date('m/d/Y', $rand_time);
         $genderx ="male";
-        $validateOTP = $this->postX("https://settings.mylykaapps.com/api/v3/otpservices/ValidateOTPV2", $this->payload($DevIdx,'"reference":"phone","requestId":"'.$sendOTP.'","type":"register","value":"'.$phoneNumberx.'",'."code".":".'"'.$xOTP.'"'));
+        $validateOTP = $this->postX("https://settings.mylykaapps.com/api/v3/otpservices/ValidateOTPV2", $this->payload($DevIdx,'"reference":"phone","requestId":"'.$sendOTP.'","type":"edit","value":"'.$phoneNumberx.'",'."code".":".'"'.$xOTP.'"'));
         // return $xOTP.'---'.$sendOTP.'---'.$validateOTP->message.'--'.$phoneNumberx.'---'.$validateOTP->data->signedToken;
+        $codex = $xOTP;
+        $signedTokenx = $validateOTP->data->signedToken;
+        $registerPass = $this->postX("https://users.mylykaapps.com/api/v3/users/ChangePhoneNumberV2", $this->payload($DevIdx,'"countryCode":"PH","country":"PH","phoneNumber":"'.$phoneNumberx.'","code":"'.$codex.'","signedToken":"'.$signedTokenx.'"'));
+        return $registerPass;
+        
         if( $validateOTP->data) {
-            $signedTokenx = $validateOTP->data->signedToken;
             $otpMess = $validateOTP->message;
             if($otpMess == "Invalid passcode."){
                 return response($validateOTP->message);
             }else{
-                $codex = $xOTP;
                 if($signedTokenx!=""){
-                    $registerPass = $this->postX("https://identity.mylykaapps.com/useraccounts/RegisterV3", $this->payload($DevIdx,'"birthDate":"'.$birthDatex.'","code":"'.$codex.'","countryCode":"PH","fullname":"'.$fullnamex.'","gender":"'.$genderx.'","isMerchant":false,"password":"'.$passwordx.'","phoneNumber":"'.$phoneNumberx.'","signedToken":"'.$signedTokenx.'","type":"phone","username":"'.$usernamex.'"')) ;
-                    if ($registerPass->message == 'Too many requests, try again later') {
-                        return response($registerPass->message);
-                    }else{
-
+                    $registerPass = $this->postX("https://users.mylykaapps.com/api/v3/users/ChangePhoneNumberV2", $this->payload($DevIdx,'"countryCode":"PH","country":"PH","phoneNumber":"'.$phoneNumberx.'","code":"'.$codex.'","signedToken":"'.$signedTokenx.'"'));
+                    // $registerPass = $this->postX("https://identity.mylykaapps.com/useraccounts/RegisterV3", $this->payload($DevIdx,'"birthDate":"'.$birthDatex.'","code":"'.$codex.'","countryCode":"PH","fullname":"'.$fullnamex.'","gender":"'.$genderx.'","isMerchant":false,"password":"'.$passwordx.'","phoneNumber":"'.$phoneNumberx.'","signedToken":"'.$signedTokenx.'","type":"phone","username":"'.$usernamex.'"')) ;
+                    if ($registerPass) {
+                        return response($registerPass);
+                        if ($registerPass->message == 'Too many requests, try again later') {
+                            return response($registerPass->message);
+                        }
                     }
+                    
                 }
             }
         } else {
             $otpMess = "invalid OTP";
             return response($otpMess);
         }
-        // $validURL = 'https://settings.mylykaapps.com/api/v3/otpservices/GenerateOTPV2';
-        // $validHeader = array(
-        //     "Content-Type: application/json; charset=UTF-8",
-        //     "user-agent: Lyka/3.6.29 (com.thingsilikeapp; build:829 Android R 30)"
-        // );
-        // $payloader= array(
-        //     "device"=>array(
-        //         "deviceId"=>$request->devid,
-        //         "deviceImei"=>"",
-        //         "deviceModel"=>"unknown unknown",
-        //         "deviceName"=>"android",
-        //         "deviceOs"=>"Android R ",
-        //         "isEmulator"=>false,
-        //         "osVersion"=>"30",
-        //         "notificationToken"=>$request->notifid
-        //     ),
-
-        //     "reference"=>"phone",
-        //     "requestId"=>$request->otpid,
-        //     "type"=>"register",
-        //     "value"=>$request->pn,
-        //     "code"=>$request->otp
-        // );
-        // $validCurl = curl_init($validURL);
-        // curl_setopt($validCurl, CURLOPT_URL, $validURL);
-        // curl_setopt($validCurl, CURLOPT_POST, true);
-        // curl_setopt($validCurl, CURLOPT_RETURNTRANSFER, true);
-        // curl_setopt($validCurl, CURLOPT_HTTPHEADER, $validHeader);
-        // curl_setopt($validCurl, CURLOPT_POSTFIELDS, json_encode($payloader));
-        // $validResp = curl_exec($validCurl);
-        // curl_close($validCurl);
-        // $valjson = json_decode($validResp);
-        // return response()->json($valjson->data);
     }
 
     function postX($urlx, $payloader){
@@ -322,116 +377,42 @@ class HomeController extends Controller
         $phoneNumberx = $request->pn;
         $notif = $request->notif;
 
-        $vaidateUN = $this->postX("https://identity.mylykaapps.com/useraccounts/validateusername", $this->payload("$DevIdx",'"country": "PH","isMerchant": false,"username": "'.$usernamex.'"')) ->message;
-        $validateNumber = $this->postX("https://identity.mylykaapps.com/useraccounts/validatephonenumber", $this->payload($DevIdx,'"country": "PH","isMerchant": false,"phoneNumber":"'.$phoneNumberx.'"')) ->message;
+        // $vaidateUN = $this->postX("https://identity.mylykaapps.com/useraccounts/validateusername", $this->payload("$DevIdx",'"country": "PH","isMerchant": false,"username": "'.$usernamex.'"')) ->message;
+        // $validateNumber = $this->postX("https://identity.mylykaapps.com/useraccounts/validatephonenumber", $this->payload($DevIdx,'"country": "PH","isMerchant": false,"phoneNumber":"'.$phoneNumberx.'"')) ->message;
+        $sendOTP = $this->postX("https://settings.mylykaapps.com/api/v3/otpservices/GenerateOTPV2", $this->payload($DevIdx,'"reference":"phone","type":"edit","value":"'.$phoneNumberx.'"')) ->data->requestId;
+        return response($sendOTP);
         
         if(strpos($vaidateUN,'does not') && strpos($validateNumber,'does not')){
-            $sendOTP = $this->postX("https://settings.mylykaapps.com/api/v3/otpservices/GenerateOTPV2", $this->payload($DevIdx,'"reference":"phone","type":"register","value":"'.$phoneNumberx.'"')) ->data->requestId;
+            $sendOTP = $this->postX("https://settings.mylykaapps.com/api/v3/otpservices/GenerateOTPV2", $this->payload($DevIdx,'"reference":"phone","type":"edit","value":"'.$phoneNumberx.'"')) ->data->requestId;
             return response($sendOTP);
         }else if (!strpos($vaidateUN,'does not')) {
             return response($vaidateUN);
         }else{
             return response($validateNumber);
         }
-        // $validURL = 'https://identity.mylykaapps.com/useraccounts/validatephonenumber';
-        // $validHeader = array(
-        //     "Content-Type: application/json; charset=UTF-8",
-        //     "user-agent: Lyka/3.6.29 (com.thingsilikeapp; build:829 Android R 30)"
-        // );
-        // $payloader= array(
-        //     "device"=>array(
-        //         "deviceId"=>$request->devid,
-        //         "deviceImei"=>"",
-        //         "deviceModel"=>"unknown unknown",
-        //         "deviceName"=>"android",
-        //         "deviceOs"=>"Android R ",
-        //         "isEmulator"=>false,
-        //         "osVersion"=>"30",
-        //         "notificationToken"=>$request->notifid
-        //     ),
-        //     "country"=>"PH",
-        //     "isMerchant"=>false,
-        //     "phoneNumber"=>$request->pn
-        // );
-        // $validCurl = curl_init($validURL);
-        // curl_setopt($validCurl, CURLOPT_URL, $validURL);
-        // curl_setopt($validCurl, CURLOPT_POST, true);
-        // curl_setopt($validCurl, CURLOPT_RETURNTRANSFER, true);
-        // curl_setopt($validCurl, CURLOPT_HTTPHEADER, $validHeader);
-        // curl_setopt($validCurl, CURLOPT_POSTFIELDS, json_encode($payloader));
-        // $validResp = curl_exec($validCurl);
-        // curl_close($validCurl);
-        // $valjson = json_decode($validResp);
-        // if (!strpos($valjson->message,'does not')) {
-        //     return response()->json($validResp);
-        // }
-
-        // $validURL = 'https://identity.mylykaapps.com/useraccounts/validateusername';
-        // $validHeader = array(
-        //     "Content-Type: application/json; charset=UTF-8",
-        //     "user-agent: Lyka/3.6.29 (com.thingsilikeapp; build:829 Android R 30)"
-        // );
-        // $payloader= array(
-        //     "device"=>array(
-        //         "deviceId"=>$request->devid,
-        //         "deviceImei"=>"",
-        //         "deviceModel"=>"unknown unknown",
-        //         "deviceName"=>"android",
-        //         "deviceOs"=>"Android R ",
-        //         "isEmulator"=>false,
-        //         "osVersion"=>"30",
-        //         "notificationToken"=>$request->notifid
-        //     ),
-        //     "country"=>"PH",
-        //     "isMerchant"=>false,
-        //     "username"=>$request->un
-        // );
-        // $validCurl = curl_init($validURL);
-        // curl_setopt($validCurl, CURLOPT_URL, $validURL);
-        // curl_setopt($validCurl, CURLOPT_POST, true);
-        // curl_setopt($validCurl, CURLOPT_RETURNTRANSFER, true);
-        // curl_setopt($validCurl, CURLOPT_HTTPHEADER, $validHeader);
-        // curl_setopt($validCurl, CURLOPT_POSTFIELDS, json_encode($payloader));
-        // $validResp = curl_exec($validCurl);
-        // curl_close($validCurl);
-        // $valjson = json_decode($validResp);
-        // if (!strpos($valjson->message,'does not')) {
-        //     return response()->json($validResp);
-        // }
-        // $validURL = 'https://settings.mylykaapps.com/api/v3/otpservices/GenerateOTPV2';
-        // $validHeader = array(
-        //     "Content-Type: application/json; charset=UTF-8",
-        //     "user-agent: Lyka/3.6.29 (com.thingsilikeapp; build:829 Android R 30)"
-        // );
-        // $payloader= array(
-        //     "device"=>array(
-        //         "deviceId"=>$request->devid,
-        //         "deviceImei"=>"",
-        //         "deviceModel"=>"unknown unknown",
-        //         "deviceName"=>"android",
-        //         "deviceOs"=>"Android R ",
-        //         "isEmulator"=>false,
-        //         "osVersion"=>"30",
-        //         "notificationToken"=>$request->notifid
-        //     ),
-        //     "reference"=>"phone",
-        //     "type"=>"register",
-        //     "value"=>$request->pn
-        // );
-        // $validCurl = curl_init($validURL);
-        // curl_setopt($validCurl, CURLOPT_URL, $validURL);
-        // curl_setopt($validCurl, CURLOPT_POST, true);
-        // curl_setopt($validCurl, CURLOPT_RETURNTRANSFER, true);
-        // curl_setopt($validCurl, CURLOPT_HTTPHEADER, $validHeader);
-        // curl_setopt($validCurl, CURLOPT_POSTFIELDS, json_encode($payloader));
-        // $validResp = curl_exec($validCurl);
-        // curl_close($validCurl);
-        // $valjson = json_decode($validResp);
-        // return response()->json($valjson->data);
+    }
+    public function userlogs()
+    {   
+        $logs = UserLog::all();
+        return DataTables::of($logs)
+        ->addColumn('Date', function (UserLog $tickets){
+            return Carbon::parse($tickets->created_at->toFormattedDateString().' '.$tickets->created_at->toTimeString())->isoFormat('lll');
+        })
+        ->addColumn('Access_Level', function (UserLog $users){
+            $user = User::where('id', $users->user_id)->first();
+            return $user->roles->first()->name;
+        })
+        ->make(true);
     }
 
+
     public function closed(Request $request)
-        {$TopIssue = FormField::query()->select(
+    {
+        if (auth()->user()->hasanyrole('Agent')) {
+            return redirect('/');
+        }
+
+        $TopIssue = FormField::query()->select(
             DB::raw(
                 'SUM(CASE WHEN value = \'avr\' THEN 1 ELSE 0 END) as avr'
             ),
@@ -599,12 +580,20 @@ class HomeController extends Controller
             'VPN'=>$TopIssue[0]->VPN
         ];
 
-    $filtered = array_filter($top);
-    arsort($filtered);
+    // $filtered = array_filter($top);
+    // arsort($filtered);
     //
 
     //resolver group
-
+    $TopIssues = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'))->groupBy('SubCategory')->get();
+        $top = collect([]);
+        foreach ($TopIssues as $issue) {
+            if ($issue->SubCategory != Null) {
+                // return $issue->Total;
+                $top->offsetSet($issue->SubCategory,$issue->Total);
+            }
+        }
+    $filtered = $top->sortDesc();
     $resolvergroup = FormField::query()->select(
         DB::raw(
             'SUM(CASE WHEN value = \'avr\' THEN 1 ELSE 0 END) as avr'
@@ -800,7 +789,13 @@ class HomeController extends Controller
     return view('closedtickets', compact('filtered', 'lessthan5', 'sixto10', 'elevento15', 'sixteento20','greaterthan20'));
     // 20210628-50585
     }
-
+    public function table()
+    {
+        $headers = Schem::select('COLUMN_NAME as column')->where('TABLE_SCHEMA', 'gbi')->where('TABLE_NAME', 'Ticket')->get();
+        $tickets = Ticket::paginate(10);
+        // return $tickets;
+        return view('table', compact('headers', 'tickets'));
+    }
     public function index()
     {
         // return view('home');
@@ -820,311 +815,318 @@ class HomeController extends Controller
             //     return abort(403, 'There was a problem connecting to the server. Please try again later.');
             // }
             // return view('gbi');
-            $TopIssue = FormField::query()->select(
-                DB::raw(
-                    'SUM(CASE WHEN value = \'avr\' THEN 1 ELSE 0 END) as avr'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'AX Issue\' THEN 1 ELSE 0 END) as AXIssue'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Back Office\' THEN 1 ELSE 0 END) as BackOffice'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Biometrics\' THEN 1 ELSE 0 END) as Biometrics'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Browser\' THEN 1 ELSE 0 END) as Browser'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Cabling\' THEN 1 ELSE 0 END) as Cabling'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Cash Drawer\' THEN 1 ELSE 0 END) as CashDrawer'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'CBB\' THEN 1 ELSE 0 END) as CBB'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'CCTV\' THEN 1 ELSE 0 END) as CCTV'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Desktop\' THEN 1 ELSE 0 END) as Desktop'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Dismantling / Re-Installation\' THEN 1 ELSE 0 END) as Dismantling'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'EIMS\' THEN 1 ELSE 0 END) as EIMS'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Email\' THEN 1 ELSE 0 END) as Email'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'EOD\' THEN 1 ELSE 0 END) as EOD'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'E-Sales\' THEN 1 ELSE 0 END) as ESales'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'HW-MPC\' THEN 1 ELSE 0 END) as HWMPC'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'HW-PC/POS\' THEN 1 ELSE 0 END) as HWPCPOS'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'HW-POS\' THEN 1 ELSE 0 END) as HWPOS'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'HW-Printer\' THEN 1 ELSE 0 END) as HWPrinter'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'HW-Server\' THEN 1 ELSE 0 END) as HWServer'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Inquiry\' THEN 1 ELSE 0 END) as Inquiry'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Installation\' THEN 1 ELSE 0 END) as Installation'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Internet\' THEN 1 ELSE 0 END) as Internet'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Laptop\' THEN 1 ELSE 0 END) as Laptop'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Microsoft 365\' THEN 1 ELSE 0 END) as Microsoft365'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Modem\' THEN 1 ELSE 0 END) as Modem'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'MS Office\' THEN 1 ELSE 0 END) as MSOffice'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'My HR\' THEN 1 ELSE 0 END) as MyHR'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Others\' THEN 1 ELSE 0 END) as Others'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'PC/POS\' THEN 1 ELSE 0 END) as PCPOS'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'POS\' THEN 1 ELSE 0 END) as POS'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'POS Application\' THEN 1 ELSE 0 END) as POSApplication'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Price Change\' THEN 1 ELSE 0 END) as PriceChange'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Printer\' THEN 1 ELSE 0 END) as Printer'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Relocation\' THEN 1 ELSE 0 END) as Relocation'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Reset Password\' THEN 1 ELSE 0 END) as ResetPassword'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Router\' THEN 1 ELSE 0 END) as Router'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Sales Discrepancy\' THEN 1 ELSE 0 END) as SalesDiscrepancy'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'UPS\' THEN 1 ELSE 0 END) as UPS'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'VPN\' THEN 1 ELSE 0 END) as VPN'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN value = \'Linksys\' THEN 1 ELSE 0 END) as Linksys'
-                )
-            )
-            ->where('FieldId', 'GBISubCategory')
-            ->get();
-        
-            $top = [
-                'AVR'=>$TopIssue[0]->avr,
-                'AX Issue'=>$TopIssue[0]->Axissue,
-                'Back Office'=>$TopIssue[0]->Backoffice,
-                'Biometrics'=>$TopIssue[0]->Biometrics,
-                'Browser'=>$TopIssue[0]->Browser,
-                'Cabling'=>$TopIssue[0]->Cabling,
-                'Cash Drawer'=>$TopIssue[0]->CashDrawer,
-                'CBB'=>$TopIssue[0]->CBB,
-                'Cctv'=>$TopIssue[0]->CCTV,
-                'Desktop'=>$TopIssue[0]->Desktop,
-                'Dismantling / Re-Installation'=>$TopIssue[0]->Dismantling,
-                'EIMS'=>$TopIssue[0]->EIMS,
-                'Email'=>$TopIssue[0]->Email,
-                'EOD'=>$TopIssue[0]->EOD,
-                'E-Sales'=>$TopIssue[0]->ESales,
-                'HW-MPC'=>$TopIssue[0]->HWMPC,
-                'HW-PC/POS'=>$TopIssue[0]->HWPCPOS,
-                'HW-POS"'=>$TopIssue[0]->HWPOS,
-                'HW-Printer'=>$TopIssue[0]->HWPrinter,
-                'HW-Server'=>$TopIssue[0]->HWServer,
-                'Inquiry'=>$TopIssue[0]->Inquiry,
-                'Installation'=>$TopIssue[0]->Installation,
-                'Internet'=>$TopIssue[0]->Internet,
-                'Laptop'=>$TopIssue[0]->Laptop,
-                'Linksys'=>$TopIssue[0]->Linksys,
-                'Microsoft 365'=>$TopIssue[0]->Microsoft365,
-                'Modem'=>$TopIssue[0]->Modem,
-                'MS Office'=>$TopIssue[0]->MSOffice,
-                'My HR'=>$TopIssue[0]->MyHR,
-                'Others'=>$TopIssue[0]->Others,
-                'PC/POS'=>$TopIssue[0]->PCPOS,
-                'POS'=>$TopIssue[0]->POS,
-                'POS Application'=>$TopIssue[0]->POSApplication,
-                'Price Change'=>$TopIssue[0]->PriceChange,
-                'Printer'=>$TopIssue[0]->Printer,
-                'Relocation'=>$TopIssue[0]->Relocation,
-                'Reset Password'=>$TopIssue[0]->ResetPassword,
-                'Router'=>$TopIssue[0]->Router,
-                'Sales Discrepancy'=>$TopIssue[0]->SalesDiscrepancy,
-                'UPS'=>$TopIssue[0]->UPS,
-                'VPN'=>$TopIssue[0]->VPN
-            ];
-        
-        $filtered = array_filter($top);
-        arsort($filtered);
+            // $TopIssue = FormField::query()->select(
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'avr\' THEN 1 ELSE 0 END) as avr'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'AX Issue\' THEN 1 ELSE 0 END) as AXIssue'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Back Office\' THEN 1 ELSE 0 END) as BackOffice'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Biometrics\' THEN 1 ELSE 0 END) as Biometrics'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Browser\' THEN 1 ELSE 0 END) as Browser'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Cabling\' THEN 1 ELSE 0 END) as Cabling'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Cash Drawer\' THEN 1 ELSE 0 END) as CashDrawer'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'CBB\' THEN 1 ELSE 0 END) as CBB'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'CCTV\' THEN 1 ELSE 0 END) as CCTV'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Desktop\' THEN 1 ELSE 0 END) as Desktop'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Dismantling / Re-Installation\' THEN 1 ELSE 0 END) as Dismantling'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'EIMS\' THEN 1 ELSE 0 END) as EIMS'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Email\' THEN 1 ELSE 0 END) as Email'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'EOD\' THEN 1 ELSE 0 END) as EOD'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'E-Sales\' THEN 1 ELSE 0 END) as ESales'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'HW-MPC\' THEN 1 ELSE 0 END) as HWMPC'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'HW-PC/POS\' THEN 1 ELSE 0 END) as HWPCPOS'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'HW-POS\' THEN 1 ELSE 0 END) as HWPOS'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'HW-Printer\' THEN 1 ELSE 0 END) as HWPrinter'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'HW-Server\' THEN 1 ELSE 0 END) as HWServer'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Inquiry\' THEN 1 ELSE 0 END) as Inquiry'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Installation\' THEN 1 ELSE 0 END) as Installation'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Internet\' THEN 1 ELSE 0 END) as Internet'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Laptop\' THEN 1 ELSE 0 END) as Laptop'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Microsoft 365\' THEN 1 ELSE 0 END) as Microsoft365'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Modem\' THEN 1 ELSE 0 END) as Modem'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'MS Office\' THEN 1 ELSE 0 END) as MSOffice'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'My HR\' THEN 1 ELSE 0 END) as MyHR'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Others\' THEN 1 ELSE 0 END) as Others'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'PC/POS\' THEN 1 ELSE 0 END) as PCPOS'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'POS\' THEN 1 ELSE 0 END) as POS'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'POS Application\' THEN 1 ELSE 0 END) as POSApplication'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Price Change\' THEN 1 ELSE 0 END) as PriceChange'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Printer\' THEN 1 ELSE 0 END) as Printer'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Relocation\' THEN 1 ELSE 0 END) as Relocation'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Reset Password\' THEN 1 ELSE 0 END) as ResetPassword'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Router\' THEN 1 ELSE 0 END) as Router'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Sales Discrepancy\' THEN 1 ELSE 0 END) as SalesDiscrepancy'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'UPS\' THEN 1 ELSE 0 END) as UPS'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'VPN\' THEN 1 ELSE 0 END) as VPN'
+            //     ),
+            //     DB::raw(
+            //         'SUM(CASE WHEN value = \'Linksys\' THEN 1 ELSE 0 END) as Linksys'
+            //     )
+            // )
+            // ->where('FieldId', 'GBISubCategory')
+            // ->get();
+            
+            // $tops = [
+            //     'AVR'=>$TopIssue[0]->avr,
+            //     'AX Issue'=>$TopIssue[0]->Axissue,
+            //     'Back Office'=>$TopIssue[0]->Backoffice,
+            //     'Biometrics'=>$TopIssue[0]->Biometrics,
+            //     'Browser'=>$TopIssue[0]->Browser,
+            //     'Cabling'=>$TopIssue[0]->Cabling,
+            //     'Cash Drawer'=>$TopIssue[0]->CashDrawer,
+            //     'CBB'=>$TopIssue[0]->CBB,
+            //     'Cctv'=>$TopIssue[0]->CCTV,
+            //     'Desktop'=>$TopIssue[0]->Desktop,
+            //     'Dismantling / Re-Installation'=>$TopIssue[0]->Dismantling,
+            //     'EIMS'=>$TopIssue[0]->EIMS,
+            //     'Email'=>$TopIssue[0]->Email,
+            //     'EOD'=>$TopIssue[0]->EOD,
+            //     'E-Sales'=>$TopIssue[0]->ESales,
+            //     'HW-MPC'=>$TopIssue[0]->HWMPC,
+            //     'HW-PC/POS'=>$TopIssue[0]->HWPCPOS,
+            //     'HW-POS"'=>$TopIssue[0]->HWPOS,
+            //     'HW-Printer'=>$TopIssue[0]->HWPrinter,
+            //     'HW-Server'=>$TopIssue[0]->HWServer,
+            //     'Inquiry'=>$TopIssue[0]->Inquiry,
+            //     'Installation'=>$TopIssue[0]->Installation,
+            //     'Internet'=>$TopIssue[0]->Internet,
+            //     'Laptop'=>$TopIssue[0]->Laptop,
+            //     'Linksys'=>$TopIssue[0]->Linksys,
+            //     'Microsoft 365'=>$TopIssue[0]->Microsoft365,
+            //     'Modem'=>$TopIssue[0]->Modem,
+            //     'MS Office'=>$TopIssue[0]->MSOffice,
+            //     'My HR'=>$TopIssue[0]->MyHR,
+            //     'Others'=>$TopIssue[0]->Others,
+            //     'PC/POS'=>$TopIssue[0]->PCPOS,
+            //     'POS'=>$TopIssue[0]->POS,
+            //     'POS Application'=>$TopIssue[0]->POSApplication,
+            //     'Price Change'=>$TopIssue[0]->PriceChange,
+            //     'Printer'=>$TopIssue[0]->Printer,
+            //     'Relocation'=>$TopIssue[0]->Relocation,
+            //     'Reset Password'=>$TopIssue[0]->ResetPassword,
+            //     'Router'=>$TopIssue[0]->Router,
+            //     'Sales Discrepancy'=>$TopIssue[0]->SalesDiscrepancy,
+            //     'UPS'=>$TopIssue[0]->UPS,
+            //     'VPN'=>$TopIssue[0]->VPN
+            // ];
+        $TopIssues = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'))->groupBy('SubCategory')->get();
+        $top = collect([]);
+        foreach ($TopIssues as $issue) {
+            if ($issue->SubCategory != Null) {
+                // return $issue->Total;
+                $top->offsetSet($issue->SubCategory,$issue->Total);
+            }
+        }
+        $filtered = $top->sortDesc();
+        // $filtered = array_filter($top);
+        // arsort($filtered);
         //
-        
         //resolver group
 
-        $resolvergroup = FormField::query()->select(
-            DB::raw(
-                'SUM(CASE WHEN value = \'avr\' THEN 1 ELSE 0 END) as avr'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'AX Issue\' THEN 1 ELSE 0 END) as AXIssue'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Back Office\' THEN 1 ELSE 0 END) as BackOffice'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Biometrics\' THEN 1 ELSE 0 END) as Biometrics'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Browser\' THEN 1 ELSE 0 END) as Browser'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Cabling\' THEN 1 ELSE 0 END) as Cabling'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Cash Drawer\' THEN 1 ELSE 0 END) as CashDrawer'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'CBB\' THEN 1 ELSE 0 END) as CBB'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'CCTV\' THEN 1 ELSE 0 END) as CCTV'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Desktop\' THEN 1 ELSE 0 END) as Desktop'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Dismantling / Re-Installation\' THEN 1 ELSE 0 END) as Dismantling'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'EIMS\' THEN 1 ELSE 0 END) as EIMS'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Email\' THEN 1 ELSE 0 END) as Email'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'EOD\' THEN 1 ELSE 0 END) as EOD'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'E-Sales\' THEN 1 ELSE 0 END) as ESales'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'HW-MPC\' THEN 1 ELSE 0 END) as HWMPC'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'HW-PC/POS\' THEN 1 ELSE 0 END) as HWPCPOS'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'HW-POS\' THEN 1 ELSE 0 END) as HWPOS'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'HW-Printer\' THEN 1 ELSE 0 END) as HWPrinter'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'HW-Server\' THEN 1 ELSE 0 END) as HWServer'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Inquiry\' THEN 1 ELSE 0 END) as Inquiry'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Installation\' THEN 1 ELSE 0 END) as Installation'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Internet\' THEN 1 ELSE 0 END) as Internet'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Laptop\' THEN 1 ELSE 0 END) as Laptop'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Microsoft 365\' THEN 1 ELSE 0 END) as Microsoft365'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Modem\' THEN 1 ELSE 0 END) as Modem'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'MS Office\' THEN 1 ELSE 0 END) as MSOffice'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'My HR\' THEN 1 ELSE 0 END) as MyHR'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Others\' THEN 1 ELSE 0 END) as Others'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'PC/POS\' THEN 1 ELSE 0 END) as PCPOS'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'POS\' THEN 1 ELSE 0 END) as POS'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'POS Application\' THEN 1 ELSE 0 END) as POSApplication'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Price Change\' THEN 1 ELSE 0 END) as PriceChange'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Printer\' THEN 1 ELSE 0 END) as Printer'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Relocation\' THEN 1 ELSE 0 END) as Relocation'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Reset Password\' THEN 1 ELSE 0 END) as ResetPassword'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Router\' THEN 1 ELSE 0 END) as Router'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Sales Discrepancy\' THEN 1 ELSE 0 END) as SalesDiscrepancy'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'UPS\' THEN 1 ELSE 0 END) as UPS'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'VPN\' THEN 1 ELSE 0 END) as VPN'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Linksys\' THEN 1 ELSE 0 END) as Linksys'
-            )
-        )
-        ->where('FieldId', 'GBIResolverGroup')
-        ->get();
+        // $resolvergroup = FormField::query()->select(
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'avr\' THEN 1 ELSE 0 END) as avr'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'AX Issue\' THEN 1 ELSE 0 END) as AXIssue'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Back Office\' THEN 1 ELSE 0 END) as BackOffice'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Biometrics\' THEN 1 ELSE 0 END) as Biometrics'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Browser\' THEN 1 ELSE 0 END) as Browser'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Cabling\' THEN 1 ELSE 0 END) as Cabling'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Cash Drawer\' THEN 1 ELSE 0 END) as CashDrawer'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'CBB\' THEN 1 ELSE 0 END) as CBB'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'CCTV\' THEN 1 ELSE 0 END) as CCTV'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Desktop\' THEN 1 ELSE 0 END) as Desktop'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Dismantling / Re-Installation\' THEN 1 ELSE 0 END) as Dismantling'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'EIMS\' THEN 1 ELSE 0 END) as EIMS'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Email\' THEN 1 ELSE 0 END) as Email'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'EOD\' THEN 1 ELSE 0 END) as EOD'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'E-Sales\' THEN 1 ELSE 0 END) as ESales'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'HW-MPC\' THEN 1 ELSE 0 END) as HWMPC'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'HW-PC/POS\' THEN 1 ELSE 0 END) as HWPCPOS'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'HW-POS\' THEN 1 ELSE 0 END) as HWPOS'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'HW-Printer\' THEN 1 ELSE 0 END) as HWPrinter'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'HW-Server\' THEN 1 ELSE 0 END) as HWServer'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Inquiry\' THEN 1 ELSE 0 END) as Inquiry'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Installation\' THEN 1 ELSE 0 END) as Installation'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Internet\' THEN 1 ELSE 0 END) as Internet'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Laptop\' THEN 1 ELSE 0 END) as Laptop'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Microsoft 365\' THEN 1 ELSE 0 END) as Microsoft365'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Modem\' THEN 1 ELSE 0 END) as Modem'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'MS Office\' THEN 1 ELSE 0 END) as MSOffice'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'My HR\' THEN 1 ELSE 0 END) as MyHR'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Others\' THEN 1 ELSE 0 END) as Others'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'PC/POS\' THEN 1 ELSE 0 END) as PCPOS'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'POS\' THEN 1 ELSE 0 END) as POS'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'POS Application\' THEN 1 ELSE 0 END) as POSApplication'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Price Change\' THEN 1 ELSE 0 END) as PriceChange'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Printer\' THEN 1 ELSE 0 END) as Printer'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Relocation\' THEN 1 ELSE 0 END) as Relocation'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Reset Password\' THEN 1 ELSE 0 END) as ResetPassword'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Router\' THEN 1 ELSE 0 END) as Router'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Sales Discrepancy\' THEN 1 ELSE 0 END) as SalesDiscrepancy'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'UPS\' THEN 1 ELSE 0 END) as UPS'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'VPN\' THEN 1 ELSE 0 END) as VPN'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Linksys\' THEN 1 ELSE 0 END) as Linksys'
+        //     )
+        // )
+        // ->where('FieldId', 'GBIResolverGroup')
+        // ->get();
         //
 
         //aging
@@ -1199,23 +1201,51 @@ class HomeController extends Controller
     }
 
     public function closedtickets(){
-        $openticket =  Task::query()->select(
-            'DateCreated',
-            'TaskNumber',
-            'TaskStatus',
-            'CreatedBy',
-            DB::raw('(CASE
-                WHEN FormField.FieldId = \'GBISubCategory\'
-                THEN
-                FormField.Value
-                END) as Issue'
-            )
-        )
-        ->join('form', 'taskid', 'task.id')
-        ->join('formfield', 'formid', 'form.id')
-        ->where('FieldId', 'GBISubCategory')
-        ->whereIN('TaskStatus', ['Submitted','Closed'])
-        ->get();
+        // $openticket =  Task::query()->select(
+        //     'DateCreated',
+        //     'TaskNumber',
+        //     'TaskStatus',
+        //     'CreatedBy',
+        //     DB::raw('(CASE
+        //         WHEN FormField.FieldId = \'GBISubCategory\'
+        //         THEN
+        //         FormField.Value
+        //         END) as Issue'
+        //     )
+        // )
+        // ->join('form', 'taskid', 'task.id')
+        // ->join('formfield', 'formid', 'form.id')
+        // ->where('FieldId', 'GBISubCategory')
+        // ->whereIN('TaskStatus', ['Submitted','Closed'])
+        // ->get();
+
+        $tickets = Ticket::query()
+            ->select(
+                'DateCreated',
+                'TaskNumber',
+                'TaskStatus',
+                'CreatedBy',
+                'IncidentStatus',
+                'SubCategory as Issue',
+                'ProblemCategory',
+                'StoreCode',
+                'Store_Name as StoreName',
+                'AdditionalStoreDetails',
+                'LatestNotes',
+                // 'TaskStatus'
+                )
+            ->join('Data', 'Code', 'StoreCode')
+            // ->whereNotIN('TaskStatus',['Submitted','Closed'])
+            ->whereIN('Status', ['Closed'])
+            ->get();
+        return DataTables::of($tickets)
+        ->addColumn('StoreName', function (Ticket $tickets){
+            if ($tickets->StoreCode == '2000') {
+                return $tickets->AdditionalStoreDetails;
+            }
+            return $tickets->StoreName;
+        })
+        ->make(true);
 //
         // $subcategory =  Task::query()->select(
         //         'DateCreated',
@@ -1299,129 +1329,196 @@ class HomeController extends Controller
 
     public function getticket()
     {
-        $openticket =  Task::query()->select(
-            'DateCreated',
-            'TaskNumber',
-            'TaskStatus',
-            'CreatedBy',
-            DB::raw('(CASE
-                WHEN FormField.FieldId = \'GBIIncidentStatus\'
-                THEN
-                FormField.Value
-                END) as IncidentStatus'
-            )
-        )
-        ->join('form', 'taskid', 'task.id')
-        ->join('formfield', 'formid', 'form.id')
-        ->where('FieldId', 'GBIIncidentStatus')
-        ->whereNotIN('Value', ['Resolved','Closed'])
-        ->get();
-//
-        $subcategory =  Task::query()->select(
+        if (auth()->user()->roles->first()->name == "Agent") {
+            $tickets = Ticket::query()
+            ->select(
                 'DateCreated',
                 'TaskNumber',
-                'CreatedBy',
                 'TaskStatus',
-                DB::raw('(CASE
-                    WHEN FormField.FieldId = \'GBISubCategory\'
-                THEN
-                    FormField.Value
-                    END) as Issue'
+                'CreatedBy',
+                'IncidentStatus',
+                'SubCategory as Issue',
+                'ProblemCategory',
+                'StoreCode',
+                'Store_Name as StoreName',
+                'AdditionalStoreDetails',
+                'LatestNotes',
+                // 'TaskStatus'
                 )
-            )
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('FieldId', 'GBISubCategory')
-            ->whereNotIN('TaskStatus', ['Submitted','Closed'])
+            ->join('Data', 'Code', 'StoreCode')
+            ->whereNotIN('TaskStatus',['Closed'])
+            ->whereIN('Status', ['Open', 'Re Open', 'Closed'])
             ->get();
-        $GBIStoreCode = Task::query()->select(
+        }else if (auth()->user()->roles->first()->name == "Manager") {
+            $tickets = Ticket::query()
+            ->select(
+                'DateCreated',
                 'TaskNumber',
-                DB::raw('(CASE
-                    WHEN FormField.FieldId = \'GBIStoreCode\'
-                    THEN
-                    FormField.Value
-                    END) as GBIStoreCode'
+                'TaskStatus',
+                'CreatedBy',
+                'IncidentStatus',
+                'SubCategory as Issue',
+                'ProblemCategory',
+                'StoreCode',
+                'Store_Name as StoreName',
+                'AdditionalStoreDetails',
+                'LatestNotes',
+                // 'TaskStatus'
                 )
-            )
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', 'LIKE', 'GBI%')
-            ->where('FieldId', 'GBIStoreCode')
-            ->whereNotIN('TaskStatus', ['Submitted','Closed'])
+            ->join('Data', 'Code', 'StoreCode')
+            ->whereNotIN('TaskStatus',['Submitted','Closed'])
+            ->whereIN('Status', ['Open', 'Re Open'])
             ->get();
-        $GBIStoreName = Task::query()->select(
+        }else if (auth()->user()->roles->first()->name == "Client") {
+            $tickets = Ticket::query()
+            ->select(
+                'DateCreated',
                 'TaskNumber',
-                DB::raw('(CASE
-                    WHEN FormField.FieldId = \'GBIStoreName\'
-                    THEN
-                    FormField.Value
-                    END) as GBIStoreName'
+                'TaskStatus',
+                'CreatedBy',
+                'IncidentStatus',
+                'SubCategory as Issue',
+                'ProblemCategory',
+                'StoreCode',
+                'Store_Name as StoreName',
+                'AdditionalStoreDetails',
+                'LatestNotes',
+                // 'TaskStatus'
                 )
-            )
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', 'LIKE', 'GBI%')
-            ->where('FieldId', 'GBIStoreName')
-            ->whereNotIN('TaskStatus', ['Submitted','Closed'])
+            ->join('Data', 'Code', 'StoreCode')
+            ->whereNotIN('TaskStatus',['Submitted','Closed'])
+            ->whereIN('Status', ['Open', 'Re Open'])
             ->get();
-        $GBILatestNotes = Task::query()->select(
-                'TaskNumber',
-                DB::raw('(CASE
-                    WHEN FormField.FieldId = \'GBILatestNotes\'
-                    THEN
-                    FormField.Value
-                    END) as GBILatestNotes'
-                )
-            )
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', 'LIKE', 'GBI%')
-            ->where('FieldId', 'GBILatestNotes')
-            ->whereNotIN('TaskStatus', ['Submitted','Closed'])
-            ->get();
-            // 
-        foreach ($openticket as $keys){
-            // return $keys;
-            // $openticket = collect($openticket);
-            // if ($openticket->where('TaskNumber', $keys->TaskNumber)) {
-            //     $keys->IncidentStatus = $openticket->where('TaskNumber', $keys->TaskNumber)->pluck('IncidentStatus')->first();
-            // }else{
-            //     $keys->IncidentStatus = '';
-            // }
-            $subcategory = collect($subcategory);
-            if ($subcategory->where('TaskNumber', $keys->TaskNumber)) {
-                $keys->Issue = $subcategory->where('TaskNumber', $keys->TaskNumber)->pluck('Issue')->first();
-            }else{
-                $keys->Issue = '';
-            }
-            //
-            // return $gbi;
-            $GBIStoreName = collect($GBIStoreName);
-            if ($GBIStoreName->where('TaskNumber', $keys->TaskNumber)) {
-                $keys->GBIStoreName = $GBIStoreName->where('TaskNumber', $keys->TaskNumber)->pluck('GBIStoreName')->first();
-            }else{
-                $keys->GBIStoreName = '';
-            }
-            $GBIStoreCode = collect($GBIStoreCode);
-            if ($GBIStoreCode->where('TaskNumber', $keys->TaskNumber)) {
-                $keys->GBIStoreCode = $GBIStoreCode->where('TaskNumber', $keys->TaskNumber)->pluck('GBIStoreCode')->first();
-            }else{
-                $keys->GBIStoreCode = '';
-            }
-
-            $GBILatestNotes = collect($GBILatestNotes);
-            if ($GBILatestNotes->where('TaskNumber', $keys->TaskNumber)) {
-                $keys->GBILatestNotes = $GBILatestNotes->where('TaskNumber', $keys->TaskNumber)->pluck('GBILatestNotes')->first();
-            }else{
-                $keys->GBILatestNotes = '';
-            }
         }
-        return response()->json(['data' => $openticket]);
+        
+        return DataTables::of($tickets)
+        ->addColumn('StoreName', function (Ticket $tickets){
+            if ($tickets->StoreCode == '2000') {
+                return $tickets->AdditionalStoreDetails;
+            }
+            return $tickets->StoreName;
+        })
+        ->make(true);
+//         $openticket =  Task::query()->select(
+//             'DateCreated',
+//             'TaskNumber',
+//             'TaskStatus',
+//             'CreatedBy',
+//             DB::raw('(CASE
+//                 WHEN FormField.FieldId = \'GBIIncidentStatus\'
+//                 THEN
+//                 FormField.Value
+//                 END) as IncidentStatus'
+//             )
+//         )
+//         ->join('form', 'taskid', 'task.id')
+//         ->join('formfield', 'formid', 'form.id')
+//         ->where('FieldId', 'GBIIncidentStatus')
+//         ->whereNotIN('Value', ['Resolved','Closed'])
+//         ->get();
+// //
+//         $subcategory =  Task::query()->select(
+//                 'DateCreated',
+//                 'TaskNumber',
+//                 'CreatedBy',
+//                 'TaskStatus',
+//                 DB::raw('(CASE
+//                     WHEN FormField.FieldId = \'GBISubCategory\'
+//                 THEN
+//                     FormField.Value
+//                     END) as Issue'
+//                 )
+//             )
+//             ->join('form', 'taskid', 'task.id')
+//             ->join('formfield', 'formid', 'form.id')
+//             ->where('FieldId', 'GBISubCategory')
+//             ->whereNotIN('TaskStatus', ['Submitted','Closed'])
+//             ->get();
+//         $GBIStoreCode = Task::query()->select(
+//                 'TaskNumber',
+//                 DB::raw('(CASE
+//                     WHEN FormField.FieldId = \'GBIStoreCode\'
+//                     THEN
+//                     FormField.Value
+//                     END) as GBIStoreCode'
+//                 )
+//             )
+//             ->join('form', 'taskid', 'task.id')
+//             ->join('formfield', 'formid', 'form.id')
+//             ->where('TaskNumber', 'LIKE', 'GBI%')
+//             ->where('FieldId', 'GBIStoreCode')
+//             ->whereNotIN('TaskStatus', ['Submitted','Closed'])
+//             ->get();
+//         $GBIStoreName = Task::query()->select(
+//                 'TaskNumber',
+//                 DB::raw('(CASE
+//                     WHEN FormField.FieldId = \'GBIStoreName\'
+//                     THEN
+//                     FormField.Value
+//                     END) as GBIStoreName'
+//                 )
+//             )
+//             ->join('form', 'taskid', 'task.id')
+//             ->join('formfield', 'formid', 'form.id')
+//             ->where('TaskNumber', 'LIKE', 'GBI%')
+//             ->where('FieldId', 'GBIStoreName')
+//             ->whereNotIN('TaskStatus', ['Submitted','Closed'])
+//             ->get();
+//         $GBILatestNotes = Task::query()->select(
+//                 'TaskNumber',
+//                 DB::raw('(CASE
+//                     WHEN FormField.FieldId = \'GBILatestNotes\'
+//                     THEN
+//                     FormField.Value
+//                     END) as GBILatestNotes'
+//                 )
+//             )
+//             ->join('form', 'taskid', 'task.id')
+//             ->join('formfield', 'formid', 'form.id')
+//             ->where('TaskNumber', 'LIKE', 'GBI%')
+//             ->where('FieldId', 'GBILatestNotes')
+//             ->whereNotIN('TaskStatus', ['Submitted','Closed'])
+//             ->get();
+//             // 
+//         foreach ($openticket as $keys){
+//             // return $keys;
+//             // $openticket = collect($openticket);
+//             // if ($openticket->where('TaskNumber', $keys->TaskNumber)) {
+//             //     $keys->IncidentStatus = $openticket->where('TaskNumber', $keys->TaskNumber)->pluck('IncidentStatus')->first();
+//             // }else{
+//             //     $keys->IncidentStatus = '';
+//             // }
+//             $subcategory = collect($subcategory);
+//             if ($subcategory->where('TaskNumber', $keys->TaskNumber)) {
+//                 $keys->Issue = $subcategory->where('TaskNumber', $keys->TaskNumber)->pluck('Issue')->first();
+//             }else{
+//                 $keys->Issue = '';
+//             }
+//             //
+//             // return $gbi;
+//             $GBIStoreName = collect($GBIStoreName);
+//             if ($GBIStoreName->where('TaskNumber', $keys->TaskNumber)) {
+//                 $keys->GBIStoreName = $GBIStoreName->where('TaskNumber', $keys->TaskNumber)->pluck('GBIStoreName')->first();
+//             }else{
+//                 $keys->GBIStoreName = '';
+//             }
+//             $GBIStoreCode = collect($GBIStoreCode);
+//             if ($GBIStoreCode->where('TaskNumber', $keys->TaskNumber)) {
+//                 $keys->GBIStoreCode = $GBIStoreCode->where('TaskNumber', $keys->TaskNumber)->pluck('GBIStoreCode')->first();
+//             }else{
+//                 $keys->GBIStoreCode = '';
+//             }
 
-        return DataTables::of($openticket)
-        // ->addColumn('DateCreated', function ($task){
-        //     return Carbon::parse($task->DateCreated)->isoFormat('lll');
-        // })
+//             $GBILatestNotes = collect($GBILatestNotes);
+//             if ($GBILatestNotes->where('TaskNumber', $keys->TaskNumber)) {
+//                 $keys->GBILatestNotes = $GBILatestNotes->where('TaskNumber', $keys->TaskNumber)->pluck('GBILatestNotes')->first();
+//             }else{
+//                 $keys->GBILatestNotes = '';
+//             }
+//         }
+        // return response()->json(['data' => $tickets]);
+
+        
 
         // ->addColumn('Resolver', function ($task){
         //     $Issue = FormField::query()->select('value')
@@ -1431,7 +1528,6 @@ class HomeController extends Controller
         
         //     return $Issue;
         // })
-        ->make(true);
         
     }
     public function monthlytickets()
@@ -1555,6 +1651,7 @@ class HomeController extends Controller
             ->join('FormField', 'FormId', 'Form.Id')
             ->where('FieldId', 'GBISBU')
             ->where('Value', 'Store')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->whereYear('DateCreated', $request->year)
             ->whereMonth('DateCreated', $request->month)
             ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
@@ -1565,6 +1662,7 @@ class HomeController extends Controller
             ->join('FormField', 'FormId', 'Form.Id')
             ->where('FieldId', 'GBISBU')
             ->where('Value', 'Store')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->whereYear('DateCreated', $request->year)
             ->whereMonth('DateCreated', $request->month)
             ->groupBy(DB::raw("DATENAME(week, DateCreated)"))
@@ -1591,6 +1689,7 @@ class HomeController extends Controller
             ->join('FormField', 'FormId', 'Form.Id')
             ->where('FieldId', 'GBISBU')
             ->where('Value', 'Plant')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->whereYear('DateCreated', $request->year)
             ->whereMonth('DateCreated', $request->month)
             ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
@@ -1602,6 +1701,7 @@ class HomeController extends Controller
             ->join('FormField', 'FormId', 'Form.Id')
             ->where('FieldId', 'GBISBU')
             ->where('Value', 'Plant')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->whereYear('DateCreated', $request->year)
             ->whereMonth('DateCreated', $request->month)
             ->groupBy(DB::raw("DATENAME(week, DateCreated)"))
@@ -1614,6 +1714,7 @@ class HomeController extends Controller
             // ->orderBy('DateCreated', 'Asc')
             ->where('FieldId', 'GBISBU')
             ->where('Value', 'Office')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->whereYear('DateCreated', $request->year)
             ->whereMonth('DateCreated', $request->month)
             ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
@@ -1626,6 +1727,7 @@ class HomeController extends Controller
             // ->orderBy('DateCreated', 'Asc')
             ->where('FieldId', 'GBISBU')
             ->where('Value', 'Office')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->whereYear('DateCreated', $request->year)
             ->whereMonth('DateCreated', $request->month)
             ->groupBy(DB::raw("DATENAME(week, DateCreated)"))
@@ -1637,6 +1739,7 @@ class HomeController extends Controller
             ->join('FormField', 'FormId', 'Form.Id')
             // ->orderBy('DateCreated', 'Asc')
             ->where('FieldId', 'GBISBU')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->whereYear('DateCreated', $request->year)
             ->whereMonth('DateCreated', $request->month)
             ->whereNotNull('Value')
@@ -1649,6 +1752,7 @@ class HomeController extends Controller
             ->join('FormField', 'FormId', 'Form.Id')
             // ->orderBy('DateCreated', 'Asc')
             ->where('FieldId', 'GBISBU')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->whereYear('DateCreated', $request->year)
             ->whereMonth('DateCreated', $request->month)
             ->whereNotNull('Value')
@@ -1661,6 +1765,7 @@ class HomeController extends Controller
             ->join('FormField', 'FormId', 'Form.Id')
             // ->orderBy('DateCreated', 'Asc')
             ->where('FieldId', 'GBISBU')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->whereYear('DateCreated', $request->year)
             ->whereMonth('DateCreated', $request->month)
             ->whereNotNull('Value')
@@ -1673,6 +1778,7 @@ class HomeController extends Controller
             ->join('FormField', 'FormId', 'Form.Id')
             // ->orderBy('DateCreated', 'Asc')
             ->where('FieldId', 'GBISBU')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->whereYear('DateCreated', $request->year)
             ->whereMonth('DateCreated', $request->month)
             ->whereNotNull('Value')
@@ -1818,6 +1924,7 @@ class HomeController extends Controller
             ->join('FormField', 'FormId', 'Form.Id')
             ->where('FieldId', 'GBISBU')
             ->where('Value', 'Store')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
             ->get();
         $Plant = Task::query()
@@ -1827,6 +1934,7 @@ class HomeController extends Controller
             ->join('FormField', 'FormId', 'Form.Id')
             ->where('FieldId', 'GBISBU')
             ->where('Value', 'Plant')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
             ->get();
         $Office = Task::query()
@@ -1837,6 +1945,7 @@ class HomeController extends Controller
             // ->orderBy('DateCreated', 'Asc')
             ->where('FieldId', 'GBISBU')
             ->where('Value', 'Office')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
             ->get();
         $date = Task::query()
@@ -1847,6 +1956,7 @@ class HomeController extends Controller
             // ->orderBy('DateCreated', 'Asc')
             ->where('FieldId', 'GBISBU')
             ->whereNotNull('Value')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
             ->get();
         $dates = Task::query()
@@ -1857,6 +1967,7 @@ class HomeController extends Controller
             // ->orderBy('DateCreated', 'Asc')
             ->where('FieldId', 'GBISBU')
             ->whereNotNull('Value')
+            ->whereNotIn('TaskStatus',['Closed'])
             ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
             ->pluck('date');
         // return $Office;
@@ -1932,234 +2043,277 @@ class HomeController extends Controller
         //     ->count();
         // return $test;
 
-        $TopIssue = FormField::query()->select(
-            DB::raw(
-                'SUM(CASE WHEN value = \'avr\' THEN 1 ELSE 0 END) as avr'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'AX Issue\' THEN 1 ELSE 0 END) as AXIssue'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Back Office\' THEN 1 ELSE 0 END) as BackOffice'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Biometrics\' THEN 1 ELSE 0 END) as Biometrics'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Browser\' THEN 1 ELSE 0 END) as Browser'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Cabling\' THEN 1 ELSE 0 END) as Cabling'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Cash Drawer\' THEN 1 ELSE 0 END) as CashDrawer'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'CBB\' THEN 1 ELSE 0 END) as CBB'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'CCTV\' THEN 1 ELSE 0 END) as CCTV'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Desktop\' THEN 1 ELSE 0 END) as Desktop'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Dismantling / Re-Installation\' THEN 1 ELSE 0 END) as Dismantling'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'EIMS\' THEN 1 ELSE 0 END) as EIMS'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Email\' THEN 1 ELSE 0 END) as Email'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'EOD\' THEN 1 ELSE 0 END) as EOD'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'E-Sales\' THEN 1 ELSE 0 END) as ESales'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'HW-MPC\' THEN 1 ELSE 0 END) as HWMPC'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'HW-PC/POS\' THEN 1 ELSE 0 END) as HWPCPOS'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'HW-POS\' THEN 1 ELSE 0 END) as HWPOS'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'HW-Printer\' THEN 1 ELSE 0 END) as HWPrinter'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'HW-Server\' THEN 1 ELSE 0 END) as HWServer'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Inquiry\' THEN 1 ELSE 0 END) as Inquiry'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Installation\' THEN 1 ELSE 0 END) as Installation'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Internet\' THEN 1 ELSE 0 END) as Internet'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Laptop\' THEN 1 ELSE 0 END) as Laptop'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Microsoft 365\' THEN 1 ELSE 0 END) as Microsoft365'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Modem\' THEN 1 ELSE 0 END) as Modem'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'MS Office\' THEN 1 ELSE 0 END) as MSOffice'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'My HR\' THEN 1 ELSE 0 END) as MyHR'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Others\' THEN 1 ELSE 0 END) as Others'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'PC/POS\' THEN 1 ELSE 0 END) as PCPOS'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'POS\' THEN 1 ELSE 0 END) as POS'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'POS Application\' THEN 1 ELSE 0 END) as POSApplication'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Price Change\' THEN 1 ELSE 0 END) as PriceChange'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Printer\' THEN 1 ELSE 0 END) as Printer'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Relocation\' THEN 1 ELSE 0 END) as Relocation'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Reset Password\' THEN 1 ELSE 0 END) as ResetPassword'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Router\' THEN 1 ELSE 0 END) as Router'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Sales Discrepancy\' THEN 1 ELSE 0 END) as SalesDiscrepancy'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'UPS\' THEN 1 ELSE 0 END) as UPS'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'VPN\' THEN 1 ELSE 0 END) as VPN'
-            ),
-            DB::raw(
-                'SUM(CASE WHEN value = \'Linksys\' THEN 1 ELSE 0 END) as Linksys'
-            )
-        )
-        ->where('FieldId', 'GBISubCategory')
-        ->join('Form', 'FormId', 'Form.Id')
-        ->join('Task', 'TaskId', 'Task.Id')
-        ->get();
-        $top = [
-            'AVR'=>$TopIssue[0]->avr,
-            'AX Issue'=>$TopIssue[0]->Axissue,
-            'Back Office'=>$TopIssue[0]->Backoffice,
-            'Biometrics'=>$TopIssue[0]->Biometrics,
-            'Browser'=>$TopIssue[0]->Browser,
-            'Cabling'=>$TopIssue[0]->Cabling,
-            'Cash Drawer'=>$TopIssue[0]->CashDrawer,
-            'CBB'=>$TopIssue[0]->CBB,
-            'CCTV'=>$TopIssue[0]->CCTV,
-            'Desktop'=>$TopIssue[0]->Desktop,
-            'Dismantling / Re-Installation'=>$TopIssue[0]->Dismantling,
-            'EIMS'=>$TopIssue[0]->EIMS,
-            'Email'=>$TopIssue[0]->Email,
-            'EOD'=>$TopIssue[0]->EOD,
-            'E-Sales'=>$TopIssue[0]->ESales,
-            'HW-MPC'=>$TopIssue[0]->HWMPC,
-            'HW-PC/POS'=>$TopIssue[0]->HWPCPOS,
-            'HW-POS'=>$TopIssue[0]->HWPOS,
-            'HW-Printer'=>$TopIssue[0]->HWPrinter,
-            'HW-Server'=>$TopIssue[0]->HWServer,
-            'Inquiry'=>$TopIssue[0]->Inquiry,
-            'Installation'=>$TopIssue[0]->Installation,
-            'Internet'=>$TopIssue[0]->Internet,
-            'Laptop'=>$TopIssue[0]->Laptop,
-            'Linksys'=>$TopIssue[0]->Linksys,
-            'Microsoft 365'=>$TopIssue[0]->Microsoft365,
-            'Modem'=>$TopIssue[0]->Modem,
-            'MS Office'=>$TopIssue[0]->MSOffice,
-            'My HR'=>$TopIssue[0]->MyHR,
-            'Others'=>$TopIssue[0]->Others,
-            'PC/POS'=>$TopIssue[0]->PCPOS,
-            'POS'=>$TopIssue[0]->POS,
-            'POS Application'=>$TopIssue[0]->POSApplication,
-            'Price Change'=>$TopIssue[0]->PriceChange,
-            'Printer'=>$TopIssue[0]->Printer,
-            'Relocation'=>$TopIssue[0]->Relocation,
-            'Reset Password'=>$TopIssue[0]->ResetPassword,
-            'Router'=>$TopIssue[0]->Router,
-            'Sales Discrepancy'=>$TopIssue[0]->SalesDiscrepancy,
-            'UPS'=>$TopIssue[0]->UPS,
-            'VPN'=>$TopIssue[0]->VPN
-        ];
-       
-        // store open top issue
-        $storeopensubcategory =Task::query()->select('value as issue',
-                'TaskNumber'
-            )
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('FieldId', 'GBISubCategory')
-            ->whereNotIN('TaskStatus',['Closed', 'Submitted'])
-            ->get();
+        // $TopIssue = FormField::query()->select(
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'avr\' THEN 1 ELSE 0 END) as avr'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'AX Issue\' THEN 1 ELSE 0 END) as AXIssue'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Back Office\' THEN 1 ELSE 0 END) as BackOffice'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Biometrics\' THEN 1 ELSE 0 END) as Biometrics'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Browser\' THEN 1 ELSE 0 END) as Browser'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Cabling\' THEN 1 ELSE 0 END) as Cabling'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Cash Drawer\' THEN 1 ELSE 0 END) as CashDrawer'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'CBB\' THEN 1 ELSE 0 END) as CBB'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'CCTV\' THEN 1 ELSE 0 END) as CCTV'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Desktop\' THEN 1 ELSE 0 END) as Desktop'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Dismantling / Re-Installation\' THEN 1 ELSE 0 END) as Dismantling'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'EIMS\' THEN 1 ELSE 0 END) as EIMS'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Email\' THEN 1 ELSE 0 END) as Email'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'EOD\' THEN 1 ELSE 0 END) as EOD'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'E-Sales\' THEN 1 ELSE 0 END) as ESales'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'HW-MPC\' THEN 1 ELSE 0 END) as HWMPC'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'HW-PC/POS\' THEN 1 ELSE 0 END) as HWPCPOS'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'HW-POS\' THEN 1 ELSE 0 END) as HWPOS'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'HW-Printer\' THEN 1 ELSE 0 END) as HWPrinter'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'HW-Server\' THEN 1 ELSE 0 END) as HWServer'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Inquiry\' THEN 1 ELSE 0 END) as Inquiry'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Installation\' THEN 1 ELSE 0 END) as Installation'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Internet\' THEN 1 ELSE 0 END) as Internet'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Laptop\' THEN 1 ELSE 0 END) as Laptop'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Microsoft 365\' THEN 1 ELSE 0 END) as Microsoft365'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Modem\' THEN 1 ELSE 0 END) as Modem'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'MS Office\' THEN 1 ELSE 0 END) as MSOffice'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'My HR\' THEN 1 ELSE 0 END) as MyHR'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Others\' THEN 1 ELSE 0 END) as Others'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'PC/POS\' THEN 1 ELSE 0 END) as PCPOS'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'POS\' THEN 1 ELSE 0 END) as POS'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'POS Application\' THEN 1 ELSE 0 END) as POSApplication'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Price Change\' THEN 1 ELSE 0 END) as PriceChange'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Printer\' THEN 1 ELSE 0 END) as Printer'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Relocation\' THEN 1 ELSE 0 END) as Relocation'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Reset Password\' THEN 1 ELSE 0 END) as ResetPassword'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Router\' THEN 1 ELSE 0 END) as Router'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Sales Discrepancy\' THEN 1 ELSE 0 END) as SalesDiscrepancy'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'UPS\' THEN 1 ELSE 0 END) as UPS'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'VPN\' THEN 1 ELSE 0 END) as VPN'
+        //     ),
+        //     DB::raw(
+        //         'SUM(CASE WHEN value = \'Linksys\' THEN 1 ELSE 0 END) as Linksys'
+        //     )
+        // )
+        // ->where('FieldId', 'GBISubCategory')
+        // ->join('Form', 'FormId', 'Form.Id')
+        // ->join('Task', 'TaskId', 'Task.Id')
+        // ->get();
+        // $tops = [
+        //     'AVR'=>$TopIssue[0]->avr,
+        //     'AX Issue'=>$TopIssue[0]->Axissue,
+        //     'Back Office'=>$TopIssue[0]->Backoffice,
+        //     'Biometrics'=>$TopIssue[0]->Biometrics,
+        //     'Browser'=>$TopIssue[0]->Browser,
+        //     'Cabling'=>$TopIssue[0]->Cabling,
+        //     'Cash Drawer'=>$TopIssue[0]->CashDrawer,
+        //     'CBB'=>$TopIssue[0]->CBB,
+        //     'CCTV'=>$TopIssue[0]->CCTV,
+        //     'Desktop'=>$TopIssue[0]->Desktop,
+        //     'Dismantling / Re-Installation'=>$TopIssue[0]->Dismantling,
+        //     'EIMS'=>$TopIssue[0]->EIMS,
+        //     'Email'=>$TopIssue[0]->Email,
+        //     'EOD'=>$TopIssue[0]->EOD,
+        //     'E-Sales'=>$TopIssue[0]->ESales,
+        //     'HW-MPC'=>$TopIssue[0]->HWMPC,
+        //     'HW-PC/POS'=>$TopIssue[0]->HWPCPOS,
+        //     'HW-POS'=>$TopIssue[0]->HWPOS,
+        //     'HW-Printer'=>$TopIssue[0]->HWPrinter,
+        //     'HW-Server'=>$TopIssue[0]->HWServer,
+        //     'Inquiry'=>$TopIssue[0]->Inquiry,
+        //     'Installation'=>$TopIssue[0]->Installation,
+        //     'Internet'=>$TopIssue[0]->Internet,
+        //     'Laptop'=>$TopIssue[0]->Laptop,
+        //     'Linksys'=>$TopIssue[0]->Linksys,
+        //     'Microsoft 365'=>$TopIssue[0]->Microsoft365,
+        //     'Modem'=>$TopIssue[0]->Modem,
+        //     'MS Office'=>$TopIssue[0]->MSOffice,
+        //     'My HR'=>$TopIssue[0]->MyHR,
+        //     'Others'=>$TopIssue[0]->Others,
+        //     'PC/POS'=>$TopIssue[0]->PCPOS,
+        //     'POS'=>$TopIssue[0]->POS,
+        //     'POS Application'=>$TopIssue[0]->POSApplication,
+        //     'Price Change'=>$TopIssue[0]->PriceChange,
+        //     'Printer'=>$TopIssue[0]->Printer,
+        //     'Relocation'=>$TopIssue[0]->Relocation,
+        //     'Reset Password'=>$TopIssue[0]->ResetPassword,
+        //     'Router'=>$TopIssue[0]->Router,
+        //     'Sales Discrepancy'=>$TopIssue[0]->SalesDiscrepancy,
+        //     'UPS'=>$TopIssue[0]->UPS,
+        //     'VPN'=>$TopIssue[0]->VPN
+        // ];
+        // $TopIssuesOpen = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'))
+        //     ->where('Status', 'Open')
+        //     ->groupBy('SubCategory')
+        //     ->get();
+        // $topOpen = collect([]);
+        // foreach ($TopIssuesOpen as $issue) {
+        //     if ($issue->SubCategory != Null) {
+        //         // return $issue->Total;
+        //         $topOpen->offsetSet($issue->SubCategory,$issue->Total);
+        //     }
+        // }
+        // $filteredOpen = $topOpen>sortDesc();
+        // // store open top issue
+        // $storeopensubcategory =Task::query()->select('value as issue',
+        //         'TaskNumber'
+        //     )
+        //     ->join('form', 'taskid', 'task.id')
+        //     ->join('formfield', 'formid', 'form.id')
+        //     ->where('FieldId', 'GBISubCategory')
+        //     ->whereNotIN('TaskStatus',['Closed', 'Submitted'])
+        //     ->get();
         
-        $storeopengbisbu = Task::query()->select(
-                        'TaskNumber',
-                        'value as gbisbu'
-                    )
-                ->join('form', 'taskid', 'task.id')
-                ->join('formfield', 'formid', 'form.id')
-                ->whereNotIN('TaskStatus',['Closed', 'Submitted'])
-                ->where('FieldId', 'GBISBU')
-                ->whereIN('value', ['Store','Plant','Office'])
-                ->get();
+        // $storeopengbisbu = Task::query()->select(
+        //                 'TaskNumber',
+        //                 'value as gbisbu'
+        //             )
+        //         ->join('form', 'taskid', 'task.id')
+        //         ->join('formfield', 'formid', 'form.id')
+        //         ->whereNotIN('TaskStatus',['Closed', 'Submitted'])
+        //         ->where('FieldId', 'GBISBU')
+        //         ->whereIN('value', ['Store','Plant','Office'])
+        //         ->get();
         
-        foreach ($storeopengbisbu as $keys) {
-            $storeopensubcategory = collect($storeopensubcategory);
-            if ($storeopensubcategory->where('TaskNumber', $keys->TaskNumber)) {
-                $keys->subcategory = $storeopensubcategory->where('TaskNumber', $keys->TaskNumber)->pluck('issue')->first();
-            }
-        }
-        $storeopen = $storeopengbisbu->countBy('subcategory')->all();
-        arsort($storeopen);
-        //
+        // foreach ($storeopengbisbu as $keys) {
+        //     $storeopensubcategory = collect($storeopensubcategory);
+        //     if ($storeopensubcategory->where('TaskNumber', $keys->TaskNumber)) {
+        //         $keys->subcategory = $storeopensubcategory->where('TaskNumber', $keys->TaskNumber)->pluck('issue')->first();
+        //     }
+        // }
+        // $storeopen = $storeopengbisbu->countBy('subcategory')->all();
+        // arsort($storeopen);
+        // //
 
-        $filtered = array_filter($top);
-        arsort($filtered);
+        // $filtered = array_filter($top);
+        // arsort($filtered);
         
-        $issue=[];
-        foreach ($storeopen as $key => $value) {
-            if (isset($filtered[$key])) {
-                $closedvalue = $filtered[$key];
-                if ($key) {
-                    $issue[]=array('key'=>$key, 'open'=>$value, 'closed'=>$closedvalue, 'total'=>$value+$closedvalue);
-                }else{
-                    $issue[]=array('key'=>'Unknown', 'open'=>$value, 'closed'=>$closedvalue, 'total'=>$value+$closedvalue);
-                }
-            }else{
-                if ($key) {
-                    $issue[]=array('key'=>$key, 'open'=>$value, 'closed'=>'0', 'total'=>$value);
-                }else{
-                    $issue[]=array('key'=>'Unknown', 'open'=>$value, 'closed'=>'0', 'total'=>$value);
-                }
-            }
-        }
+        // $issue=[];
+        // foreach ($storeopen as $key => $value) {
+        //     if (isset($filtered[$key])) {
+        //         $closedvalue = $filtered[$key];
+        //         if ($key) {
+        //             $issue[]=array('key'=>$key, 'open'=>$value, 'closed'=>$closedvalue, 'total'=>$value+$closedvalue);
+        //         }else{
+        //             $issue[]=array('key'=>'Unknown', 'open'=>$value, 'closed'=>$closedvalue, 'total'=>$value+$closedvalue);
+        //         }
+        //     }else{
+        //         if ($key) {
+        //             $issue[]=array('key'=>$key, 'open'=>$value, 'closed'=>'0', 'total'=>$value);
+        //         }else{
+        //             $issue[]=array('key'=>'Unknown', 'open'=>$value, 'closed'=>'0', 'total'=>$value);
+        //         }
+        //     }
+        // }
         // data
-        return response()->json(['data'=>$issue]);
+        $TopIssues = Ticket::select('SubCategory', 
+                DB::raw
+                (
+                    'SUM(CASE WHEN Status = \'Open\' THEN 1 ELSE 0 END) as Open'
+                ),
+                DB::raw
+                (
+                    'SUM(CASE WHEN Status = \'Closed\' THEN 1 ELSE 0 END) as Closed'
+                ),
+            )
+            ->groupBy('SubCategory')
+            ->get();
 
-        // return DataTables::of($issue)->make(true);
+        // $topOpen = collect([]);
+        // foreach ($TopIssuesOpen as $issue) {
+        //     if ($issue->SubCategory != Null) {
+        //         // return $issue->Total;
+        //         $topOpen->offsetSet($issue->SubCategory,$issue->Total);
+        //     }
+        // }
+        // $filteredOpen = $topOpen>sortDesc();
+
+        // return response()->json(['data'=>$issue]);
+
+        return DataTables::of($TopIssues)
+        // ->addColumn('SubCategory', function (Ticket $TopIssues){
+        //     if (!$tickets->SubCategory) {
+        //         return $tickets->SubCategory;
+        //     }
+        //     return 'Null';
+        // })
+        ->addColumn('Total', function (Ticket $TopIssues){
+            return $TopIssues->Open+$TopIssues->Closed;
+        })
+        ->make(true);
     }
 
     public function taskdata(Request $request)

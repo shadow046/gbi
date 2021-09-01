@@ -108,10 +108,18 @@
         @if(Request::is('/'))
             @include('modal.ticketdetails')
             @include('modal.topissue')
+            @include('modal.userlogs')
+            @include('modal.user')
+        @endif
+
+        @if(Request::is('users'))
+            @include('modal.user')
         @endif
 
         @if(Request::is('closed'))
             @include('modal.ticketdetails')
+            @include('modal.userlogs')
+            @include('modal.user')
             @include('modal.topissue')
         @endif
 
@@ -145,6 +153,9 @@
         @endif
         @if (Request::is('weeklytickets'))
             <script src="{{asset('js/weeklycharts.js')}}"></script>
+        @endif
+        @if (Request::is('users'))
+            <script src="{{asset('js/users.js')}}"></script>
         @endif
     </body>
 </html>
