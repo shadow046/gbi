@@ -36,7 +36,7 @@
             </tfoot>
         </table>
     </div>
-    <canvas id="dailyChart" height="250" width='900' style="margin:0 auto"></canvas>
+    <div id="chart1"></div>
 </div>
 <hr>
 <div class="text-center" id="byweeks" style="display:none">
@@ -50,7 +50,7 @@
             </tfoot>
         </table>
     </div>
-    <canvas id="dailyChartW" height="250" width='900' style="margin:0 auto"></canvas>
+    <div id="chart2"></div>
 </div>
 <hr>
 @endsection

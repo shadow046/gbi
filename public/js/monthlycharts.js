@@ -3,8 +3,6 @@ var yearstart = 2021;
 var dt = new Date();
 var curmonth = dt.getMonth()+1;
 var curyear = dt.getFullYear();
-var barChartDataW;
-var barChartData;
 var ctx;
 let mychart;
 var getdata;
@@ -13,25 +11,6 @@ var monthselected;
 var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 $(document).ready(function()
 {   
-    
-    // var years = '2021'; 
-    // var weeks = '29';
-    
-    //     var d = new Date(years, 6, 1);
-    //     console.log(d.getWeek());   
-
-    //         var dayNum = d.getDay();
-    //         var diff = --weeks * 7;
-    //         console.log(dayNum);
-    //         // If 1 Jan is Friday to Sunday, go to next week
-    //         if (!dayNum || dayNum > 4) {
-    //             diff += 7;
-    //         }
-    //         console.log(diff);
-    //         // Add required number of days
-    //         d.setDate(d.getDate() - d.getDay() + ++diff);
-    // console.log(d);   
-    // console.log(d.getWeek);   
     $('#loading').show();
     function updateTime() {
         var currtime = new Date();
@@ -97,12 +76,14 @@ $(document).on('change', '#monthselect', function(){
     $('#bydays').show();
     $('#loading').show();
     $('.ptext').hide();
+    var barChartData;
+    var barChartDataW;
+
     monthselected = $(this).val();
     optionmonthselected = $('#monthselect option:selected').text();
     optionyearselected = $('#yearselect option:selected').text();
     var yearselected = $('#yearselect').val();
-    console.log(monthselected);
-    setTimeout(function() {
+    // setTimeout(function() {
         $.ajax({
             type:'get',
             url:'monthlyticketsdata',
@@ -119,6 +100,10 @@ $(document).on('change', '#monthselect', function(){
                 $('#dataheadW').empty();
                 $('#databodyW').empty();
                 $('#datafootW').empty();
+                $('#chart1').empty();
+                $('#chart2').empty();
+                $('#chart1').append('<canvas id="dailyChart" height="250" width="900" style="margin:0 auto"></canvas>');
+                $('#chart2').append('<canvas id="dailyChartW" height="250" width="900" style="margin:0 auto"></canvas>');
                 var datahead = '<tr><th style="font-size:12px">GBI SBU</th>';
                 var databodystore = '<tr><td>Store</td>';
                 var databodyplant = '<tr><td>Plant</td>';
@@ -137,15 +122,6 @@ $(document).on('change', '#monthselect', function(){
                 var secondweekend = secondweekstart+6;
                 var thirdweekstart = secondweekend+1;
                 var thirdweekend = thirdweekstart+6;
-                // if (weekcount == 5) {
-                //     var fourthweekstart = thirdweekend+1;
-                //     var fourthweekend = d.getDate();
-                // }else if (weekcount > 5) {
-                //     var fourthweekstart = thirdweekend+1;
-                //     var fourthweekend = fourthweekstart+6;
-                //     var fifthweekstart = fourthweekend+1;
-                //     var fifthweekend = d.getDate();
-                // }
                 var newd = new Date();
                 if (data.strW.length == 1) {
                     var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+newd.getDate();
@@ -195,19 +171,10 @@ $(document).on('change', '#monthselect', function(){
                     }else if (index == 4) {
                         databodyW += '<tr><td>'+fifthweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
                     }
-                    // 6 - Saturday
-                    // databodyW += '<tr><td>Week '+(index+1)+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
-                    // databodyW += '<tr><td>Week 2</td><td>'+data.strW[1]+'</td><td>'+data.plntW[1]+'</td><td>'+data.ofcW[1]+'</td><td>'+data.grandtotalW[1].toLocaleString()+'</td>';
-                    // databodyW += '<tr><td>Week 3</td><td>'+data.strW[2]+'</td><td>'+data.plntW[2]+'</td><td>'+data.ofcW[2]+'</td><td>'+data.grandtotalW[2].toLocaleString()+'</td>';
-                    // databodyW += '<tr><td>Week 4</td><td>'+data.strW[3]+'</td><td>'+data.plntW[3]+'</td><td>'+data.ofcW[3]+'</td><td>'+data.grandtotalW[3].toLocaleString()+'</td>';
                 }
                 databodyW += '<tr><td>Grand Total</td><td>'+data.strtotalW.toLocaleString()+'</td><td>'+data.plnttotalW.toLocaleString()+'</td><td>'+data.ofctotalW.toLocaleString()+'</td><td>'+data.grandtotalW[data.weekcount].toLocaleString()+'</td>';
                 var datafootW = '<tr><td>Percentage</td><td>'+data.percent[0]+'</td><td>'+data.percent[1]+'</td><td>'+data.percent[2]+'</td><td>100%</td>';
                 data.dates.forEach(element => {
-                    // let d = new Date(element);
-                    // let ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
-                    // let mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(d);
-                    // let da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
                     datahead+='<th style="font-size:12px;">&nbsp;&nbsp;'+element+'&nbsp;&nbsp;</th>';
                 });
                 data.str.forEach(element => {
@@ -236,6 +203,7 @@ $(document).on('change', '#monthselect', function(){
                 $('#databodyW').append(databodyW);
                 $('#datafootW').append(datafootW);
                 $('#loading').hide();
+                
                 barChartData = {
                     labels: data.dates,
                     datasets: [
@@ -306,74 +274,74 @@ $(document).on('change', '#monthselect', function(){
                 $('#groupselect').show();
             }
         });
+
         ctx = $('#dailyChart');
         ctxW = $('#dailyChartW');
-        let mychart = new Chart(ctx, {
-            type: 'line',
-            data: barChartData,
-            options: {
-                maintainAspectRatio: false,
-                elements: {
-                    rectangle: {
-                        borderWidth: 2,
-                        borderColor: '#c1c1c1',
-                        borderSkipped: 'bottom'
-                    }
-                },
-                responsive: false,
-                title: {
-                    display: true,
-                    text: optionmonthselected+' tickets'
-                },
-            }
-        });
-        let mychartW = new Chart(ctxW, 
-            {
-                type: 'bar',
-                data: barChartDataW,
+            var mychart = new Chart(ctx, {
+                type: 'line',
+                data: barChartData,
                 options: {
-                    events: [],
-                    responsive: false,
                     maintainAspectRatio: false,
-                    legend: {      
+                    elements: {
+                        rectangle: {
+                            borderWidth: 2,
+                            borderColor: '#c1c1c1',
+                            borderSkipped: 'bottom'
+                        }
                     },
+                    responsive: false,
                     title: {
                         display: true,
                         text: optionmonthselected+' tickets'
                     },
-                    scales: {
-                        yAxes: [{
-                            ticks: {          
-                            beginAtZero: true,
-                            }
-                        }]
-                    },
-                    animation: {
-                        duration: 1,
-                        onComplete: function() {
-                            var chartInstance = this.chart,
-                            ctx = chartInstance.ctx;
+                }
+            });
+            var mychartW = new Chart(ctxW, 
+                {
+                    type: 'bar',
+                    data: barChartDataW,
+                    options: {
+                        events: [],
+                        responsive: false,
+                        maintainAspectRatio: false,
+                        legend: {      
+                        },
+                        title: {
+                            display: true,
+                            text: optionmonthselected+' tickets'
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {          
+                                beginAtZero: true,
+                                }
+                            }]
+                        },
+                        animation: {
+                            onComplete: function() {
+                                var chartInstance = this.chart,
+                                ctx = chartInstance.ctx;
 
-                            ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'bottom';
-                            
-                            this.data.datasets.forEach(function(dataset, i) {
-                                var meta = chartInstance.controller.getDatasetMeta(i);
-                                meta.data.forEach(function(bar, index) {
-                                    if (dataset.data[index] >= 0) {
-                                        var data = dataset.data[index];
-                                        ctx.fillStyle = dataset.borderColor;
-                                        ctx.fillText(data, bar._model.x, bar._model.y);
-                                    }
+                                ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'bottom';
+                                
+                                this.data.datasets.forEach(function(dataset, i) {
+                                    var meta = chartInstance.controller.getDatasetMeta(i);
+                                    meta.data.forEach(function(bar, index) {
+                                        if (dataset.data[index] >= 0) {
+                                            var data = dataset.data[index];
+                                            ctx.fillStyle = dataset.borderColor;
+                                            ctx.fillText(data, bar._model.x, bar._model.y);
+                                        }
+                                    });
                                 });
-                            });
-                        }
+                            }
+                        },
                     },
-                    
-                },
-            }
-        );
+                }
+            );
+
         $('#dailyChart').width('900');
         $('#dailyChartW').width('900');
         $('#ptext').text('MONTHLY VIEW '+optionmonthselected.toUpperCase()+' '+$('#yearselect').val()).css({'font-weight':'bold'});;
@@ -383,8 +351,7 @@ $(document).on('change', '#monthselect', function(){
         }else{
             $('#exportBtn').show();
         }
-        
-    }, 500);
+    // }, 500);
 });
 $(document).on('change', '#groupselect', function () {
     if ($(this).val() == 'day') {
