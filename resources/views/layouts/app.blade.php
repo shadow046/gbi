@@ -157,5 +157,8 @@
         @if (Request::is('users'))
             <script src="{{asset('js/users.js')}}"></script>
         @endif
+        @if (Request::is('email/verify'))
+            <script src="{{asset('js/verify.js')}}"></script>
+        @endif
     </body>
 </html>

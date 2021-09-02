@@ -10,6 +10,7 @@ GBIDateandTimeFinished
 GBIDateandTimeForwared                                                                                                                                                                                                                                         
 GBIEmailAddress                                                                                                                                                                                                                                                
 GBIEndUserOfficer                                                                                                                                                                                                                                              
+GBIForParts                                                                                                                                                                                                                                                    
 GBIFSRNumber                                                                                                                                                                                                                                                   
 GBIIncidentStatus                                                                                                                                                                                                                                              
 GBILatestNotes                                                                                                                                                                                                                                                 
@@ -54,4 +55,4 @@ GBITimeStarted
 GBITypeofResolution                                                                                                                                                                                                                                            
 GBITypeofResolution1                                                                                                                                                                                                                                           
 
-(55 rows affected)
+(56 rows affected)

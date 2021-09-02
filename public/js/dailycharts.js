@@ -65,21 +65,21 @@ $(document).ready(function()
                     datahead+='<th style="font-size:9px">&nbsp;&nbsp;&nbsp;'+`${mo}`+'&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;'+`${da}`+'&nbsp;&nbsp;&nbsp;</th>';
                 });
                 data.str.forEach(element => {
-                    databodystore +='<td>'+element+'</td>';
+                    databodystore +='<td>'+element.toLocaleString()+'</td>';
                 });
                 data.plnt.forEach(element => {
-                    databodyplant +='<td>'+element+'</td>';
+                    databodyplant +='<td>'+element.toLocaleString()+'</td>';
                 });
                 data.ofc.forEach(element => {
-                    databodyoffice +='<td>'+element+'</td>';
+                    databodyoffice +='<td>'+element.toLocaleString()+'</td>';
                 });
                 data.grandtotal.forEach(element => {
-                    datafoot +='<td>'+element+'</td>';
+                    datafoot +='<td>'+element.toLocaleString()+'</td>';
                 });
                 datahead+='<th style="font-size:12px">&nbsp;&nbsp;Grand Total&nbsp;&nbsp;</th></tr>';
-                databodystore +='<td>'+data.strtotal+'</td></tr>';
-                databodyplant +='<td>'+data.plnttotal+'</td></tr>';
-                databodyoffice +='<td>'+data.ofctotal+'</td></tr>';
+                databodystore +='<td>'+data.strtotal.toLocaleString()+'</td></tr>';
+                databodyplant +='<td>'+data.plnttotal.toLocaleString()+'</td></tr>';
+                databodyoffice +='<td>'+data.ofctotal.toLocaleString()+'</td></tr>';
                 datafoot +='</tr>';
                 $('#datahead').append(datahead);
                 $('#databody').append(databodystore);

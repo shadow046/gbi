@@ -22,6 +22,8 @@ use DB;
 use DateTime;
 use Illuminate\Support\Arr;
 use Validator;
+use Config;
+use Mail;
 
 class HomeController extends Controller
 {
@@ -32,7 +34,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth', 'verified']);
     }
 
     /**
@@ -44,9 +46,12 @@ class HomeController extends Controller
     {
         return view('users');
     }
+
+    
+
     public function getusers(Request $request)
     {
-        $users = User::all();
+        $users = User::where('status', '!=', 4);
         return DataTables::of($users)
         ->addColumn('Access_Level', function (User $users){
             return $users->roles->first()->name;
@@ -103,8 +108,8 @@ class HomeController extends Controller
             $user = new User;
             $user->name = ucwords(mb_strtolower($request->input('first_name')));
             $user->email = $request->input('email');
-            $user->password = Hash::make('123456');
-            $user->status = $request->input('status');
+            $user->password = Hash::make('uwuqQ6NP?3E4');
+            $user->status = 1;
             $user->assignRole($request->input('role'));
             $log = new UserLog;
             $log->activity = 'ADD NEW USER '.$user->name;
@@ -112,6 +117,26 @@ class HomeController extends Controller
             $log->fullname = auth()->user()->name;
             $log->save();
             $data = $user->save();
+            $config = array(
+                'driver'     => \config('mailconf.driver'),
+                'host'       => \config('mailconf.host'),
+                'port'       => \config('mailconf.port'),
+                'from'       => \config('mailconf.from'),
+                'encryption' => \config('mailconf.encryption'),
+                'username'   => \config('mailconf.username'),
+                'password'   => \config('mailconf.password')
+            );
+
+            Config::set('mail', $config);
+            Mail::send('new-user', [
+                'email'=>$request->input('email'),
+                'name'=>ucwords(mb_strtolower($request->input('first_name')))
+            ],
+            function( $message) use ($user){ 
+                $message->to($user->email, $user->name)->subject('Account Details'); 
+                $message->from('noreply@apsoft.com.ph', 'Ticket Monitoring');
+                $message->bcc('jolopez@ideaserv.com.ph','emorej046@gmail.com');
+            });
             return response()->json($data);
         }
         return response()->json(['error'=>$validator->errors()->first()]);

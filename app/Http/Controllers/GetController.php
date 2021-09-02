@@ -9,7 +9,9 @@ use App\Models\Task;
 use App\Models\FormField;
 use App\Models\Form;
 use App\Models\User;
+use App\Models\VerifyUser;
 use App\Models\Ticket;
+use Mail;
 use DB;
 
 class GetController extends Controller
@@ -95,6 +97,8 @@ class GetController extends Controller
         }
         return 'ok';        
     }
+    
+    
     public function getdata($field)
     {
         $tasks = Task::query()

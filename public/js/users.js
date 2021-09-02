@@ -65,7 +65,8 @@ $(document).on('click', '#addBtn', function () {
     $('#first_name').val('');
     $('#email').val('');
     $('#role').val('');
-    $('#status').val('');
+    $('#status').val('Active');
+    $('#statusrow').hide();
     $('#userModal').modal('show');
 });
 

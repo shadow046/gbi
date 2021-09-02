@@ -16,7 +16,7 @@ $(document).ready(function()
     });
     gbitable =
     $('table.gbiTable').DataTable({ 
-        "dom": 'ftip',
+        "dom": 'tip',
         "language": {
                 "emptyTable": " ",
                 // "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw"><span class="sr-only">Searching...</span></i>',

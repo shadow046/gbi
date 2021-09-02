@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable, HasRoles;
     
@@ -19,6 +19,10 @@ class User extends Authenticatable
      *
      * @var array
      */
+    // protected $casts = [
+    //     'email_verified_at' => 'datetime',
+    // ];
+
     protected $fillable = [
         'name',
         'email',
@@ -43,4 +47,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function verifyUser()
+    {
+        return $this->hasOne('App\Models\VerifyUser');
+    }
 }
