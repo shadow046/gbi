@@ -146,8 +146,8 @@ $(document).on('change', '#monthselect', function(){
                 //     var fifthweekstart = fourthweekend+1;
                 //     var fifthweekend = d.getDate();
                 // }
+                var newd = new Date();
                 if (data.strW.length == 1) {
-                    var newd = new Date();
                     var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+newd.getDate();
                 }else if (data.strW.length == 2) {
                     var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+firstweekend;
@@ -172,10 +172,14 @@ $(document).on('change', '#monthselect', function(){
                     var secondweek = optionmonthselected+' '+secondweekstart+' - '+optionmonthselected+' '+secondweekend;
                     var thirdweek = optionmonthselected+' '+thirdweekstart+' - '+optionmonthselected+' '+thirdweekend;
                     var fourthweek = optionmonthselected+' '+fourthweekstart+' - '+optionmonthselected+' '+fourthweekend;
-                    if (newd.getDate() == d.getDate()) {
-                        var fifthweek = optionmonthselected+' '+fifthweekstart+' - '+optionmonthselected+' '+fifthweekend;
+                    if ((newd.getMonth()+1) == optionmonthselected) {
+                        if (newd.getDate() == d.getDate()) {
+                            var fifthweek = optionmonthselected+' '+fifthweekstart+' - '+optionmonthselected+' '+fifthweekend;
+                        }else{
+                            var fifthweek = optionmonthselected+' '+fifthweekstart+' - '+optionmonthselected+' '+newd.getDate();
+                        }
                     }else{
-                        var fifthweek = optionmonthselected+' '+fifthweekstart+' - '+optionmonthselected+' '+newd.getDate();
+                        var fifthweek = optionmonthselected+' '+fifthweekstart+' - '+optionmonthselected+' '+fifthweekend;
                     }
                 }
 
