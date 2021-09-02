@@ -137,20 +137,48 @@ $(document).on('change', '#monthselect', function(){
                 var secondweekend = secondweekstart+6;
                 var thirdweekstart = secondweekend+1;
                 var thirdweekend = thirdweekstart+6;
-                if (weekcount == 5) {
+                // if (weekcount == 5) {
+                //     var fourthweekstart = thirdweekend+1;
+                //     var fourthweekend = d.getDate();
+                // }else if (weekcount > 5) {
+                //     var fourthweekstart = thirdweekend+1;
+                //     var fourthweekend = fourthweekstart+6;
+                //     var fifthweekstart = fourthweekend+1;
+                //     var fifthweekend = d.getDate();
+                // }
+                if (data.strW.length == 1) {
+                    var newd = new Date();
+                    var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+newd.getDate();
+                }else if (data.strW.length == 2) {
+                    var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+firstweekend;
+                    var secondweek = optionmonthselected+' '+secondweekstart+' - '+optionmonthselected+' '+newd.getDate();
+                }else if (data.strW.length == 3) {
+                    var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+firstweekend;
+                    var secondweek = optionmonthselected+' '+secondweekstart+' - '+optionmonthselected+' '+secondweekend;
+                    var thirdweek = optionmonthselected+' '+thirdweekstart+' - '+optionmonthselected+' '+newd.getDate();
+                }else if (data.strW.length == 4) {
                     var fourthweekstart = thirdweekend+1;
                     var fourthweekend = d.getDate();
-                }else if (weekcount > 5) {
+                    var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+firstweekend;
+                    var secondweek = optionmonthselected+' '+secondweekstart+' - '+optionmonthselected+' '+secondweekend;
+                    var thirdweek = optionmonthselected+' '+thirdweekstart+' - '+optionmonthselected+' '+thirdweekend;
+                    var fourthweek = optionmonthselected+' '+fourthweekstart+' - '+optionmonthselected+' '+newd.getDate();
+                }else if (data.strW.length == 5) {
                     var fourthweekstart = thirdweekend+1;
                     var fourthweekend = fourthweekstart+6;
                     var fifthweekstart = fourthweekend+1;
                     var fifthweekend = d.getDate();
-                    var fifthweek = optionmonthselected+' '+fifthweekstart+' - '+optionmonthselected+' '+fifthweekend;
+                    var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+firstweekend;
+                    var secondweek = optionmonthselected+' '+secondweekstart+' - '+optionmonthselected+' '+secondweekend;
+                    var thirdweek = optionmonthselected+' '+thirdweekstart+' - '+optionmonthselected+' '+thirdweekend;
+                    var fourthweek = optionmonthselected+' '+fourthweekstart+' - '+optionmonthselected+' '+fourthweekend;
+                    if (newd.getDate() == d.getDate()) {
+                        var fifthweek = optionmonthselected+' '+fifthweekstart+' - '+optionmonthselected+' '+fifthweekend;
+                    }else{
+                        var fifthweek = optionmonthselected+' '+fifthweekstart+' - '+optionmonthselected+' '+newd.getDate();
+                    }
                 }
-                var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+firstweekend;
-                var secondweek = optionmonthselected+' '+secondweekstart+' - '+optionmonthselected+' '+secondweekend;
-                var thirdweek = optionmonthselected+' '+thirdweekstart+' - '+optionmonthselected+' '+thirdweekend;
-                var fourthweek = optionmonthselected+' '+fourthweekstart+' - '+optionmonthselected+' '+fourthweekend;
+
                 for (let index = 0; index < data.strW.length; index++) {
                     if (index == 0) {
                         databodyW += '<tr><td>'+firstweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
