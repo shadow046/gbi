@@ -23,7 +23,7 @@ $(document).ready(function()
                 // "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw"><span class="sr-only">Searching...</span></i>',
                 "loadingRecords": "Please wait - loading..."
             },
-        "pageLength": 5,
+        "pageLength": 10,
         "order": [[ 0, "desc" ]],
         processing: false,
         serverSide: false,

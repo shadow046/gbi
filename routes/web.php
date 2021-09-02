@@ -27,7 +27,7 @@ Route::get('/email/verify', function () {
 })->middleware('auth')->name('verification.notice');
 
 //For view controller
-Route::get('users', [ViewController::class, 'users'])->name('users.index');
+Route::get('users', [ViewController::class, 'users'])->name('users.index')->middleware('CheckRole');
 Route::get('closed', [ViewController::class, 'closed'])->name('closed');
 Route::get('/', [ViewController::class, 'open'])->name('home.index');
 Route::get('monthlytickets', [ViewController::class, 'monthlytickets'])->name('gbi.monthly.blade');
