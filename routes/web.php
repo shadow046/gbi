@@ -33,6 +33,7 @@ Route::get('/', [ViewController::class, 'open'])->name('home.index');
 Route::get('monthlytickets', [ViewController::class, 'monthlytickets'])->name('gbi.monthly.blade');
 Route::get('weeklytickets', [ViewController::class, 'weeklytickets'])->name('gbi.weekly.blade');
 Route::get('dailytickets', [ViewController::class, 'dailytickets'])->name('gbi.daily.blade');
+Route::get('change-password', [UserController::class, 'changepass']);
 
 //For users controller
 Route::get('getusers', [UserController::class, 'getusers']);
@@ -41,6 +42,7 @@ Route::post('adduser', [UserController::class, 'store']);
 Route::get('userlogs', [UserController::class, 'userlogs']);
 Route::get('/user/verify/{token}',[UserController::class, 'verifyUser']);
 Route::get('/send/verification', [UserController::class, 'resend']);
+Route::post('change-password', [UserController::class, 'storepass'])->name('change.password');
 
 //For ticket Controller
 Route::get('closedtickets', [TicketController::class, 'closedtickets']);

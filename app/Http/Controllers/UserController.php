@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Hash;
+use App\Rules\MatchOldPassword;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\UserLog;
@@ -35,6 +36,23 @@ class UserController extends Controller
         return redirect('/login')->with('status', $status);
     }
 
+    public function storepass(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', new MatchOldPassword],
+            'new_password' => ['required'],
+            'new_confirm_password' => ['same:new_password'],
+        ]);
+        User::find(auth()->user()->id)->update(['password'=> Hash::make($request->new_password)]);
+        return redirect()->to('/')->with('success', 'Password change successfully.');
+    }
+
+    public function changepass()
+    {
+        $title = 'Change password';
+        return view('changePassword', compact('title'));
+    }
+    
     public function resend(Request $request)
     {
         $checkduplicate = User::where('email', $request->email)->first();

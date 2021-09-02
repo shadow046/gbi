@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use App\Models\Ticket;
 use App\Models\Task;
@@ -11,9 +12,10 @@ use DB;
 
 class ViewController extends Controller
 {
+
     public function __construct()
     {
-        $this->middleware(['auth', 'verified']);
+        $this->middleware(['auth', 'verified', 'CheckPassword']);
     }
 
     public function users()
@@ -21,6 +23,7 @@ class ViewController extends Controller
         return view('users');
     }
 
+    
     public function monthlytickets()
     {
         return view('monthlychart');

@@ -23,13 +23,16 @@ class TicketController extends Controller
     public function __construct()
     {
         $this->middleware(['auth', 'verified']);
+        
     }
+
+    
 
     public function ExportData(Request $request, $year, $month, $monthname) 
     {
         return Excel::download(new DataExports($year,$month,$monthname), $monthname.' - '.$year.'.xlsx');
     }
-    
+
     public function closedtickets()
     {
         $tickets = Ticket::query()

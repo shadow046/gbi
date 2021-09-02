@@ -5,7 +5,7 @@
     <h3 class="p-2 align-self-end" style="color: #0d1a80; font-family: arial; font-weight: bold;">TICKET MONITORING SYSTEM</h4> --}}
     @auth
     <div class="p-1 ml-auto align-self-end d-flex" id="branchid" >
-        <a href="#">
+        <a href="{{route('change.password')}}">
             <div class="p-2 ml-auto" style="text-align: right;">
                 <p style="color: #0d1a80">{{ auth()->user()->name}} {{ auth()->user()->lastname}}
                 <br>{{auth()->user()->roles->first()->name}}

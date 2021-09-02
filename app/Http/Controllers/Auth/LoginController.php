@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\UserLog;
 use App\Models\VerifyUser;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Auth;
 class LoginController extends Controller
 {
@@ -53,21 +54,8 @@ class LoginController extends Controller
         $log->user_id = auth()->user()->id;
         $log->fullname = auth()->user()->name;
         $log->save();
-
-        
-        // $unverify = User::where('status', 4)->update(['status' => '1']);
-        // $config = array(
-        //     'driver'     => \config('mailconf.driver'),
-        //     'host'       => \config('mailconf.host'),
-        //     'port'       => \config('mailconf.port'),
-        //     'from'       => \config('mailconf.from'),
-        //     'encryption' => \config('mailconf.encryption'),
-        //     'username'   => \config('mailconf.username'),
-        //     'password'   => \config('mailconf.password'),
-        // );
-        // Config::set('mail', $config);
-        // if ($unverify) {
-        //     \Mail::to($user->email)->send(new VerifyMail($user));
-        // }
+        if (Hash::check('uwuqQ6NP?3E4',auth()->user()->password)) {
+            return redirect()->to('change-password')->with('success', 'Please create a new password for your account.');
+        }
     }
 }
