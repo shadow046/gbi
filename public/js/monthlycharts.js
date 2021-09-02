@@ -13,6 +13,7 @@ var monthselected;
 var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 $(document).ready(function()
 {   
+    
     // var years = '2021'; 
     // var weeks = '29';
     
@@ -125,8 +126,45 @@ $(document).on('change', '#monthselect', function(){
                 var datafoot = '<tr><td>Grand Total</td>';
                 var databodyW = ' ';
                 var dataheadW = '<tr><th>&nbsp;&nbsp;&nbsp;Weekly Ticket&nbsp;&nbsp;&nbsp;</th><th>&nbsp;&nbsp;&nbsp;Store&nbsp;&nbsp;&nbsp;</th><th>&nbsp;&nbsp;&nbsp;Plant&nbsp;&nbsp;&nbsp;</th><th>&nbsp;&nbsp;&nbsp;Office&nbsp;&nbsp;&nbsp;</th><th>&nbsp;&nbsp;&nbsp;GRAND TOTAL&nbsp;&nbsp;&nbsp;</th>';
+                var yr = yearselected;
+                var mon = monthselected;
+                var dy = new Date(yr + "-" + mon + "-01").getDay();
+                const d = new Date(yearselected, monthselected, 0);
+                const adjustedDate = d.getDate() + d.getDay();
+                var weekcount = Math.ceil(adjustedDate / 7);
+                var firstweekend= Math.ceil(7-dy)+1;
+                var secondweekstart = firstweekend+1;
+                var secondweekend = secondweekstart+6;
+                var thirdweekstart = secondweekend+1;
+                var thirdweekend = thirdweekstart+6;
+                if (weekcount == 5) {
+                    var fourthweekstart = thirdweekend+1;
+                    var fourthweekend = d.getDate();
+                }else if (weekcount > 5) {
+                    var fourthweekstart = thirdweekend+1;
+                    var fourthweekend = fourthweekstart+6;
+                    var fifthweekstart = fourthweekend+1;
+                    var fifthweekend = d.getDate();
+                    var fifthweek = optionmonthselected+' '+fifthweekstart+' - '+optionmonthselected+' '+fifthweekend;
+                }
+                var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+firstweekend;
+                var secondweek = optionmonthselected+' '+secondweekstart+' - '+optionmonthselected+' '+secondweekend;
+                var thirdweek = optionmonthselected+' '+thirdweekstart+' - '+optionmonthselected+' '+thirdweekend;
+                var fourthweek = optionmonthselected+' '+fourthweekstart+' - '+optionmonthselected+' '+fourthweekend;
                 for (let index = 0; index < data.strW.length; index++) {
-                    databodyW += '<tr><td>Week '+(index+1)+'</td><td>'+data.strW[index]+'</td><td>'+data.plntW[index]+'</td><td>'+data.ofcW[index]+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
+                    if (index == 0) {
+                        databodyW += '<tr><td>'+firstweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
+                    }else if (index == 1) {
+                        databodyW += '<tr><td>'+secondweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
+                    }else if (index == 2) {
+                        databodyW += '<tr><td>'+thirdweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
+                    }else if (index == 3) {
+                        databodyW += '<tr><td>'+fourthweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
+                    }else if (index == 4) {
+                        databodyW += '<tr><td>'+fifthweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
+                    }
+                    // 6 - Saturday
+                    // databodyW += '<tr><td>Week '+(index+1)+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
                     // databodyW += '<tr><td>Week 2</td><td>'+data.strW[1]+'</td><td>'+data.plntW[1]+'</td><td>'+data.ofcW[1]+'</td><td>'+data.grandtotalW[1].toLocaleString()+'</td>';
                     // databodyW += '<tr><td>Week 3</td><td>'+data.strW[2]+'</td><td>'+data.plntW[2]+'</td><td>'+data.ofcW[2]+'</td><td>'+data.grandtotalW[2].toLocaleString()+'</td>';
                     // databodyW += '<tr><td>Week 4</td><td>'+data.strW[3]+'</td><td>'+data.plntW[3]+'</td><td>'+data.ofcW[3]+'</td><td>'+data.grandtotalW[3].toLocaleString()+'</td>';
