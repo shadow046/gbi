@@ -9,6 +9,7 @@ var getdata;
 var optionyearselected;
 var monthselected;
 var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+var monthshort = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "August", "September", "October", "November", "December"];
 $(document).ready(function()
 {   
     $('#loading').show();
@@ -124,38 +125,38 @@ $(document).on('change', '#monthselect', function(){
                 var thirdweekend = thirdweekstart+6;
                 var newd = new Date();
                 if (data.strW.length == 1) {
-                    var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+newd.getDate();
+                    var firstweek = optionmonthselected.substring(0, 3)+' 1 - '+optionmonthselected.substring(0, 3)+' '+newd.getDate();
                 }else if (data.strW.length == 2) {
-                    var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+firstweekend;
-                    var secondweek = optionmonthselected+' '+secondweekstart+' - '+optionmonthselected+' '+newd.getDate();
+                    var firstweek = optionmonthselected.substring(0, 3)+' 1 - '+optionmonthselected.substring(0, 3)+' '+firstweekend;
+                    var secondweek = optionmonthselected.substring(0, 3)+' '+secondweekstart+' - '+optionmonthselected.substring(0, 3)+' '+newd.getDate();
                 }else if (data.strW.length == 3) {
-                    var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+firstweekend;
-                    var secondweek = optionmonthselected+' '+secondweekstart+' - '+optionmonthselected+' '+secondweekend;
-                    var thirdweek = optionmonthselected+' '+thirdweekstart+' - '+optionmonthselected+' '+newd.getDate();
+                    var firstweek = optionmonthselected.substring(0, 3)+' 1 - '+optionmonthselected.substring(0, 3)+' '+firstweekend;
+                    var secondweek = optionmonthselected.substring(0, 3)+' '+secondweekstart+' - '+optionmonthselected.substring(0, 3)+' '+secondweekend;
+                    var thirdweek = optionmonthselected.substring(0, 3)+' '+thirdweekstart+' - '+optionmonthselected.substring(0, 3)+' '+newd.getDate();
                 }else if (data.strW.length == 4) {
                     var fourthweekstart = thirdweekend+1;
                     var fourthweekend = d.getDate();
-                    var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+firstweekend;
-                    var secondweek = optionmonthselected+' '+secondweekstart+' - '+optionmonthselected+' '+secondweekend;
-                    var thirdweek = optionmonthselected+' '+thirdweekstart+' - '+optionmonthselected+' '+thirdweekend;
-                    var fourthweek = optionmonthselected+' '+fourthweekstart+' - '+optionmonthselected+' '+newd.getDate();
+                    var firstweek = optionmonthselected.substring(0, 3)+' 1 - '+optionmonthselected.substring(0, 3)+' '+firstweekend;
+                    var secondweek = optionmonthselected.substring(0, 3)+' '+secondweekstart+' - '+optionmonthselected.substring(0, 3)+' '+secondweekend;
+                    var thirdweek = optionmonthselected.substring(0, 3)+' '+thirdweekstart+' - '+optionmonthselected.substring(0, 3)+' '+thirdweekend;
+                    var fourthweek = optionmonthselected.substring(0, 3)+' '+fourthweekstart+' - '+optionmonthselected.substring(0, 3)+' '+newd.getDate();
                 }else if (data.strW.length == 5) {
                     var fourthweekstart = thirdweekend+1;
                     var fourthweekend = fourthweekstart+6;
                     var fifthweekstart = fourthweekend+1;
                     var fifthweekend = d.getDate();
-                    var firstweek = optionmonthselected+' 1 - '+optionmonthselected+' '+firstweekend;
-                    var secondweek = optionmonthselected+' '+secondweekstart+' - '+optionmonthselected+' '+secondweekend;
-                    var thirdweek = optionmonthselected+' '+thirdweekstart+' - '+optionmonthselected+' '+thirdweekend;
-                    var fourthweek = optionmonthselected+' '+fourthweekstart+' - '+optionmonthselected+' '+fourthweekend;
-                    if ((newd.getMonth()+1) == optionmonthselected) {
+                    var firstweek = optionmonthselected.substring(0, 3)+' 1 - '+optionmonthselected.substring(0, 3)+' '+firstweekend;
+                    var secondweek = optionmonthselected.substring(0, 3)+' '+secondweekstart+' - '+optionmonthselected.substring(0, 3)+' '+secondweekend;
+                    var thirdweek = optionmonthselected.substring(0, 3)+' '+thirdweekstart+' - '+optionmonthselected.substring(0, 3)+' '+thirdweekend;
+                    var fourthweek = optionmonthselected.substring(0, 3)+' '+fourthweekstart+' - '+optionmonthselected.substring(0, 3)+' '+fourthweekend;
+                    if ((newd.getMonth()+1) == monthselected && newd.getFullYear() == yearselected) {
                         if (newd.getDate() == d.getDate()) {
-                            var fifthweek = optionmonthselected+' '+fifthweekstart+' - '+optionmonthselected+' '+fifthweekend;
+                            var fifthweek = optionmonthselected.substring(0, 3)+' '+fifthweekstart+' - '+optionmonthselected.substring(0, 3)+' '+fifthweekend;
                         }else{
-                            var fifthweek = optionmonthselected+' '+fifthweekstart+' - '+optionmonthselected+' '+newd.getDate();
+                            var fifthweek = optionmonthselected.substring(0, 3)+' '+fifthweekstart+' - '+optionmonthselected.substring(0, 3)+' '+newd.getDate();
                         }
                     }else{
-                        var fifthweek = optionmonthselected+' '+fifthweekstart+' - '+optionmonthselected+' '+fifthweekend;
+                        var fifthweek = optionmonthselected.substring(0, 3)+' '+fifthweekstart+' - '+optionmonthselected.substring(0, 3)+' '+fifthweekend;
                     }
                 }
 
