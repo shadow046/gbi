@@ -99,11 +99,8 @@
         </style>
     </head>
     <body>
-    <div id="loading"></div>
         @include('inc.header')
-        <div class="py-2">
         @yield('content')
-        </div>
 
         @if(Request::is('/'))
             @include('modal.ticketdetails')
@@ -160,5 +157,6 @@
         @if (Request::is('email/verify'))
             <script src="{{asset('js/verify.js')}}"></script>
         @endif
+        <div id="loading"></div>
     </body>
 </html>
