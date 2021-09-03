@@ -26,12 +26,14 @@
         </ul>
     </div>
 @endif
-<div class="table-responsive container-fluid">
+<div class="table container-fluid">
     <span style="font-size:130%;color:#00127f"><b>DASHBOARD</b></span>
-    <table class="table-hover table gbiTable" id="gbiTable" style="font-size:70%;width:100%">
+    <table class="table-hover gbiTable display nowrap" id="gbiTable" style="font-size:70%;width:100%">
         <thead style="background-color:#00127f;color:white">
             <tr>
+                <th>DATE</th>
                 <th>TICKET NUMBER</th>
+                <th>AGE</th>
                 <th>CATEGORY</th>
                 <th>ISSUE</th>
                 {{-- <th>Store Type</th> --}}
@@ -41,7 +43,9 @@
                 <th>LATEST NOTES</th>
             </tr>
             <tr>
+                <th>DATE</th>
                 <th>TICKET NUMBER</th>
+                <th>AGE</th>
                 <th>CATEGORY</th>
                 <th>ISSUE</th>
                 {{-- <th>Store Type</th> --}}

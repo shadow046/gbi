@@ -123,8 +123,8 @@ class UserController extends Controller
             $user->name = ucwords(mb_strtolower($request->input('first_name')));
             $user->email = $request->input('email');
             $user->status = $request->input('status');
-            $user->assignRole($request->input('role'));
             $data = $user->save();
+            $user->syncRoles($request->input('role'));
             return response()->json($data);
         }
         return response()->json(['error'=>$validator->errors()->first()]);

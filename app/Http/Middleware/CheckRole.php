@@ -16,10 +16,10 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->user()->hasanyrole('Manager')) {
-            return $next($request);
+        if (!auth()->user()->hasanyrole('Manager')) {
+            return redirect()->to('/');
         }
-        return redirect()->to('/');
+        return $next($request);
 
     }
 }

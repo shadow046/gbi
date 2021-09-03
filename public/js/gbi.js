@@ -9,9 +9,9 @@ jQuery(document).ready(function()
     jQuery('#gbiTable thead tr:eq(0) th').each( function () {
         var title = jQuery(this).text();
         if (title == "TICKET NUMBER") {
-            jQuery(this).html( '<input type="text" style="width:100%" placeholder="Search by date [YYYY][MM][DD]" class="column_search" />' );
+            jQuery(this).html( '<input type="text" style="width:100px" placeholder="Search by date [YYYY][MM][DD]" class="column_search" />' );
         }else{
-            jQuery(this).html( '<input type="text" style="width:100%" placeholder="Search '+title+'" class="column_search" />' );
+            jQuery(this).html( '<input type="text" style="width:100px" placeholder="Search '+title+'" class="column_search" />' );
         }
     });
     
@@ -27,6 +27,8 @@ jQuery(document).ready(function()
         "order": [[ 0, "desc" ]],
         processing: false,
         serverSide: false,
+        scrollX: true,
+        scrollCollapse: true,
         ajax: {
             url: 'getticket'
         },
@@ -38,13 +40,32 @@ jQuery(document).ready(function()
             //         return moment(dates).format('LLL');
             //     }
             // },
+            { data: 'DateCreated', render: function ( data, type, row ) 
+                {
+                    return moment(data).format('lll');
+                }},
             { data: 'TaskNumber', name:'TaskNumber'},
+            { data: 'DateCreated', render: function ( data, type, row ) {
+                var d1 = moment(data);
+                var d2 = moment();
+                if (d2.diff(d1, 'days') <= 5) {
+                    return 'Less than 5 days';
+                }else if (d2.diff(d1, 'days') >= 6 && d2.diff(d1, 'days') <= 10) {
+                    return '6 to 10 days';
+                }else if (d2.diff(d1, 'days') >= 11 && d2.diff(d1, 'days') <= 15) {
+                    return '11 to 15 days';
+                }else if (d2.diff(d1, 'days') >= 16 && d2.diff(d1, 'days') <= 20) {
+                    return '16 to 20 days';
+                }else if (d2.diff(d1, 'days') >= 21) {
+                    return 'More than 20 days';
+                }
+            }},
             { data: 'ProblemCategory', name:'ProblemCategory'},
             { data: 'Issue', name:'Issue'},
             { data: 'StoreCode', name:'StoreCode'},
-            { data: 'StoreName', name:'StoreName', "width": "17%"},
+            { data: 'StoreName', name:'StoreName'},
             // { data: 'Location', name:'Location'},
-            { data: 'IncidentStatus', name:'IncidentStatus', "width": "17%"},
+            { data: 'IncidentStatus', name:'IncidentStatus'},
             { data: 'LatestNotes', name:'LatestNotes', "width": "17%"}
         ]
     });
