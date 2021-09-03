@@ -22,7 +22,6 @@ class ViewController extends Controller
     {
         return view('users');
     }
-
     
     public function monthlytickets()
     {
