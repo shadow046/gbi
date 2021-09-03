@@ -27,13 +27,6 @@ $(document).ready(function()
             url: 'getticket'
         },
         columns: [
-            // { data: 'DateCreated',
-            //     "render": function ( data, type, row, meta) 
-            //     {
-            //         var dates = new Date(data);
-            //         return moment(dates).format('LLL');
-            //     }
-            // },
             { data: 'DateCreated', render: function ( data, type, row ) 
                 {
                     return moment(data).add(8, 'hours').format('lll');

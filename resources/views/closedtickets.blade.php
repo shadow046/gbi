@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @section('content')
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Daily Activities</a>
     <a class="navbar-brand" href="#">{{\Carbon\Carbon::now()->format('F d, Y')}}</a>
     <a class="navbar-brand" id="navtime" href="#"></a>
     @if (auth()->user()->roles->first()->name != "Agent")
