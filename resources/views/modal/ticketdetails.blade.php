@@ -113,7 +113,7 @@
             
             <hr>
             <div class="modal-footer">
-                @if (auth()->user()->hasanyrole('Agent', 'Manager') || (auth()->user()->id == 19 || auth()->user()->id == 8)
+                @if (auth()->user()->hasanyrole('Agent', 'Manager') || auth()->user()->id == 19 || auth()->user()->id == 8)
                     <input type="button" class="btn btn-secondary createBtn mr-auto" value="Create New Ticket">
                     <input type="button" class="btn btn-secondary EditBtn" id="EditBtn" value="Edit">
                 @endif
