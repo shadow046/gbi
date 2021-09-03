@@ -118,7 +118,7 @@ $(document).on('change', '#monthselect', function(){
                 const d = new Date(yearselected, monthselected, 0);
                 const adjustedDate = d.getDate() + d.getDay();
                 var weekcount = Math.ceil(adjustedDate / 7);
-                var firstweekend= Math.ceil(7-dy)+1;
+                var firstweekend= Math.ceil(7-dy);
                 var secondweekstart = firstweekend+1;
                 var secondweekend = secondweekstart+6;
                 var thirdweekstart = secondweekend+1;
