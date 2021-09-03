@@ -3,20 +3,20 @@ var BtnSelected = 'Details', TopIssueLocationNameSelected = 'Store';
 var serverTime = new Date();
 var gbistatus;
 var userlogsTable;
-jQuery(document).ready(function()
+$(document).ready(function()
 {
-    jQuery('#loading').show();
-    jQuery('#gbiTable thead tr:eq(0) th').each( function () {
-        var title = jQuery(this).text();
+    $('#loading').show();
+    $('#gbiTable thead tr:eq(0) th').each( function () {
+        var title = $(this).text();
         if (title == "TICKET NUMBER") {
-            jQuery(this).html( '<input type="text" style="width:100px" placeholder="Search by date [YYYY][MM][DD]" class="column_search" />' );
+            $(this).html( '<input type="text" style="width:100px" placeholder="Search by date [YYYY][MM][DD]" class="column_search" />' );
         }else{
-            jQuery(this).html( '<input type="text" style="width:100px" placeholder="Search '+title+'" class="column_search" />' );
+            $(this).html( '<input type="text" style="width:100px" placeholder="Search '+title+'" class="column_search" />' );
         }
     });
     
     gbitable =
-    jQuery('table.gbiTable').DataTable({ 
+    $('table.gbiTable').DataTable({ 
         "dom": 'tip',
         "language": {
                 "emptyTable": " ",
@@ -27,8 +27,6 @@ jQuery(document).ready(function()
         "order": [[ 0, "desc" ]],
         processing: false,
         serverSide: false,
-        scrollX: true,
-        scrollCollapse: true,
         ajax: {
             url: 'getticket'
         },
@@ -70,18 +68,18 @@ jQuery(document).ready(function()
         ]
     });
 
-    jQuery('#gbiTable thead').on( 'keyup', ".column_search",function () {
+    $('#gbiTable thead').on( 'keyup', ".column_search",function () {
         gbitable
-            .column( jQuery(this).parent().index() )
+            .column( $(this).parent().index() )
             .search( this.value )
             .draw();
     });
     //Store Top Issue
-    jQuery("#StoreTopIssueTable").append(
-       jQuery('<tfoot/>').append( jQuery("#StoreTopIssueTable thead tr").clone())
+    $("#StoreTopIssueTable").append(
+       $('<tfoot/>').append( $("#StoreTopIssueTable thead tr").clone())
    );
     StoreTopIssueTable =
-    jQuery('table.StoreTopIssueTable').DataTable({ 
+    $('table.StoreTopIssueTable').DataTable({ 
         "dom": 'itp',
         "language": {
                 "emptyTable": " ",
@@ -133,49 +131,49 @@ jQuery(document).ready(function()
         if (currtime.getSeconds() < 10) {
             var minsecs = '0'+minsecs;
         }
-        jQuery('#navtime').html(mytime + ":"+ mintime + ":" + minsecs + " " + am);
-        jQuery('#loading').hide();
+        $('#navtime').html(mytime + ":"+ mintime + ":" + minsecs + " " + am);
+        $('#loading').hide();
     }
     
     setInterval(updateTime, 1000); 
-    jQuery('#service_report').hide();
+    $('#service_report').hide();
     
 });
-    // jQuery('#ticketdetailsModal').modal('show');
-jQuery(document).on("click", '.DetailsBtn', function () {
-    var BtnName = jQuery(this).attr('BtnName');
+    // $('#ticketdetailsModal').modal('show');
+$(document).on("click", '.DetailsBtn', function () {
+    var BtnName = $(this).attr('BtnName');
     if (BtnSelected != BtnName) {
-        jQuery('.DetailsBtn[BtnName=\''+BtnSelected+'\']').removeClass('btn-secondary');
-        jQuery('.DetailsBtn[BtnName=\''+BtnSelected+'\']').toggleClass('bg-blue');
-        jQuery(this).removeClass('bg-blue');
-        jQuery(this).toggleClass('btn-secondary');
-        jQuery('#'+BtnSelected).hide()
-        jQuery('#'+BtnName).show();
+        $('.DetailsBtn[BtnName=\''+BtnSelected+'\']').removeClass('btn-secondary');
+        $('.DetailsBtn[BtnName=\''+BtnSelected+'\']').toggleClass('bg-blue');
+        $(this).removeClass('bg-blue');
+        $(this).toggleClass('btn-secondary');
+        $('#'+BtnSelected).hide()
+        $('#'+BtnName).show();
         BtnSelected = BtnName;
     }
 });
-jQuery('#userlogsTable thead').on( 'keyup', ".column_search",function () {
+$('#userlogsTable thead').on( 'keyup', ".column_search",function () {
         userlogsTable
-            .column( jQuery(this).parent().index() )
+            .column( $(this).parent().index() )
             .search( this.value )
             .draw();
 });
-jQuery(document).on('click', '#graphBtn', function () {
-    jQuery('#loading').show();
+$(document).on('click', '#graphBtn', function () {
+    $('#loading').show();
     window.location.href = '/dailytickets';
 });
-jQuery(document).on('click', '#userBtn', function () {
-    jQuery('#loading').show();
+$(document).on('click', '#userBtn', function () {
+    $('#loading').show();
     window.location.href = '/users';
 });
 
-jQuery(document).on('click', '#logsBtn', function () {
-    jQuery('#userlogsTable thead tr:eq(0) th').each( function () {
-        var title = jQuery(this).text();
-        jQuery(this).html( '<input type="text" style="width:100%" placeholder="Search '+title+'" class="column_search" />' );
+$(document).on('click', '#logsBtn', function () {
+    $('#userlogsTable thead tr:eq(0) th').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" style="width:100%" placeholder="Search '+title+'" class="column_search" />' );
     });
     userlogsTable =
-    jQuery('table.userlogsTable').DataTable({ 
+    $('table.userlogsTable').DataTable({ 
         "dom": 'itp',
         "language": {
                 "emptyTable": " ",
@@ -192,95 +190,95 @@ jQuery(document).on('click', '#logsBtn', function () {
             { data: 'activity', name:'activity'}
         ]
     });
-    jQuery('#userlogsModal').modal('show');
+    $('#userlogsModal').modal('show');
 });
 
-jQuery(document).on('click', '#closeTicketBtn', function () {
-    jQuery('#loading').show();
+$(document).on('click', '#closeTicketBtn', function () {
+    $('#loading').show();
     // window.location.href = '/closed';
 });
-jQuery(document).on('click', '.createBtn', function () {
+$(document).on('click', '.createBtn', function () {
     window.open('http://wf.ideaserv.com.ph/#/GBI/task/assignment/new?tab=Service%20Report%20-%20GBI&status=For%20Verification', '_blank');
 });
-jQuery(document).on('click', '#EditBtn', function () {
-    var ticket = jQuery('#TicketNumber').val();
+$(document).on('click', '#EditBtn', function () {
+    var ticket = $('#TicketNumber').val();
     var status = gbistatus;
     window.open('http://wf.ideaserv.com.ph/#/GBI/task/assignment/'+ticket+'?tab=Service%20Report%20-%20GBI&status='+gbistatus, '_blank');
     window.open('http://wf.ideaserv.com.ph/#/GBI/task/assignment/new?tab=Service%20Report%20-%20GBI&status=For%20Verification', '_blank');
 });
-jQuery(document).on("click", '.TopIssueLocationBtn', function () {
-    var TopIssueLocationName = jQuery(this).attr('TopIssueLocationName');
+$(document).on("click", '.TopIssueLocationBtn', function () {
+    var TopIssueLocationName = $(this).attr('TopIssueLocationName');
     if (TopIssueLocationNameSelected != TopIssueLocationName) {
-        jQuery('.TopIssueLocationBtn[TopIssueLocationName=\''+TopIssueLocationNameSelected+'\']').removeClass('btn-secondary');
-        jQuery('.TopIssueLocationBtn[TopIssueLocationName=\''+TopIssueLocationNameSelected+'\']').toggleClass('bg-blue');
-        jQuery(this).removeClass('bg-blue');
-        jQuery(this).toggleClass('btn-secondary');
-        jQuery('.'+TopIssueLocationNameSelected).hide()
-        jQuery('.'+TopIssueLocationName).show();
+        $('.TopIssueLocationBtn[TopIssueLocationName=\''+TopIssueLocationNameSelected+'\']').removeClass('btn-secondary');
+        $('.TopIssueLocationBtn[TopIssueLocationName=\''+TopIssueLocationNameSelected+'\']').toggleClass('bg-blue');
+        $(this).removeClass('bg-blue');
+        $(this).toggleClass('btn-secondary');
+        $('.'+TopIssueLocationNameSelected).hide()
+        $('.'+TopIssueLocationName).show();
         TopIssueLocationNameSelected = TopIssueLocationName;
     }
 });
 
-jQuery(document).on("click", "#TopIssueMore", function () {
-    jQuery('#topissueModal').modal('show');
+$(document).on("click", "#TopIssueMore", function () {
+    $('#topissueModal').modal('show');
     
 });
-jQuery(document).on("click", ".close", function () {
+$(document).on("click", ".close", function () {
     // location.reload()    
 });
 
-jQuery(document).on("click", "#StoreTopIssueTable tbody tr", function () {
+$(document).on("click", "#StoreTopIssueTable tbody tr", function () {
     var trdata = StoreTopIssueTable.row(this).data();
     console.log(trdata);
 });
-jQuery(document).on("click", "#gbiTable tbody tr", function () {
-    jQuery('#loading').show();
+$(document).on("click", "#gbiTable tbody tr", function () {
+    $('#loading').show();
     var trdata = gbitable.row(this).data();
     var TaskNumber = trdata.TaskNumber;
-    jQuery('#TicketNumber').val(trdata.TaskNumber);
-    jQuery('#gbisbu').val(trdata.gbisbu);
-    jQuery('#Status').val(trdata.IncidentStatus);
+    $('#TicketNumber').val(trdata.TaskNumber);
+    $('#gbisbu').val(trdata.gbisbu);
+    $('#Status').val(trdata.IncidentStatus);
     gbistatus = trdata.TaskStatus;
-    jQuery.ajax({
+    $.ajax({
         type: "GET",
         url: "taskdata",
         data: {
             TaskNumber: TaskNumber
         },
         success: function(data){
-             jQuery('#loading').hide();
-            jQuery('#ticketdetailsModal').modal('show'); 
+             $('#loading').hide();
+            $('#ticketdetailsModal').modal('show'); 
             if (trdata.gbisbu == "Plant") {
-                jQuery('.Location').show();
-                jQuery('#Location').val(data.Location);
+                $('.Location').show();
+                $('#Location').val(data.Location);
             }else{
-                jQuery('.Location').hide();
+                $('.Location').hide();
             }
-            jQuery('#StoreCode').val(data.Store_Code);
-            jQuery('#StoreName').val(data.Store_Name);
-            jQuery('#Address').val(data.Store_Address);
-            jQuery('#Ownership').val(data.Ownership);
-            jQuery('#gbisbu').val(data.Sbu);
-            jQuery('#ContactPerson').val(data.Contact_Person);
-            jQuery('#ContactNumber').val(data.Contact_Number);
-            jQuery('#Email_Address').val(data.Email_Address);
-            jQuery('#Problem').val(data.Problem_Reported);
-            jQuery('#Issue').val(trdata.Issue);
-            jQuery('#RootCause').val(data.Root_Cause);
-            jQuery('#LatestNotes').val(data.Latest_Notes);
-            jQuery('#IncidentStatus').val(data.IncidentStatus);
-            jQuery('#StoreType').val(data.GBIStoreType);
-            jQuery('#ActionTaken').val(data.GBIActionTaken);
+            $('#StoreCode').val(data.Store_Code);
+            $('#StoreName').val(data.Store_Name);
+            $('#Address').val(data.Store_Address);
+            $('#Ownership').val(data.Ownership);
+            $('#gbisbu').val(data.Sbu);
+            $('#ContactPerson').val(data.Contact_Person);
+            $('#ContactNumber').val(data.Contact_Number);
+            $('#Email_Address').val(data.Email_Address);
+            $('#Problem').val(data.Problem_Reported);
+            $('#Issue').val(trdata.Issue);
+            $('#RootCause').val(data.Root_Cause);
+            $('#LatestNotes').val(data.Latest_Notes);
+            $('#IncidentStatus').val(data.IncidentStatus);
+            $('#StoreType').val(data.GBIStoreType);
+            $('#ActionTaken').val(data.GBIActionTaken);
             var remarks = ' ';
             if (data.Remarks.length > 0) {
                 for (let index = 0; index < data.Remarks.length; index++) {
                     var remarksdate = new Date(data.Remarks[index].Timestamp);
                     remarks +='<div class="container row"><label class="col-sm-3 control-label">'+data.Remarks[index].Author+'<br><small>'+moment(remarksdate).format('lll')+'</small></label><div class="col-sm-9"><div class="text-break">'+data.Remarks[index].Message+'</div></div><hr></div>';
                 }
-                jQuery('#remarks-details').empty().append(remarks);
-                jQuery('.DetailsBtn[BtnName=\'Remarks\']').show();
+                $('#remarks-details').empty().append(remarks);
+                $('.DetailsBtn[BtnName=\'Remarks\']').show();
             }else{
-                jQuery('.DetailsBtn[BtnName=\'Remarks\']').hide();
+                $('.DetailsBtn[BtnName=\'Remarks\']').hide();
             }
             var history = '';
             console.log(data.History);
@@ -314,9 +312,9 @@ jQuery(document).on("click", "#gbiTable tbody tr", function () {
                     }
                 }
             }
-            jQuery('#tbodyhistory').empty().append(history);
+            $('#tbodyhistory').empty().append(history);
             console.log(history);
-            jQuery('#gbidiv').hide();
+            $('#gbidiv').hide();
         },
         error: function (data) {
             alert(data.responseText);

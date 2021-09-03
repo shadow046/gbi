@@ -35,7 +35,10 @@ $(document).ready(function()
             //         return moment(dates).format('LLL');
             //     }
             // },
-            { data: 'DateCreated', name:'DateCreated'},
+            { data: 'DateCreated', render: function ( data, type, row ) 
+                {
+                    return moment(data).format('lll');
+                }},
             { data: 'TaskNumber', name:'TaskNumber'},
             { data: 'ProblemCategory', name:'ProblemCategory'},
             { data: 'Issue', name:'Issue'},
