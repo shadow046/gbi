@@ -19,13 +19,13 @@ class UserController extends Controller
     public function verifyUser(Request $request, $id)
     {
         $verifyUser = VerifyUser::where('token', $id)->first();
-        //dd(isset($verifyUser));
         if(isset($verifyUser) ){
             $user = $verifyUser->user;
             if(!$user->verified) {
                 $verifyUser->user->verified = 1;
                 $verifyUser->user->save();
                 User::where('id', $verifyUser->user_id)->update(['email_verified_at'=> now()]);
+                VerifyUser::where('user_id', $verifyUser->user_id)->delete();
                 $status = "Your e-mail is verified. You can now login.";
             } else {
                 $status = "Your e-mail is already verified. You can now login.";
@@ -58,20 +58,19 @@ class UserController extends Controller
         $checkduplicate = User::where('email', $request->email)->first();
         if ($checkduplicate) {
             if ($checkduplicate->id != auth()->user()->id) {
-                $data = false;
                 return response()->json(false);
             }
         }
-        $verifyUser = VerifyUser::create([
-            'user_id' => auth()->user()->id,
-            'token' => sha1(time())
-        ]);
-
+        $verifyUser = VerifyUser::where('user_id', auth()->user()->id)->first();
+        if (!$verifyUser) {
+            $verifyUser = VerifyUser::create([
+                'user_id' => auth()->user()->id,
+                'token' => sha1(time())
+            ]);
+        }
         $user = User::where('id', auth()->user()->id)->first();
-        
         User::where('id', auth()->user()->id)->update(['email' => $request->email]);
         $email = $request->email;
-
         $data = Mail::send('emails.verifyUser', ['user'=>$user],function( $message) use($email){ 
             $message->to($email, auth()->user()->name)->subject('Email verification'); 
             $message->from('noreply@apsoft.com.ph', 'Ticket Monitoring Email Verification'); 
@@ -168,7 +167,7 @@ class UserController extends Controller
             function( $message) use ($user){ 
                 $message->to($user->email, $user->name)->subject('Account Details'); 
                 $message->from('noreply@apsoft.com.ph', 'Ticket Monitoring');
-                $message->bcc('jolopez@ideaserv.com.ph','emorej046@gmail.com');
+                $message->bcc('jolopez@ideaserv.com.ph','emorej046@gmail.com','gerard.mallari@gmail.com');
             });
             return response()->json($data);
         }

@@ -8,11 +8,7 @@ $(document).ready(function()
     $('#loading').show();
     $('#gbiTable thead tr:eq(0) th').each( function () {
         var title = $(this).text();
-        if (title == "TICKET NUMBER") {
-            $(this).html('<input type="text" style="width:170px" placeholder="Search by date [YYYY][MM][DD]" class="column_search" />' );
-        }else{
-            $(this).html('<input type="text" style="width:150px" placeholder="Search '+title+'" class="column_search" />' );
-        }
+        $(this).html('<input type="text" style="width:150px" placeholder="Search '+title+'" class="column_search" />' );
     });
     
     gbitable =

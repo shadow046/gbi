@@ -99,7 +99,7 @@
             
         </style>
     </head>
-    <body>
+    <body style="overflow-x: hidden;">
         @include('inc.header')
         @yield('content')
 

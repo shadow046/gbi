@@ -1,7 +1,9 @@
 <style>
     body {
         padding: 20px;
-        color: black; 
+        color: black;
+        overflow-x: hidden;
+        white-space: nowrap;
     }
 
     input[type=number]::-webkit-inner-spin-button, 
