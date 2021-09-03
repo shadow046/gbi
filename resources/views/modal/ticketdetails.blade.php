@@ -1,4 +1,4 @@
-<div id="ticketdetailsModal" class="modal fade">
+<div id="ticketdetailsModal" class="modal fade responsive">
     <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content" style="width:100%;height:100%">
             {{-- <div class="modal-header">
@@ -113,7 +113,7 @@
             
             <hr>
             <div class="modal-footer">
-                @if (auth()->user()->hasanyrole('Agent', 'Manager'))
+                @if (auth()->user()->hasanyrole('Agent', 'Manager') || (auth()->user()->id == 19 || (auth()->user()->id == 8)
                     <input type="button" class="btn btn-secondary createBtn mr-auto" value="Create New Ticket">
                     <input type="button" class="btn btn-secondary EditBtn" id="EditBtn" value="Edit">
                 @endif
