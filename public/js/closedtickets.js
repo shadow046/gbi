@@ -37,7 +37,7 @@ $(document).ready(function()
             // },
             { data: 'DateCreated', render: function ( data, type, row ) 
                 {
-                    return moment(data).format('lll');
+                    return moment(data).add(8, 'hours').format('lll');
                 }},
             { data: 'TaskNumber', name:'TaskNumber'},
             { data: 'ProblemCategory', name:'ProblemCategory'},

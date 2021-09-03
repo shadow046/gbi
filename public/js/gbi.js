@@ -24,7 +24,7 @@ $(document).ready(function()
                 "loadingRecords": "Please wait - loading..."
             },
         "pageLength": 10,
-        "order": [[ 0, "desc" ]],
+        "order": [[ 1, "desc" ]],
         processing: false,
         serverSide: false,
         ajax: {
@@ -40,11 +40,11 @@ $(document).ready(function()
             // },
             { data: 'DateCreated', render: function ( data, type, row ) 
                 {
-                    return moment(data).format('lll');
+                    return moment(data).add(8, 'hours').format('lll');
                 }},
             { data: 'TaskNumber', name:'TaskNumber'},
             { data: 'DateCreated', render: function ( data, type, row ) {
-                var d1 = moment(data);
+                var d1 = moment(data).add(8, 'hours');
                 var d2 = moment();
                 if (d2.diff(d1, 'days') <= 5) {
                     return 'Less than 5 days';
