@@ -103,7 +103,7 @@ class TicketController extends Controller
                 // 'TaskStatus'
                 )
             ->join('Data', 'Code', 'StoreCode')
-            ->whereNotIN('TaskStatus',['Submitted','Closed'])
+            ->whereNotIN('TaskStatus',['Closed'])
             ->whereIN('Status', ['Open', 'Re Open'])
             ->get();
         }else if (auth()->user()->roles->first()->name == "Client") {
@@ -123,7 +123,7 @@ class TicketController extends Controller
                 // 'TaskStatus'
                 )
             ->join('Data', 'Code', 'StoreCode')
-            ->whereNotIN('TaskStatus',['Submitted','Closed'])
+            ->whereNotIN('TaskStatus',['Closed'])
             ->whereIN('Status', ['Open', 'Re Open'])
             ->get();
         }
