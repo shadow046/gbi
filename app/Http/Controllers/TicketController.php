@@ -26,8 +26,6 @@ class TicketController extends Controller
         
     }
 
-    
-
     public function ExportData(Request $request, $year, $month, $monthname) 
     {
         return Excel::download(new DataExports($year,$month,$monthname), $monthname.' - '.$year.'.xlsx');
