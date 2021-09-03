@@ -24,7 +24,12 @@ $(document).ready(function()
         processing: false,
         serverSide: false,
         ajax: {
-            url: 'getticket'
+            url: 'getticket',
+            statusCode: {
+                401: function() {
+                    location.reload();
+                }
+            }
         },
         columns: [
             { data: 'DateCreated', render: function ( data, type, row ) 
