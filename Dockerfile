@@ -10,7 +10,7 @@ RUN	add-apt-repository ppa:ondrej/php -y
 RUN apt-get update -y
 RUN apt-get install curl php7.4 php7.4-fpm php7.4-curl php7.4-ldap php7.4-mysql php7.4-gd \
 	php7.4-xml php7.4-mbstring php7.4-zip php7.4-bcmath composer curl wget nano php \
-	php8.0 php8.0-dev php8.0-fpm php8.0-xml php8.0-gd php8.0-mbstring -y
+	php8.0 php8.0-dev php8.0-fpm php8.0-curl php8.0-ldap php8.0-xml php8.0-bcmath php8.0-mysql php8.0-gd php8.0-mbstring php8.0-zip -y
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 RUN curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
 RUN apt-get update -y && \
