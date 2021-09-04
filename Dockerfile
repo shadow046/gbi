@@ -10,7 +10,7 @@ RUN 	apt-get update -y && \
 RUN apt-get install software-properties-common -y 
 RUN	add-apt-repository ppa:ondrej/php -y
 RUN apt-get update -y
-RUN apt-get install php7.4 php7.4-fpm php7.4-curl php7.4-ldap php7.4-mysql php7.4-gd \
+RUN apt-get install curl php7.4 php7.4-fpm php7.4-curl php7.4-ldap php7.4-mysql php7.4-gd \
 	php7.4-xml php7.4-mbstring php7.4-zip php7.4-bcmath composer curl wget nano php \
 	php8.0 php8.0-dev php8.0-fpm php8.0-xml -y
 RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17
