@@ -27,7 +27,7 @@ RUN pecl install pdo_sqlsrv
 RUN printf "; priority=20\nextension=sqlsrv.so\n" > /etc/php/8.0/mods-available/sqlsrv.ini
 RUN printf "; priority=30\nextension=pdo_sqlsrv.so\n" > /etc/php/8.0/mods-available/pdo_sqlsrv.ini
 RUN phpenmod -v 8.0 sqlsrv pdo_sqlsrv
-RUN systemctl restart php8.0-fpm
+# RUN systemctl restart php8.0-fpm
 WORKDIR /home/
 COPY . .
 RUN composer install
