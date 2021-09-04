@@ -162,6 +162,7 @@ $(document).on('click', '#userBtn', function () {
 });
 
 $(document).on('click', '#logsBtn', function () {
+    $('table.userlogsTable').dataTable().fnDestroy();
     $('#userlogsTable thead tr:eq(0) th').each( function () {
         var title = $(this).text();
         $(this).html( '<input type="text" style="width:100%" placeholder="Search '+title+'" class="column_search" />' );
