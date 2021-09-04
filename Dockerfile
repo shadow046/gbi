@@ -2,8 +2,6 @@ FROM ubuntu:20.04
 ENV TZ=Asia/Manila
 ENV DEBIAN_FRONTEND=noninteractive
 RUN 	ln -fs /usr/share/zoneinfo/Asia/Manila /etc/localtime
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
-RUN curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
 RUN 	apt-get update -y && \
 	apt-get upgrade -y && \
 	apt-get dist-upgrade -y
@@ -13,6 +11,10 @@ RUN apt-get update -y
 RUN apt-get install curl php7.4 php7.4-fpm php7.4-curl php7.4-ldap php7.4-mysql php7.4-gd \
 	php7.4-xml php7.4-mbstring php7.4-zip php7.4-bcmath composer curl wget nano php \
 	php8.0 php8.0-dev php8.0-fpm php8.0-xml -y
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+RUN apt-get update -y && \
+	apt-get upgrade -y && \
 RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17
 RUN ACCEPT_EULA=Y apt-get install -y mssql-tools
 RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
