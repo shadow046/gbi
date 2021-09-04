@@ -13,15 +13,15 @@ jobs:
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
         name: shadow046/gbi/tim:latest
-        # username: ${{ github.actor }}
-        # password:  ${{secrets.NUSERV_REGISTRY_DOCKER}}
+        username: ${{ github.actor }}
+        password:  ${{secrets.GITHUB_TOKEN}}
         registry: docker.pkg.github.com
     - uses: actions/checkout@master
     - name: Publish to Registry (Version Release)
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
         name: shadow046/gbi/tim
-        # username: ${{ github.actor }}
-        # password: ${{secrets.NUSERV_REGISTRY_DOCKER}}
+        username: ${{ github.actor }}
+        password: ${{secrets.GITHUB_TOKEN}}
         registry: docker.pkg.github.com
         tag_names: true
