@@ -174,6 +174,7 @@ $(document).on('click', '#logsBtn', function () {
                 "emptyTable": " ",
                 "loadingRecords": "Please wait - loading..."
             },
+        "order": [[ 0, "desc" ]],
         "pageLength": 10,
         processing: false,
         serverSide: true,
