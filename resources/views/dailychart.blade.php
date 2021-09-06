@@ -3,7 +3,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">{{\Carbon\Carbon::now()->format('F d, Y')}}</a>
     <a class="navbar-brand" id="navtime" href="#"></a>
-    @if (auth()->user()->roles->first()->name != "Client")
+    @if (auth()->user()->roles->first()->name != "Agent")
             <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="dashboardBtn" value="DASHBOARD">&nbsp;&nbsp;
     @else
         <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="dashboardBtn" value="OPEN TICKETS">&nbsp;&nbsp;

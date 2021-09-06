@@ -26,7 +26,7 @@
     </div>
 @endif
 <div class="table container-fluid" style="overflow-x: auto;white-space: nowrap;">
-    @if (auth()->user()->roles->first()->name != "Client")
+    @if (auth()->user()->roles->first()->name == "Agent")
         <span style="font-size:130%;color:#00127f"><b>DASHBOARD</b></span>
     @else
         <span style="font-size:130%;color:#00127f"><b>OPEN TICKETS</b></span>
