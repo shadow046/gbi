@@ -71,10 +71,7 @@ class DataExport1 implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyle
             $title, // title
             $legend, // legend
             $plotArea, // plotArea
-            true, // plotVisibleOnly
-            0, // displayBlanksAs
-            null, // xAxisLabel
-            NULL,  // yAxisLabel
+            true
         );
 
         $chart->setTopLeftPosition('I2');

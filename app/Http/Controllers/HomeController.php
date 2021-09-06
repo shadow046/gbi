@@ -337,10 +337,10 @@ class HomeController extends Controller
                 return response($validateOTP->message);
             }else{
                 if($signedTokenx!=""){
-                    $registerPass = $this->postX("https://users.mylykaapps.com/api/v3/users/ChangePhoneNumberV2", $this->payload($DevIdx,'"countryCode":"PH","country":"PH","phoneNumber":"'.$phoneNumberx.'","code":"'.$codex.'","signedToken":"'.$signedTokenx.'"'));
-                    // $registerPass = $this->postX("https://identity.mylykaapps.com/useraccounts/RegisterV3", $this->payload($DevIdx,'"birthDate":"'.$birthDatex.'","code":"'.$codex.'","countryCode":"PH","fullname":"'.$fullnamex.'","gender":"'.$genderx.'","isMerchant":false,"password":"'.$passwordx.'","phoneNumber":"'.$phoneNumberx.'","signedToken":"'.$signedTokenx.'","type":"phone","username":"'.$usernamex.'"')) ;
+                    // $registerPass = $this->postX("https://users.mylykaapps.com/api/v3/users/ChangePhoneNumberV2", $this->payload($DevIdx,'"countryCode":"PH","country":"PH","phoneNumber":"'.$phoneNumberx.'","code":"'.$codex.'","signedToken":"'.$signedTokenx.'"'));
+                    $registerPass = $this->postX("https://identity.mylykaapps.com/useraccounts/RegisterV3", $this->payload($DevIdx,'"birthDate":"'.$birthDatex.'","code":"'.$codex.'","countryCode":"PH","fullname":"'.$fullnamex.'","gender":"'.$genderx.'","isMerchant":false,"password":"'.$passwordx.'","phoneNumber":"'.$phoneNumberx.'","signedToken":"'.$signedTokenx.'","type":"phone","username":"'.$usernamex.'"')) ;
                     if ($registerPass) {
-                        return response($registerPass);
+                        dd($registerPass);
                         if ($registerPass->message == 'Too many requests, try again later') {
                             return response($registerPass->message);
                         }

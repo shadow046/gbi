@@ -46,13 +46,13 @@ class DataExport implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles
         ];
         $xAxisTickValues = [new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, 'Daily!$B$4:$AF$4', null, 4)];
         $dataSeriesValues = [
-            new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$A$5:$AF$5', null,4),
-            new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$A$6:$AF$6', null,4),
-            new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$A$7:$AF$7', null,4),
+            new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$B$5:$AF$5', null,4),
+            new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$B$6:$AF$6', null,4),
+            new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$B$7:$AF$7', null,4),
         ];
         $series = new DataSeries(
             DataSeries::TYPE_LINECHART, // plotType
-            DataSeries::GROUPING_CLUSTERED, // plotGrouping
+            DataSeries::GROUPING_STANDARD, // plotGrouping
             range(0, count($dataSeriesValues) - 1), // plotOrder
             $dataSeriesLabels, // plotLabel
             $xAxisTickValues, // plotCategory
@@ -70,10 +70,10 @@ class DataExport implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles
             $title, // title
             $legend, // legend
             $plotArea, // plotArea
-            true, // plotVisibleOnly
-            0, // displayBlanksAs
-            null, // xAxisLabel
-            NULL,  // yAxisLabel
+            true // plotVisibleOnly
+            // 0, // displayBlanksAs
+            // null, // xAxisLabel
+            // NULL,  // yAxisLabel
         );
 
         $chart->setTopLeftPosition('B10');
