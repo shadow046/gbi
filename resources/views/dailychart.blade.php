@@ -3,7 +3,11 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">{{\Carbon\Carbon::now()->format('F d, Y')}}</a>
     <a class="navbar-brand" id="navtime" href="#"></a>
-    <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="dashboardBtn" value="DASHBOARD">&nbsp;&nbsp;
+    @if (auth()->user()->roles->first()->name != "Client")
+            <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="dashboardBtn" value="DASHBOARD">&nbsp;&nbsp;
+    @else
+        <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="dashboardBtn" value="OPEN TICKETS">&nbsp;&nbsp;
+    @endif
     <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="monthlyBtn" value="VIEW BY MONTH">
     <div class="ml-auto"id="search"></div>
 </nav><hr>

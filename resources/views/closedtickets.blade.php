@@ -7,7 +7,11 @@
         @if (auth()->user()->roles->first()->name == "Manager")
             <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="logsBtn" value="USER LOGS">&nbsp;&nbsp;
         @endif
-        <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="openTicketBtn" value="DASHBOARD">&nbsp;&nbsp;
+        @if (auth()->user()->roles->first()->name != "Client")
+            <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="openTicketBtn" value="DASHBOARD">&nbsp;&nbsp;
+        @else
+            <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="openTicketBtn" value="OPEN TICKETS">&nbsp;&nbsp;
+        @endif
         <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="graphBtn" value="GRAPHS">&nbsp;&nbsp;
     @endif
     @if (auth()->user()->roles->first()->name != "Client")

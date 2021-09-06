@@ -26,7 +26,11 @@
     </div>
 @endif
 <div class="table container-fluid" style="overflow-x: auto;white-space: nowrap;">
-    <span style="font-size:130%;color:#00127f"><b>DASHBOARD</b></span>
+    @if (auth()->user()->roles->first()->name != "Client")
+        <span style="font-size:130%;color:#00127f"><b>DASHBOARD</b></span>
+    @else
+        <span style="font-size:130%;color:#00127f"><b>OPEN TICKETS</b></span>
+    @endif
     <table class="table-hover gbiTable display nowrap" id="gbiTable" style="font-size:70%;width:100%">
         <thead style="background-color:#00127f;color:white">
             <tr>
