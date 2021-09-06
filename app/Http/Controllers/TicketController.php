@@ -468,168 +468,63 @@ class TicketController extends Controller
 
     public function taskdata(Request $request)
     {
-        $storecode = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
+        $store = Ticket::query()
+            ->join('Data','Code','StoreCode')
+            ->select(
+                'StoreCode',
+                'Store_Name',
+                'Address',
+                'Data.Ownership',
+                'ContactPerson',
+                'ContactNumber',
+                'EmailAddress',
+                'ProblemReported',
+                'Location',
+                'RootCause',
+                'LatestNotes',
+                'SBU',
+                'IncidentStatus',
+                'ActionTaken',
+                'ResolverGroup',
+                'ResolvedBy',
+                'Type as StoreType'
+            )
             ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBIStoreCode')
-            ->select('value')
-            ->pluck('value')->first();
-        $storename = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBIStoreName')
-            ->select('value')
-            ->pluck('value')->first();
-        $storeaddress = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBIStoreAddress')
-            ->select('value')
-            ->pluck('value')->first();
-        $ownership = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBIOwnership')
-            ->select('value')
-            ->pluck('value')->first();
+            ->first();
 
-        $contactperson = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBIContactPerson')
-            ->select('value')
-            ->pluck('value')->first();
-
-        $contactnumber = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBIContactNumber')
-            ->select('value')
-            ->pluck('value')->first();
-
-        $email = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBIEmailAddress')
-            ->select('value')
-            ->pluck('value')->first();
-
-        $problemreported = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBIProblemReported')
-            ->select('value')
-            ->pluck('value')->first();
-
-        $location = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBILocation')
-            ->select('value')
-            ->pluck('value')->first();
-        
-        $rootcause = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBIRootCause')
-            ->select('value')
-            ->pluck('value')->first();
-
-        $latestnotes = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBILatestNotes')
-            ->select('value')
-            ->pluck('value');
-        $SBU = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBISBU')
-            ->select('value')
-            ->pluck('value')->first();
-
-        $IncidentStatus = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBIIncidentStatus')
-            ->select('value')
-            ->pluck('value')->first();
-
-        $GBIActionTaken = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBIActionTaken')
-            ->select('value')
-            ->pluck('value')->first();
-
-        $GBIResolverGroup = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBIResolverGroup')
-            ->select('value')
-            ->pluck('value')->first();
-
-        $GBIResolvedBy = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBIResolvedBy')
-            ->select('value')
-            ->pluck('value')->first();
-        $GBIStoreType = Task::query()
-            ->join('form', 'taskid', 'task.id')
-            ->join('formfield', 'formid', 'form.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->where('FieldId', 'GBIStoreType')
-            ->select('value')
-            ->pluck('value')->first();
-
-        $Remarks = Task::query()
-            ->select('Author', 'Message', 'Timestamp')
-            ->join('Remark', 'taskid', 'task.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->get();
-        $History = Task::query()
-            ->select('Label as Action', 'Snapshotvalue as Original','Source','Timestamp','UpdatedValue as Updated', 'Message','AuditLevel')
-            ->join('taskauditlog', 'taskid', 'task.id')
-            ->where('TaskNumber', $request->TaskNumber)
-            ->get();
+        // $Remarks = Task::query()
+        //     ->select('Author', 'Message', 'Timestamp')
+        //     ->join('Remark', 'taskid', 'task.id')
+        //     ->where('TaskNumber', $request->TaskNumber)
+        //     ->get();
+        // $History = Task::query()
+            // ->select('Label as Action', 'Snapshotvalue as Original','Source','Timestamp','UpdatedValue as Updated', 'Message','AuditLevel')
+            // ->join('taskauditlog', 'taskid', 'task.id')
+            // ->where('TaskNumber', $request->TaskNumber)
+            // ->get();
         return response()->json(
             [
-                'Store_Code'=>$storecode,
-                'Store_Address'=>$storeaddress,
-                'Ownership'=>$ownership,
-                'Contact_Person'=>$contactperson,
-                'Contact_Number'=>$contactnumber,
-                'Store_Name'=>$storename,
-                'Email_Address'=>$email,
-                'Location'=>$location,
-                'Latest_Notes'=>$latestnotes,
-                'Sbu'=>$SBU,
-                'IncidentStatus'=>$IncidentStatus,
-                'Problem_Reported'=>$problemreported,
-                'GBIActionTaken'=>$GBIActionTaken,
-                'GBIResolverGroup'=>$GBIResolverGroup,
-                'GBIResolvedBy'=>$GBIResolvedBy,
-                'Root_Cause'=>$rootcause,
-                'Remarks'=>$Remarks,
-                'History'=>$History,
-                'GBIStoreType'=>$GBIStoreType
+                'Store_Code'=>$store->StoreCode,
+                'Store_Address'=>$store->Address,
+                'Ownership'=>$store->Ownership,
+                'Contact_Person'=>$store->ContactPerson,
+                'Contact_Number'=>$store->ContactNumber,
+                'Store_Name'=>$store->Store_Name,
+                'Email_Address'=>$store->EmailAddress,
+                'Location'=>$store->Location,
+                'Latest_Notes'=>$store->LatestNotes,
+                'Sbu'=>$store->SBU,
+                'IncidentStatus'=>$store->IncidentStatus,
+                'Problem_Reported'=>$store->ProblemReported,
+                'GBIActionTaken'=>$store->ActionTaken,
+                'GBIResolverGroup'=>$store->ResolverGroup,
+                'GBIResolvedBy'=>$store->ResolvedBy,
+                'Root_Cause'=>$store->RootCause,
+                // 'Remarks'=>$Remarks,
+                // 'History'=>$History,
+                'Remarks'=>'',
+                'History'=>'',
+                'GBIStoreType'=>$store->StoreType
                 // 'Incident_Status'=>$incidentstatus
             ]
         );
