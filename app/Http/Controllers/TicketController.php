@@ -28,7 +28,28 @@ class TicketController extends Controller
 
     public function ExportData(Request $request, $year, $month, $monthname) 
     {
-        return Excel::download(new DataExports($year,$month,$monthname), $monthname.' - '.$year.'.xlsx');
+        $store = Ticket::query()
+            ->select('SubCategory', DB::raw('COUNT(SubCategory) as count'))
+            ->join('Data','Code', 'StoreCode')
+            ->whereMonth('DateCreated', $month)
+            ->whereYear('DateCreated', $year)
+            ->whereNotNull('SubCategory')
+            ->where('SBU', 'Store')
+            ->groupBy('SubCategory')
+            ->orderBy('count', 'DESC')
+            ->get();
+        $plant = Ticket::query()
+            ->select('SubCategory', DB::raw('COUNT(SubCategory) as count'))
+            ->join('Data','Code', 'StoreCode')
+            ->whereMonth('DateCreated', $month)
+            ->whereYear('DateCreated', $year)
+            ->whereNotNull('SubCategory')
+            ->where('SBU', 'Plant')
+            ->groupBy('SubCategory')
+            ->orderBy('count', 'DESC')
+            ->get();
+
+        return Excel::download(new DataExports($year,$month,$monthname,$store,$plant), $monthname.' - '.$year.'.xlsx');
     }
 
     public function closedtickets()
