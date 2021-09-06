@@ -136,6 +136,7 @@ $(document).on('click', '#openTicketBtn', function () {
 });
 
 $(document).on('click', '#logsBtn', function () {
+    $('table.userlogsTable').dataTable().fnDestroy();
     $('#userlogsTable thead tr:eq(0) th').each( function () {
         var title = $(this).text();
         $(this).html( '<input type="text" style="width:100%" placeholder="Search '+title+'" class="column_search" />' );
@@ -147,6 +148,7 @@ $(document).on('click', '#logsBtn', function () {
                 "emptyTable": " ",
                 "loadingRecords": "Please wait - loading..."
             },
+        "order": [[ 0, "desc" ]],
         "pageLength": 10,
         processing: false,
         serverSide: true,
