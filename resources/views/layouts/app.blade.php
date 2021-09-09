@@ -104,21 +104,24 @@
         @yield('content')
 
         @if(Request::is('/'))
-            @include('modal.ticketdetails')
             @include('modal.topissue')
+            @include('modal.aging')
             @include('modal.userlogs')
             @include('modal.user')
+        @endif
+
+        @if(Request::is('openticket'))
+            @include('modal.ticketdetails')
+            @include('modal.topissue')
+            @include('modal.aging')
         @endif
 
         @if(Request::is('users'))
             @include('modal.user')
         @endif
 
-        @if(Request::is('closed'))
+        @if(Request::is('closedtickets'))
             @include('modal.ticketdetails')
-            @include('modal.userlogs')
-            @include('modal.user')
-            @include('modal.topissue')
         @endif
 
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -137,14 +140,20 @@
         <script type="text/javascript" src="{{asset('js/moment.min.js')}}"></script>
         <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc/dist/chartjs-plugin-datalabels.min.js"></script>
         {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/6.0.6/highcharts.js" charset="utf-8"></script> --}}
-        @if (Request::is('/'))
-            <script src="{{asset('js/gbi.js')}}"></script>
+        @if (Request::is('openticket'))
+            <script src="{{asset('js/opentickets.js')}}"></script>
         @endif
-        @if (Request::is('closed'))
+        @if (Request::is('/'))
+            <script src="{{asset('js/dashboard.js')}}"></script>
+        @endif
+        @if (Request::is('closedticket'))
             <script src="{{asset('js/closedtickets.js')}}"></script>
         @endif
         @if (Request::is('dailytickets'))
             <script src="{{asset('js/dailycharts.js')}}"></script>
+        @endif
+        @if (Request::is('dashboard'))
+            <script src="{{asset('js/dashboard.js')}}"></script>
         @endif
         @if (Request::is('monthlytickets'))
             <script src="{{asset('js/monthlycharts.js')}}"></script>

@@ -5,26 +5,46 @@ $filesReg = json_decode($regFile, true);
 $cookyStr = file_get_contents('lyaccnts.json');
 $accntdata = json_decode($cookyStr, true);
 $uAgent = "Lyka/3.6.29 (com.thingsilikeapp; build:829 Android R 30)";
-function postX($urlx, $payloader){
-    global $uAgent;
-    $validURL = $urlx;
-    $validHeader = array(
-        "Content-Type: application/json; charset=UTF-8",
-        "user-agent: $uAgent"
-        );
-        $validCurl = curl_init($validURL);
-        curl_setopt($validCurl, CURLOPT_URL, $validURL);
-        curl_setopt($validCurl, CURLOPT_POST, true);
-        curl_setopt($validCurl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($validCurl, CURLOPT_HTTPHEADER, $validHeader);
-        curl_setopt($validCurl, CURLOPT_POSTFIELDS, $payloader);
-        file_put_contents('lyaccntvalidCurl.json', $validHeader);
-        $validResp = curl_exec($validCurl);
-        curl_close($validCurl);
-        $valjson = json_decode($validResp);
-        return $valjson;
+// function postX($urlx, $payloader){
+//     global $uAgent;
+//     $validURL = $urlx;
+//     $validHeader = array(
+//         "Content-Type: application/json; charset=UTF-8",
+//         "user-agent: $uAgent"
+//         );
+//         $validCurl = curl_init($validURL);
+//         curl_setopt($validCurl, CURLOPT_URL, $validURL);
+//         curl_setopt($validCurl, CURLOPT_POST, true);
+//         curl_setopt($validCurl, CURLOPT_RETURNTRANSFER, true);
+//         curl_setopt($validCurl, CURLOPT_HTTPHEADER, $validHeader);
+//         curl_setopt($validCurl, CURLOPT_POSTFIELDS, $payloader);
+//         file_put_contents('lyaccntvalidCurl.json', $validHeader);
+//         $validResp = curl_exec($validCurl);
+//         curl_close($validCurl);
+//         $valjson = json_decode($validResp);
+//         return $valjson;
 
-};
+// };
+function postX($urlx, $payloader, $cooks){
+    global $uAgent;
+    $postURL = $urlx;
+    $postHeader = array(
+        "Content-Type: application/json; charset=UTF-8",
+        "user-agent: $uAgent","authorization: Bearer $cooks") ;
+        $postCurl = curl_init($postURL);
+        curl_setopt($postCurl, CURLOPT_URL, $postURL);
+        curl_setopt($postCurl, CURLOPT_POST, true);
+        curl_setopt($postCurl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($postCurl, CURLOPT_HTTPHEADER, $postHeader);
+        curl_setopt($postCurl, CURLOPT_POSTFIELDS, $payloader);
+        curl_setopt($postCurl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($postCurl, CURLOPT_SSL_VERIFYPEER, false);
+        $postResp = curl_exec($postCurl);
+    //   echo "\n".$postResp;
+        curl_close($postCurl);
+        $postjson = json_decode($postResp);
+        return $postjson;
+}
 function payload($devIDx, $xtraPay, $rTokenx = ""){
     if($rTokenx!=""){
         $wtoken = ",notificationToken: $rTokenx";
@@ -47,7 +67,7 @@ function payload($devIDx, $xtraPay, $rTokenx = ""){
            DATA; 
     file_put_contents('lyaccntvaldata.json', $valdata);
    return $valdata;
-};
+}
 function random_username($string) {
     $pattern = " ";
     $firstPart = strstr(strtolower($string), $pattern, true);
@@ -56,117 +76,6 @@ function random_username($string) {
     
     $username = trim($firstPart).trim($secondPart).trim($nrRand);
     return $username;
-}
-function randomName() {
-    $firstname = array(
-        'Johnathon',
-        'Anthony',
-        'Erasmo',
-        'Raleigh',
-        'Nancie',
-        'Tama',
-        'Camellia',
-        'Augustine',
-        'Christeen',
-        'Luz',
-        'Diego',
-        'Lyndia',
-        'Thomas',
-        'Georgianna',
-        'Leigha',
-        'Alejandro',
-        'Marquis',
-        'Joan',
-        'Stephania',
-        'Elroy',
-        'Zonia',
-        'Buffy',
-        'Sharie',
-        'Blythe',
-        'Gaylene',
-        'Elida',
-        'Randy',
-        'Margarete',
-        'Margarett',
-        'Dion',
-        'Tomi',
-        'Arden',
-        'Clora',
-        'Laine',
-        'Becki',
-        'Margherita',
-        'Bong',
-        'Jeanice',
-        'Qiana',
-        'Lawanda',
-        'Rebecka',
-        'Maribel',
-        'Tami',
-        'Yuri',
-        'Michele',
-        'Rubi',
-        'Larisa',
-        'Lloyd',
-        'Tyisha',
-        'Samatha',
-    );
-
-    $lastname = array(
-        'Mischke',
-        'Serna',
-        'Pingree',
-        'Mcnaught',
-        'Pepper',
-        'Schildgen',
-        'Mongold',
-        'Wrona',
-        'Geddes',
-        'Lanz',
-        'Fetzer',
-        'Schroeder',
-        'Block',
-        'Mayoral',
-        'Fleishman',
-        'Roberie',
-        'Latson',
-        'Lupo',
-        'Motsinger',
-        'Drews',
-        'Coby',
-        'Redner',
-        'Culton',
-        'Howe',
-        'Stoval',
-        'Michaud',
-        'Mote',
-        'Menjivar',
-        'Wiers',
-        'Paris',
-        'Grisby',
-        'Noren',
-        'Damron',
-        'Kazmierczak',
-        'Haslett',
-        'Guillemette',
-        'Buresh',
-        'Center',
-        'Kucera',
-        'Catt',
-        'Badon',
-        'Grumbles',
-        'Antes',
-        'Byron',
-        'Volkman',
-        'Klemp',
-        'Pekar',
-        'Pecora',
-        'Schewe',
-        'Ramage',
-    );
-    $name = $firstname[rand ( 0 , count($firstname) -1)];
-    $name .= ' ';
-    $name .= $lastname[rand ( 0 , count($lastname) -1)];
-    return $name;
 }
 function notkens(){
     $notiTokn = "";
@@ -221,9 +130,9 @@ function register(){
     $cookyStr = file_get_contents('lyaccnts.json');
     $accntdata = json_decode($cookyStr, true);
     $DevIdx = $accntdata[$number]["devId"];
-
+    $cookies = $accntdata[$number]["cookie"];
     // $vaidateUN = postX("https://identity.mylykaapps.com/useraccounts/validateusername", payload("$DevIdx",'"country": "PH","isMerchant": false,"username": "'.$usernamex.'"')) ->message;
-    $validateNumber = postX("https://identity.mylykaapps.com/useraccounts/validatephonenumber", payload($DevIdx,'"country": "PH","isMerchant": false,"phoneNumber":"'.$phoneNumberx.'"')) ->message;
+    $validateNumber = postX("https://identity.mylykaapps.com/useraccounts/validatephonenumber", payload($DevIdx,'"country": "PH","isMerchant": false,"phoneNumber":"'.$phoneNumberx.'"'),'') ->message;
 
 //Check username if available
     echo "\n";
@@ -236,9 +145,8 @@ function register(){
             if($xtext == "n"){
                 exit('cancelled.'."\n");
             }
-        $sendOTP = postX("https://settings.mylykaapps.com/api/v3/otpservices/GenerateOTPV2", payload($DevIdx,'"reference":"phone","type":"edit","value":"'.$phoneNumberx.'"')) ->data->requestId;
+        $sendOTP = postX("https://settings.mylykaapps.com/api/v3/otpservices/GenerateOTPV2", payload($DevIdx,'"reference":"phone","type":"edit","value":"'.$phoneNumberx.'"'),$cookies)->data->requestId;
         // $sendOTP = postX("https://settings.mylykaapps.com/api/v3/otpservices/GenerateOTPV2", payload($DevIdx,'"reference":"phone","type":"register","value":"'.$phoneNumberx.'"')) ->data->requestId;
-        echo $sendOTP."\n";
         if($sendOTP){
             $OTPsucc = false;
             while (!$OTPsucc){
@@ -246,8 +154,8 @@ function register(){
                 if($xOTP == "x"){
                     exit('cancelled.'."\n");
                 }
-                $validateOTP = postX("https://settings.mylykaapps.com/api/v3/otpservices/ValidateOTPV2", payload($DevIdx,'"reference":"phone","requestId":"'.$sendOTP.'","type":"edit","value":"'.$phoneNumberx.'",'."code".":".'"'.$xOTP.'"'));
-        // $validateOTP = postX("https://settings.mylykaapps.com/api/v3/otpservices/ValidateOTPV2", payload($DevIdx,'"reference":"phone","requestId":"'.$sendOTP.'","type":"register","value":"'.$phoneNumberx.'",'."code".":".'"'.$xOTP.'"'));
+                // $validateOTP = postX("https://users.mylykaapps.com/api/v3/users/ChangePhoneNumberV2", payload($DevIdx,'"reference":"phone","requestId":"'.$sendOTP.'","type":"edit","value":"'.$phoneNumberx.'",'."code".":".'"'.$xOTP.'"'),$cookies);
+                $validateOTP = postX("https://settings.mylykaapps.com/api/v3/otpservices/ValidateOTPV2", payload($DevIdx,'"reference":"phone","requestId":"'.$sendOTP.'","type":"edit","value":"'.$phoneNumberx.'",'."code".":".'"'.$xOTP.'"'),$cookies);
                 if( $validateOTP->data) {
                     $signedTokenx = $validateOTP->data->signedToken;
                     echo $validateOTP->data->signedToken;
@@ -259,18 +167,26 @@ function register(){
                     }else{
                         echo $otpMess."\n\n";
                         if($signedTokenx!=""){
-                            $registerPass = postX("https://users.mylykaapps.com/api/v3/users/ChangePhoneNumberV2", payload($DevIdx,'"countryCode":"PH","country":"PH","phoneNumber":"'.$phoneNumberx.'","code":"'.$codex.'","signedToken":"'.$signedTokenx.'"'));
-                            // $registerPass = postX("https://identity.mylykaapps.com/useraccounts/RegisterV3", payload($DevIdx,'"birthDate":"'.$birthDatex.'","code":"'.$codex.'","countryCode":"PH","fullname":"'.$fullnamex.'","gender":"'.$genderx.'","isMerchant":false,"password":"'.$passwordx.'","phoneNumber":"'.$phoneNumberx.'","signedToken":"'.$signedTokenx.'","type":"phone","username":"'.$usernamex.'"'),$notificationTokenx) ;
+                            // $registerPas = postX("https://users.mylykaapps.com/api/v3/users/ChangePhoneNumberV2", payload($DevIdx,'"birthDate":"'.$birthDatex.'","code":"'.$codex.'","countryCode":"PH","fullname":"'.$fullnamex.'","gender":"'.$genderx.'","isMerchant":false,"password":"'.$passwordx.'","phoneNumber":"'.$phoneNumberx.'","signedToken":"'.$signedTokenx.'","type":"phone","username":"'.$usernamex.'"'),$cookies) ;
+                            $registerPass = postX("https://users.mylykaapps.com/api/v3/users/ChangePhoneNumberV2", payload($DevIdx,'"countryCode":"PH","country":"PH","phoneNumber":"'.$phoneNumberx.'","code":"'.$codex.'","signedToken":"'.$signedTokenx.'","type":"phone","isMerchant":false'),$cookies);
+                            $activ = postX("https://wallets.mylykaapps.com/api/v3/wallets/activatewallet", payload($DevIdx,'"countryCode":"PH","country":"PH","phoneNumber":"'.$phoneNumberx.'","code":"'.$codex.'","signedToken":"'.$signedTokenx.'"'),$cookies) ;
+                            $data = json_encode($registerPass);
+                            // $datas = json_encode($registerPas);
+                            $activs = json_encode($activ);
+                            echo $data."\n";
+                            echo $datas."\n";
+                            echo $activs."\n";
+                            
                             if($registerPass) {
                                 $data = json_encode($registerPass);
                                 echo $data;
                             }else{
-                                echo "Invalid OTP."."\n";
+                                echo "Invalid OTP2."."\n";
                             }
                         }
                     }
                 } else {
-                    echo "Invalid OTP."."\n";
+                    echo "Invalid OTP1."."\n";
                 }
             }
         }//if OTP is successful

@@ -1,6 +1,6 @@
 <div id="userlogsModal" class="modal fade">
     <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content text-center">
+        <div class="modal-content">
             <div class="modal-header">
                 <h6 class="modal-title w-100 text-center">USER LOGS</h6>
                 <a class="close cancel" aria-label="Close" data-dismiss="modal" style="cursor: pointer">

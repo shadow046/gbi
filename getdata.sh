@@ -1,7 +1,7 @@
 #!/bin/bash
 set -x
 export MYSQL_PWD=nuserv-demo
-echo "good" >> "testing.txt"
+echo "good" > "testing.txt"
 get_data(){
     # get = $(date +%Y-%m-%d --date='100 day ago')
     # DAYS="100"
@@ -77,6 +77,12 @@ getfields(){
     dt=$(date '+%d/%m/%Y %H:%M:%S');
     file=$(date '+%d-%m-%Y');
     echo "Backup Started at $dt" > "$file.txt"
+    mysql -unuserv-demo -h 122.248.200.34 -D gbi -e "INSERT INTO backup_logs 
+                    (Date)
+                VALUES
+                    (${dt})
+                ON DUPLICATE KEY UPDATE
+                    Date = \"${dt}\";"
     #get gbi all fields form powerform database
     echo "Select FieldId From FormField
     Where FieldId Like 'GBI%' Group by FieldId;" > fields.sql
@@ -98,6 +104,12 @@ getfields(){
     done < <(tail -n +2 fieldsnew.csv)
     dt=$(date '+%d/%m/%Y %H:%M:%S');
     echo "Script Stopped at $dt" >> "$file.txt"
+    mysql -unuserv-demo -h 122.248.200.34 -D gbi -e "INSERT INTO backup_logs 
+                    (Date)
+                VALUES
+                    (${dt})
+                ON DUPLICATE KEY UPDATE
+                    Date = \"${dt}\";"
 }
 
 checktime(){

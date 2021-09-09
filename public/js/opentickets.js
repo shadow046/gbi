@@ -8,7 +8,25 @@ $(document).ready(function()
     $('#loading').show();
     $('#gbiTable thead tr:eq(0) th').each( function () {
         var title = $(this).text();
-        $(this).html('<input type="text" style="width:150px" placeholder="Search '+title+'" class="column_search" />' );
+        if (title == "DATE") {
+            $(this).html('<input type="text" style="width:100px" placeholder="Search '+title+'" class="column_search" />' );
+        }else if (title == "TICKET NUMBER") {
+                $(this).html('<input type="text" style="width:100px" placeholder="Search TICKET #" class="column_search" />' );
+        }else if (title == "AGE") {
+                $(this).html('<input type="text" style="width:70px" placeholder="Search '+title+'" class="column_search" />' );
+        }else if (title == "STORE CODE") {
+                $(this).html('<input type="text" style="width:70px" placeholder="Search Code" class="column_search" />' );
+        }else if (title == "CATEGORY") {
+                $(this).html('<input type="text" style="width:100px" placeholder="Search '+title+'" class="column_search" />' );
+        }else if (title == "ISSUE") {
+                $(this).html('<input type="text" style="width:100px" placeholder="Search '+title+'" class="column_search" />' );
+        }else if (title == "INCIDENT STATUS") {
+                $(this).html('<input type="text" style="width:200px" placeholder="Search '+title+'" class="column_search" />' );
+        }else if (title == "LATEST NOTES") {
+                $(this).html('<input type="text" style="width:300px" placeholder="Search '+title+'" class="column_search" />' );
+        }else{
+            $(this).html('<input type="text" style="width:150px" placeholder="Search '+title+'" class="column_search" />' );
+        }
     });
     
     gbitable =
@@ -51,12 +69,11 @@ $(document).ready(function()
                 }else if (d2.diff(d1, 'days') >= 21) {
                     return 'More than 20 days';
                 }
-            }},
+            },"width": "10%"},
             { data: 'ProblemCategory', name:'ProblemCategory'},
             { data: 'Issue', name:'Issue'},
             { data: 'StoreCode', name:'StoreCode'},
             { data: 'StoreName', name:'StoreName'},
-            // { data: 'Location', name:'Location'},
             { data: 'IncidentStatus', name:'IncidentStatus'},
             { data: 'LatestNotes', name:'LatestNotes', "width": "17%"}
         ]
@@ -68,33 +85,7 @@ $(document).ready(function()
             .search( this.value )
             .draw();
     });
-    //Store Top Issue
-    $("#StoreTopIssueTable").append(
-       $('<tfoot/>').append( $("#StoreTopIssueTable thead tr").clone())
-   );
-    StoreTopIssueTable =
-    $('table.StoreTopIssueTable').DataTable({ 
-        "dom": 'itp',
-        "language": {
-                "emptyTable": " ",
-                // "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw"><span class="sr-only">Searching...</span></i>',
-                "loadingRecords": "Please wait - loading..."
-            },
-        "pageLength": 10,
-        "order": [[ 3, "desc" ]],
-        processing: false,
-        serverSide: false,
-        ajax: 'storetopissue',
-        
-        columns: [
-            // { data: 'DateCreated', name:'DateCreated'},
-            { data: 'SubCategory', name:'SubCategory'},
-            { data: 'Open', name:'Open'},
-            { data: 'Closed', name:'Closed'},
-            { data: 'Total', name:'Total'}
-            // { data: 'IncidentStatus', name:'IncidentStatus'}
-        ]
-    });
+    
     function updateTime() {
         var currtime = new Date();
         var currtime1 = new Date(currtime.getTime());
@@ -146,53 +137,20 @@ $(document).on("click", '.DetailsBtn', function () {
         BtnSelected = BtnName;
     }
 });
-$('#userlogsTable thead').on( 'keyup', ".column_search",function () {
-        userlogsTable
-            .column( $(this).parent().index() )
-            .search( this.value )
-            .draw();
-});
-$(document).on('click', '#graphBtn', function () {
+
+$(document).on('click', '#closedticketsBtn', function () {
     $('#loading').show();
-    window.location.href = '/dailytickets';
+    window.location.href = 'closedticket';
 });
-$(document).on('click', '#userBtn', function () {
+$(document).on('click', '#monthlyBtn', function () {
     $('#loading').show();
-    window.location.href = '/users';
+    window.location.href = 'monthlytickets';
+});
+$(document).on('click', '#dashboardBtn', function () {
+    $('#loading').show();
+    window.location.href = '/';
 });
 
-$(document).on('click', '#logsBtn', function () {
-    $('table.userlogsTable').dataTable().fnDestroy();
-    $('#userlogsTable thead tr:eq(0) th').each( function () {
-        var title = $(this).text();
-        $(this).html( '<input type="text" style="width:100%" placeholder="Search '+title+'" class="column_search" />' );
-    });
-    userlogsTable =
-    $('table.userlogsTable').DataTable({ 
-        "dom": 'itp',
-        "language": {
-                "emptyTable": " ",
-                "loadingRecords": "Please wait - loading..."
-            },
-        "order": [[ 0, "desc" ]],
-        "pageLength": 10,
-        processing: false,
-        serverSide: true,
-        ajax: 'userlogs',
-        columns: [
-            { data: 'Date', name:'Date'},
-            { data: 'fullname', name:'fullname'},
-            { data: 'Access_Level', name:'Access_Level'},
-            { data: 'activity', name:'activity'}
-        ]
-    });
-    $('#userlogsModal').modal('show');
-});
-
-$(document).on('click', '#closeTicketBtn', function () {
-    $('#loading').show();
-    // window.location.href = '/closed';
-});
 $(document).on('click', '.createBtn', function () {
     window.open('http://wf.ideaserv.com.ph/#/GBI/task/assignment/new?tab=Service%20Report%20-%20GBI&status=For%20Verification', '_blank');
 });
@@ -202,31 +160,11 @@ $(document).on('click', '#EditBtn', function () {
     window.open('http://wf.ideaserv.com.ph/#/GBI/task/assignment/'+ticket+'?tab=Service%20Report%20-%20GBI&status='+gbistatus, '_blank');
     window.open('http://wf.ideaserv.com.ph/#/GBI/task/assignment/new?tab=Service%20Report%20-%20GBI&status=For%20Verification', '_blank');
 });
-$(document).on("click", '.TopIssueLocationBtn', function () {
-    var TopIssueLocationName = $(this).attr('TopIssueLocationName');
-    if (TopIssueLocationNameSelected != TopIssueLocationName) {
-        $('.TopIssueLocationBtn[TopIssueLocationName=\''+TopIssueLocationNameSelected+'\']').removeClass('btn-secondary');
-        $('.TopIssueLocationBtn[TopIssueLocationName=\''+TopIssueLocationNameSelected+'\']').toggleClass('bg-blue');
-        $(this).removeClass('bg-blue');
-        $(this).toggleClass('btn-secondary');
-        $('.'+TopIssueLocationNameSelected).hide()
-        $('.'+TopIssueLocationName).show();
-        TopIssueLocationNameSelected = TopIssueLocationName;
-    }
-});
 
-$(document).on("click", "#TopIssueMore", function () {
-    $('#topissueModal').modal('show');
-    
-});
 $(document).on("click", ".close", function () {
     // location.reload()    
 });
 
-$(document).on("click", "#StoreTopIssueTable tbody tr", function () {
-    var trdata = StoreTopIssueTable.row(this).data();
-    console.log(trdata);
-});
 $(document).on("click", "#gbiTable tbody tr", function () {
     $('#loading').show();
     var trdata = gbitable.row(this).data();

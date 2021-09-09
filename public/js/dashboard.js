@@ -4,6 +4,7 @@ var Plant;
 var Office;
 var start = 0;
 var barChartData;
+var StoreTopIssueTable, userlogsTable;
 $(document).ready(function()
 {
     function updateTime() {
@@ -76,7 +77,7 @@ $(document).ready(function()
                 data.grandtotal.forEach(element => {
                     datafoot +='<td>'+element.toLocaleString()+'</td>';
                 });
-                datahead+='<th style="font-size:12px">&nbsp;&nbsp;Grand Total&nbsp;&nbsp;</th></tr>';
+                datahead+='<th style="font-size:12px">Grand Total&nbsp;&nbsp;</th></tr>';
                 databodystore +='<td>'+data.strtotal.toLocaleString()+'</td></tr>';
                 databodyplant +='<td>'+data.plnttotal.toLocaleString()+'</td></tr>';
                 databodyoffice +='<td>'+data.ofctotal.toLocaleString()+'</td></tr>';
@@ -134,8 +135,8 @@ $(document).ready(function()
             });
             }
         });
-        $('#dailyChart').width($('#data').width());
-        $('#dailyChartW').width($('#dataW').width());
+        // $('#dailyChart').width($('#data').width());
+        // $('#dailyChartW').width($('#dataW').width());
         $('#loading').hide();
     }
     $('#loading').show();
@@ -143,14 +144,84 @@ $(document).ready(function()
         updateGraph();
     },3000);
     setInterval(updateTime, 1000);
+    // $("#StoreTopIssueTable").append(
+    //    $('<tfoot/>').append( $("#StoreTopIssueTable thead tr").clone())
+    // );
+    StoreTopIssueTable =
+    $('table.StoreTopIssueTable').DataTable({ 
+        "dom": 'itp',
+        "language": {
+                "emptyTable": " ",
+                // "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw"><span class="sr-only">Searching...</span></i>',
+                "loadingRecords": "Please wait - loading..."
+            },
+        "pageLength": 10,
+        "order": [[ 3, "desc" ]],
+        processing: false,
+        serverSide: false,
+        ajax: 'storetopissue',
+        columns: [
+            { data: 'SubCategory', name:'SubCategory'},
+            { data: 'Open', name:'Open'},
+            { data: 'Closed', name:'Closed'},
+            { data: 'Total', name:'Total'}
+        ]
+    });
+   
 });
-
-$(document).on('click', '#dashboardBtn', function () {
-    $('#loading').show();
-    window.location.href = '/';
-});
-
 $(document).on('click', '#monthlyBtn', function () {
     $('#loading').show();
-    window.location.href = '/monthlytickets';
+    window.location.href = 'monthlytickets';
+});
+
+$(document).on('click', '#openticketsBtn', function () {
+    $('#loading').show();
+    window.location.href = 'openticket';
+});
+
+$(document).on('click', '#closedticketsBtn', function () {
+    $('#loading').show();
+    window.location.href = 'closedticket';
+});
+
+$(document).on('click', '#userBtn', function () {
+    $('#loading').show();
+    window.location.href = 'users';
+});
+
+$(document).on('click', '#userLogsBtn', function () {
+    $('table.userlogsTable').dataTable().fnDestroy();
+    $('#userlogsTable thead tr:eq(0) th').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" style="width:100%" placeholder="Search '+title+'" class="column_search" />' );
+    });
+    userlogsTable =
+    $('table.userlogsTable').DataTable({ 
+        "dom": 'itp',
+        "language": {
+                "emptyTable": " ",
+                "loadingRecords": "Please wait - loading..."
+            },
+        "order": [[ 0, "desc" ]],
+        "pageLength": 10,
+        processing: false,
+        serverSide: true,
+        ajax: 'userlogs',
+        columns: [
+            { data: 'Date', name:'Date'},
+            { data: 'fullname', name:'fullname'},
+            { data: 'Access_Level', name:'Access_Level'},
+            { data: 'activity', name:'activity'}
+        ]
+    });
+    $('#userlogsModal').modal('show');
+});
+
+
+$(document).on("click", "#TopIssueMore", function () {
+    $('#topissueModal').modal('show');
+});
+
+$(document).on("click", "#AgingMore", function () {
+    $('#AgingModal').modal('show');
 });

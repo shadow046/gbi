@@ -141,15 +141,15 @@ $(document).on('click', '#userTable tbody tr', function () {
     $('#subBtn').val('Update');
     $('#userModal').modal('show');
 });
-$(document).on('click', '#graphBtn', function () {
+$(document).on('click', '#openticketsBtn', function () {
     $('#loading').show();
-    window.location.href = '/dailytickets';
+    window.location.href = 'openticket';
 });
-$(document).on('click', '#openTicketBtn', function () {
+$(document).on('click', '#dashboardBtn', function () {
     $('#loading').show();
     window.location.href = '/';
 });
-$(document).on('click', '#closeTicketBtn', function () {
+$(document).on('click', '#closedticketsBtn', function () {
     $('#loading').show();
-    window.location.href = '/closed';
+    window.location.href = 'closedticket';
 });

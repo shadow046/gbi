@@ -18,7 +18,7 @@ $(document).ready(function()
                 // "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw"><span class="sr-only">Searching...</span></i>',
                 "loadingRecords": "Please wait - loading..."
             },
-        "pageLength": 5,
+        "pageLength": 10,
         "order": [[ 1, "desc" ]],
         processing: false,
         serverSide: false,
@@ -49,29 +49,6 @@ $(document).ready(function()
             .draw();
     });
     
-    //Store Top Issue
-    StoreTopIssueTable =
-    $('table.StoreTopIssueTable').DataTable({ 
-        "dom": 'itp',
-        "language": {
-                "emptyTable": " ",
-                // "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw"><span class="sr-only">Searching...</span></i>',
-                "loadingRecords": "Please wait - loading..."
-            },
-        "pageLength": 10,
-        "order": [[ 1, "desc" ]],
-        processing: false,
-        serverSide: false,
-        ajax: 'storetopissue',
-        columns: [
-            // { data: 'DateCreated', name:'DateCreated'},
-            { data: 'SubCategory', name:'SubCategory'},
-            { data: 'Open', name:'Open'},
-            { data: 'Closed', name:'Closed'},
-            { data: 'Total', name:'Total'}
-            // { data: 'IncidentStatus', name:'IncidentStatus'}
-        ]
-    });
     $('div.dataTables_filter').appendTo('#search');
     function updateTime() {
         var currtime = new Date();
@@ -285,4 +262,15 @@ $(document).on("click", "#gbiTable tbody tr", function () {
         }
     });
 });
-
+$(document).on('click', '#openticketsBtn', function () {
+    $('#loading').show();
+    window.location.href = 'openticket';
+});
+$(document).on('click', '#monthlyBtn', function () {
+    $('#loading').show();
+    window.location.href = 'monthlytickets';
+});
+$(document).on('click', '#dashboardBtn', function () {
+    $('#loading').show();
+    window.location.href = '/';
+});

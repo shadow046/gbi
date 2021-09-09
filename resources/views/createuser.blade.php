@@ -28,13 +28,14 @@ $(document).on('click', '#submitBtn', function(){
                 otpid: $('#otpid').val(),
             },
             success: function(result){
-                if(result == 'Too many requests, try again later'){
+                console.log(result)
+                {{-- if(result == 'Too many requests, try again later'){
                     alert(result);
                     alert('Failed');
                 }else{
                     alert('Registration Completed!');
                 }
-                location.reload();
+                location.reload(); --}}
             },
             error: function (data) {
                 alert(data.responseText);

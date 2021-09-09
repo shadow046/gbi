@@ -111,66 +111,19 @@ $(document).on('change', '#monthselect', function(){
                 var databodyoffice = '<tr><td>Office</td>';
                 var datafoot = '<tr><td>Grand Total</td>';
                 var databodyW = ' ';
-                var dataheadW = '<tr><th>&nbsp;&nbsp;&nbsp;Weekly Ticket&nbsp;&nbsp;&nbsp;</th><th>&nbsp;&nbsp;&nbsp;Store&nbsp;&nbsp;&nbsp;</th><th>&nbsp;&nbsp;&nbsp;Plant&nbsp;&nbsp;&nbsp;</th><th>&nbsp;&nbsp;&nbsp;Office&nbsp;&nbsp;&nbsp;</th><th>&nbsp;&nbsp;&nbsp;GRAND TOTAL&nbsp;&nbsp;&nbsp;</th>';
-                var yr = yearselected;
-                var mon = monthselected;
-                var dy = new Date(yr + "-" + mon + "-01").getDay();
-                const d = new Date(yearselected, monthselected, 0);
-                const adjustedDate = d.getDate() + d.getDay();
-                var weekcount = Math.ceil(adjustedDate / 7);
-                var firstweekend= Math.ceil(7-dy);
-                var secondweekstart = firstweekend+1;
-                var secondweekend = secondweekstart+6;
-                var thirdweekstart = secondweekend+1;
-                var thirdweekend = thirdweekstart+6;
-                var newd = new Date();
-                if (data.strW.length == 1) {
-                    var firstweek = optionmonthselected.substring(0, 3)+' 1 - '+optionmonthselected.substring(0, 3)+' '+newd.getDate();
-                }else if (data.strW.length == 2) {
-                    var firstweek = optionmonthselected.substring(0, 3)+' 1 - '+optionmonthselected.substring(0, 3)+' '+firstweekend;
-                    var secondweek = optionmonthselected.substring(0, 3)+' '+secondweekstart+' - '+optionmonthselected.substring(0, 3)+' '+newd.getDate();
-                }else if (data.strW.length == 3) {
-                    var firstweek = optionmonthselected.substring(0, 3)+' 1 - '+optionmonthselected.substring(0, 3)+' '+firstweekend;
-                    var secondweek = optionmonthselected.substring(0, 3)+' '+secondweekstart+' - '+optionmonthselected.substring(0, 3)+' '+secondweekend;
-                    var thirdweek = optionmonthselected.substring(0, 3)+' '+thirdweekstart+' - '+optionmonthselected.substring(0, 3)+' '+newd.getDate();
-                }else if (data.strW.length == 4) {
-                    var fourthweekstart = thirdweekend+1;
-                    var fourthweekend = d.getDate();
-                    var firstweek = optionmonthselected.substring(0, 3)+' 1 - '+optionmonthselected.substring(0, 3)+' '+firstweekend;
-                    var secondweek = optionmonthselected.substring(0, 3)+' '+secondweekstart+' - '+optionmonthselected.substring(0, 3)+' '+secondweekend;
-                    var thirdweek = optionmonthselected.substring(0, 3)+' '+thirdweekstart+' - '+optionmonthselected.substring(0, 3)+' '+thirdweekend;
-                    var fourthweek = optionmonthselected.substring(0, 3)+' '+fourthweekstart+' - '+optionmonthselected.substring(0, 3)+' '+newd.getDate();
-                }else if (data.strW.length == 5) {
-                    var fourthweekstart = thirdweekend+1;
-                    var fourthweekend = fourthweekstart+6;
-                    var fifthweekstart = fourthweekend+1;
-                    var fifthweekend = d.getDate();
-                    var firstweek = optionmonthselected.substring(0, 3)+' 1 - '+optionmonthselected.substring(0, 3)+' '+firstweekend;
-                    var secondweek = optionmonthselected.substring(0, 3)+' '+secondweekstart+' - '+optionmonthselected.substring(0, 3)+' '+secondweekend;
-                    var thirdweek = optionmonthselected.substring(0, 3)+' '+thirdweekstart+' - '+optionmonthselected.substring(0, 3)+' '+thirdweekend;
-                    var fourthweek = optionmonthselected.substring(0, 3)+' '+fourthweekstart+' - '+optionmonthselected.substring(0, 3)+' '+fourthweekend;
-                    if ((newd.getMonth()+1) == monthselected && newd.getFullYear() == yearselected) {
-                        if (newd.getDate() == d.getDate()) {
-                            var fifthweek = optionmonthselected.substring(0, 3)+' '+fifthweekstart+' - '+optionmonthselected.substring(0, 3)+' '+fifthweekend;
-                        }else{
-                            var fifthweek = optionmonthselected.substring(0, 3)+' '+fifthweekstart+' - '+optionmonthselected.substring(0, 3)+' '+newd.getDate();
-                        }
-                    }else{
-                        var fifthweek = optionmonthselected.substring(0, 3)+' '+fifthweekstart+' - '+optionmonthselected.substring(0, 3)+' '+fifthweekend;
-                    }
-                }
+                var dataheadW = '<tr><th>&nbsp;&nbsp;&nbsp;WEEK&nbsp;&nbsp;&nbsp;</th><th>&nbsp;&nbsp;&nbsp;Store&nbsp;&nbsp;&nbsp;</th><th>&nbsp;&nbsp;&nbsp;Plant&nbsp;&nbsp;&nbsp;</th><th>&nbsp;&nbsp;&nbsp;Office&nbsp;&nbsp;&nbsp;</th><th>&nbsp;&nbsp;&nbsp;GRAND TOTAL&nbsp;&nbsp;&nbsp;</th>';
 
                 for (let index = 0; index < data.strW.length; index++) {
                     if (index == 0) {
-                        databodyW += '<tr><td>'+firstweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
+                        databodyW += '<tr><td>'+data.firstweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
                     }else if (index == 1) {
-                        databodyW += '<tr><td>'+secondweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
+                        databodyW += '<tr><td>'+data.secondweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
                     }else if (index == 2) {
-                        databodyW += '<tr><td>'+thirdweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
+                        databodyW += '<tr><td>'+data.thirdweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
                     }else if (index == 3) {
-                        databodyW += '<tr><td>'+fourthweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
+                        databodyW += '<tr><td>'+data.fourthweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
                     }else if (index == 4) {
-                        databodyW += '<tr><td>'+fifthweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
+                        databodyW += '<tr><td>'+data.fifthweek+'</td><td>'+data.strW[index].toLocaleString()+'</td><td>'+data.plntW[index].toLocaleString()+'</td><td>'+data.ofcW[index].toLocaleString()+'</td><td>'+data.grandtotalW[index].toLocaleString()+'</td>';
                     }
                 }
                 databodyW += '<tr><td>Grand Total</td><td>'+data.strtotalW.toLocaleString()+'</td><td>'+data.plnttotalW.toLocaleString()+'</td><td>'+data.ofctotalW.toLocaleString()+'</td><td>'+data.grandtotalW[data.weekcount].toLocaleString()+'</td>';
@@ -345,7 +298,7 @@ $(document).on('change', '#monthselect', function(){
 
         $('#dailyChart').width('900');
         $('#dailyChartW').width('900');
-        $('#ptext').text('MONTHLY VIEW '+optionmonthselected.toUpperCase()+' '+$('#yearselect').val()).css({'font-weight':'bold'});;
+        $('#ptext').text('MONTHLY VIEW '+optionmonthselected.toUpperCase()+' '+$('#yearselect').val()).css({'font-weight':'bold'});
         $('.ptext').show();
         if (curmonth == monthselected) {
             $('#exportBtn').hide();
@@ -367,9 +320,17 @@ $(document).on('click', '#dailyBtn', function () {
     $('#loading').show();
     window.location.href = '/dailytickets';
 });
-$(document).on('click', '#graphBtn', function () {
+$(document).on('click', '#dashboardBtn', function () {
     $('#loading').show();
     window.location.href = '/';
+});
+$(document).on('click', '#closedticketsBtn', function () {
+    $('#loading').show();
+    window.location.href = 'closedticket';
+});
+$(document).on('click', '#openticketsBtn', function () {
+    $('#loading').show();
+    window.location.href = 'openticket';
 });
 $(document).on('click', '#exportBtn', function () {
     $('#loading').show();

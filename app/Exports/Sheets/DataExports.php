@@ -2,8 +2,9 @@
 
 namespace App\Exports\Sheets;
 
-use App\Exports\DataExport;
-use App\Exports\DataExport1;
+use App\Exports\Daily;
+use App\Exports\Weekly;
+use App\Exports\TopIssue;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
@@ -16,18 +17,23 @@ class DataExports implements WithMultipleSheets
     protected $year;
     protected $month;
     protected $monthname;
+    protected $store;
+    protected $plant;
 
-    public function __construct($year, $month, $monthname) {
+    public function __construct($year, $month, $monthname, $store, $plant) {
         $this->year = $year;
         $this->month = $month;
         $this->monthname = $monthname;
+        $this->store = $store;
+        $this->plant = $plant;
     }
 
     public function sheets(): array
     {
         $sheets = [];
-        $sheets[] = new DataExport($this->year, $this->month, $this->monthname);
-        $sheets[] = new DataExport1($this->year, $this->month, $this->monthname);
+        $sheets[] = new Daily($this->year, $this->month, $this->monthname);
+        $sheets[] = new Weekly($this->year, $this->month, $this->monthname);
+        $sheets[] = new TopIssue($this->year, $this->month, $this->monthname, $this->store, $this->plant);
         return $sheets;
     }
 

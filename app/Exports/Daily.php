@@ -22,7 +22,7 @@ use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
 use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
 use DB;
 
-class DataExport implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,WithTitle,WithCharts
+class Daily implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,WithTitle,WithCharts
 {
     /**
     * @return \Illuminate\Support\Collection

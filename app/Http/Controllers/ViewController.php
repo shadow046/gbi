@@ -15,7 +15,7 @@ class ViewController extends Controller
 
     public function __construct()
     {
-        $this->middleware(['auth', 'verified', 'CheckPassword']);
+        $this->middleware(['auth', 'CheckPassword']);
     }
 
     public function users()
@@ -31,6 +31,173 @@ class ViewController extends Controller
     public function weeklytickets()
     {
         return view('weeklychart');
+    }
+    public function dashboard()
+    {
+        $open = Ticket::query()
+            ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
+            ->whereNotIn('Status',['Closed'])
+            ->count();
+        $closed = Ticket::query()
+            ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
+            ->where('Status','Closed')
+            ->count();
+
+        $TopIssues = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'))
+            ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
+            ->whereIN('Status', ['CLosed', 'Open'])
+            ->groupBy('SubCategory')
+            ->get();
+        $top = collect([]);
+        foreach ($TopIssues as $issue) {
+            if ($issue->SubCategory != Null) {
+                // return $issue->Total;
+                $top->offsetSet($issue->SubCategory,$issue->Total);
+            }
+        }
+        $filtered = $top->sortDesc();
+        $fivedaysStore = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Store')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(5))
+            ->whereDate('DateCreated', '<=', Carbon::now())
+            ->count();
+        $fivedaysPlant = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Plant')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(5))
+            ->whereDate('DateCreated', '<=', Carbon::now())
+            ->count();
+        $fivedaysOffice = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Office')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(5))
+            ->whereDate('DateCreated', '<=', Carbon::now())
+            ->count();
+        $sixto10Office = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Office')
+            ->where('TaskNumber', 'LIKE', 'GBI%')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(10))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(6))
+            ->count();
+        $sixto10Store = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Store')
+            ->where('TaskNumber', 'LIKE', 'GBI%')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(10))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(6))
+            ->count();
+        $sixto10Plant = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Plant')
+            ->where('TaskNumber', 'LIKE', 'GBI%')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(10))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(6))
+            ->count();
+        $elevento15Plant = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Plant')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(15))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(11))
+            ->count();
+        $elevento15Store = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Store')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(15))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(11))
+            ->count();
+        $elevento15Office = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Office')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(15))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(11))
+            ->count();
+        $sixteento20Office = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Office')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(20))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(16))
+            ->count();
+        $sixteento20Store = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Store')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(20))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(16))
+            ->count();
+        $sixteento20Plant = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Plant')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(20))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(16))
+            ->count();
+        $greaterthan20Plant = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Plant')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(399))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(21))
+            ->count();
+        $greaterthan20Store = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Store')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(399))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(21))
+            ->count();
+        $greaterthan20Office = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Office')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(399))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(21))
+            ->count();
+        $fivedays = $fivedaysOffice+$fivedaysPlant+$fivedaysStore;
+        $sixto10 = $sixto10Office+$sixto10Plant+$sixto10Store;
+        $elevento15 = $elevento15Office+$elevento15Plant+$elevento15Store;
+        $sixteento20 = $sixteento20Office+$sixteento20Plant+$sixteento20Store;
+        $greaterthan20 = $greaterthan20Office+$greaterthan20Plant+$greaterthan20Store;
+        $lessthan5 = $fivedaysOffice+$fivedaysPlant+$fivedaysStore;
+        return view('dashboard',
+            compact(
+                'filtered',
+                'lessthan5',
+                'greaterthan20',
+                'greaterthan20Office',
+                'greaterthan20Plant',
+                'greaterthan20Store',
+                'sixteento20',
+                'sixteento20Office',
+                'sixteento20Plant',
+                'sixteento20Store',
+                'elevento15',
+                'sixto10Office',
+                'elevento15Plant',
+                'elevento15Office',
+                'elevento15Store',
+                'sixto10',
+                'sixto10Office',
+                'sixto10Plant',
+                'sixto10Store',
+                'fivedays',
+                'fivedaysOffice',
+                'fivedaysPlant',
+                'fivedaysStore',
+                'open',
+                'closed')
+            );
     }
 
     public function dailytickets()
@@ -109,7 +276,10 @@ class ViewController extends Controller
 
     public function open()
     {
-        $TopIssues = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'))->groupBy('SubCategory')->get();
+        $TopIssues = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'))
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->groupBy('SubCategory')
+            ->get();
         $top = collect([]);
         foreach ($TopIssues as $issue) {
             if ($issue->SubCategory != Null) {
@@ -118,33 +288,147 @@ class ViewController extends Controller
             }
         }
         $filtered = $top->sortDesc();
-        $lessthan5 = Ticket::query()->select('TaskNumber')
+        $fivedaysStore = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Store')
             ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
             ->whereDate('DateCreated', '>=', Carbon::now()->subDays(5))
             ->whereDate('DateCreated', '<=', Carbon::now())
             ->count();
-        $sixto10 = Ticket::query()->select('TaskNumber')
+        $fivedaysPlant = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Plant')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(5))
+            ->whereDate('DateCreated', '<=', Carbon::now())
+            ->count();
+        $fivedaysOffice = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Office')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(5))
+            ->whereDate('DateCreated', '<=', Carbon::now())
+            ->count();
+        $sixto10Office = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Office')
             ->where('TaskNumber', 'LIKE', 'GBI%')
             ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
             ->whereDate('DateCreated', '>=', Carbon::now()->subDays(10))
             ->whereDate('DateCreated', '<=', Carbon::now()->subDays(6))
             ->count();
-        $elevento15 = Ticket::query()->select('TaskNumber')
+        $sixto10Store = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Store')
+            ->where('TaskNumber', 'LIKE', 'GBI%')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(10))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(6))
+            ->count();
+        $sixto10Plant = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Plant')
+            ->where('TaskNumber', 'LIKE', 'GBI%')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(10))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(6))
+            ->count();
+        $elevento15Plant = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Plant')
             ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
             ->whereDate('DateCreated', '>=', Carbon::now()->subDays(15))
             ->whereDate('DateCreated', '<=', Carbon::now()->subDays(11))
             ->count();
-        $sixteento20 = Ticket::query()->select('TaskNumber')
+        $elevento15Store = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Store')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(15))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(11))
+            ->count();
+        $elevento15Office = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Office')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(15))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(11))
+            ->count();
+        $sixteento20Office = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Office')
             ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
             ->whereDate('DateCreated', '>=', Carbon::now()->subDays(20))
             ->whereDate('DateCreated', '<=', Carbon::now()->subDays(16))
             ->count();
-        $greaterthan20 = Ticket::query()->select('TaskNumber')
+        $sixteento20Store = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Store')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(20))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(16))
+            ->count();
+        $sixteento20Plant = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Plant')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(20))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(16))
+            ->count();
+        $greaterthan20Plant = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Plant')
             ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
             ->whereDate('DateCreated', '>=', Carbon::now()->subDays(399))
             ->whereDate('DateCreated', '<=', Carbon::now()->subDays(21))
             ->count();
-        return view('opentickets', compact('filtered', 'lessthan5', 'sixto10', 'elevento15', 'sixteento20','greaterthan20'));
+        $greaterthan20Store = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Store')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(399))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(21))
+            ->count();
+        $greaterthan20Office = Ticket::query()->select('TaskNumber')
+            ->join('Data','Code','StoreCode')
+            ->where('SBU','Office')
+            ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
+            ->whereDate('DateCreated', '>=', Carbon::now()->subDays(399))
+            ->whereDate('DateCreated', '<=', Carbon::now()->subDays(21))
+            ->count();
+        $fivedays = $fivedaysOffice+$fivedaysPlant+$fivedaysStore;
+        $sixto10 = $sixto10Office+$sixto10Plant+$sixto10Store;
+        $elevento15 = $elevento15Office+$elevento15Plant+$elevento15Store;
+        $sixteento20 = $sixteento20Office+$sixteento20Plant+$sixteento20Store;
+        $greaterthan20 = $greaterthan20Office+$greaterthan20Plant+$greaterthan20Store;
+        $lessthan5 = $fivedaysOffice+$fivedaysPlant+$fivedaysStore;
+        return view('opentickets',
+            compact(
+                'filtered',
+                'lessthan5',
+                'greaterthan20',
+                'greaterthan20Office',
+                'greaterthan20Plant',
+                'greaterthan20Store',
+                'sixteento20',
+                'sixteento20Office',
+                'sixteento20Plant',
+                'sixteento20Store',
+                'elevento15',
+                'sixto10Office',
+                'elevento15Plant',
+                'elevento15Office',
+                'elevento15Store',
+                'sixto10',
+                'sixto10Office',
+                'sixto10Plant',
+                'sixto10Store',
+                'fivedays',
+                'fivedaysOffice',
+                'fivedaysPlant',
+                'fivedaysStore'
+            )
+        );
     }
 
     public function closed(Request $request)

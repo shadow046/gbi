@@ -35,6 +35,12 @@ live(){
         dt=$(date '+%d/%m/%Y %H:%M:%S');
         file=$(date '+%d-%m-%Y');
         echo "Database Updated at $dt" >> live.txt
+        mysql -unuserv-demo -h 122.248.200.34 -D gbi -e "INSERT INTO live_logs 
+                    (Date)
+                VALUES
+                    (${dt})
+                ON DUPLICATE KEY UPDATE
+                    Date = \"${dt}\";"
         rm today.*
         sleep 1m
         rm nohup.out

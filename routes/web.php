@@ -28,12 +28,14 @@ Route::get('/email/verify', function () {
 
 //For view controller
 Route::get('users', [ViewController::class, 'users'])->name('users.index')->middleware('CheckRole');
-Route::get('closed', [ViewController::class, 'closed'])->name('closed');
-Route::get('/', [ViewController::class, 'open'])->name('home.index');
+Route::get('closedticket', [ViewController::class, 'closed'])->name('closedtickets');
+Route::get('openticket', [ViewController::class, 'open'])->name('opentickets');
+Route::get('/', [ViewController::class, 'dashboard'])->name('home.index');
 Route::get('monthlytickets', [ViewController::class, 'monthlytickets'])->name('gbi.monthly.blade');
 Route::get('weeklytickets', [ViewController::class, 'weeklytickets'])->name('gbi.weekly.blade');
 Route::get('dailytickets', [ViewController::class, 'dailytickets'])->name('gbi.daily.blade');
 Route::get('change-password', [UserController::class, 'changepass']);
+Route::get('dashboard', [ViewController::class, 'dashboard']);
 
 //For users controller
 Route::get('getusers', [UserController::class, 'getusers']);
