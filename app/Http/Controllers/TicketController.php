@@ -80,7 +80,7 @@ class TicketController extends Controller
                 )
             ->join('Data', 'Code', 'StoreCode')
             // ->whereNotIN('TaskStatus',['Submitted','Closed'])
-            ->whereIN('Status', ['Closed'])
+            ->whereIN('IncidentStatus', ['Closed', 'Resolved'])
             ->get();
         return DataTables::of($tickets)
         ->addColumn('StoreName', function (Ticket $tickets){
@@ -107,14 +107,14 @@ class TicketController extends Controller
                 'StoreCode',
                 'Store_Name as StoreName',
                 'AdditionalStoreDetails',
-                'LatestNotes',
+                'LatestNotes'
                 // 'TaskStatus'
                 )
             ->join('Data', 'Code', 'StoreCode')
             ->whereNotIN('TaskStatus',['Closed'])
-            ->whereIN('Status', ['Open', 'Re Open', 'Closed'])
+            ->whereNotIN('IncidentStatus', ['Closed', 'Resolved'])
             ->get();
-        }else if (auth()->user()->roles->first()->name == "Manager") {
+        }else if (auth()->user()->hasrole('Manager')) {
             $tickets = Ticket::query()
             ->select(
                 'DateCreated',
@@ -128,11 +128,11 @@ class TicketController extends Controller
                 'Store_Name as StoreName',
                 'AdditionalStoreDetails',
                 'LatestNotes',
-                // 'TaskStatus'
+                'Status'
                 )
             ->join('Data', 'Code', 'StoreCode')
             ->whereNotIN('TaskStatus',['Closed'])
-            ->whereIN('Status', ['Open', 'Re Open'])
+            ->whereNotIN('IncidentStatus', ['Closed', 'Resolved'])
             ->get();
         }else if (auth()->user()->roles->first()->name == "Client") {
             $tickets = Ticket::query()
@@ -147,12 +147,11 @@ class TicketController extends Controller
                 'StoreCode',
                 'Store_Name as StoreName',
                 'AdditionalStoreDetails',
-                'LatestNotes',
-                // 'TaskStatus'
+                'LatestNotes'
                 )
             ->join('Data', 'Code', 'StoreCode')
             ->whereNotIN('TaskStatus',['Closed'])
-            ->whereIN('Status', ['Open', 'Re Open'])
+            ->whereNotIN('IncidentStatus', ['Closed', 'Resolved'])
             ->get();
         }
         
