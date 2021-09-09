@@ -5,7 +5,6 @@
     <a class="navbar-brand" id="navtime" href="#"></a>
     <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="dashboardBtn" value="DASHBOARD">&nbsp;&nbsp;
     <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="openticketsBtn" value="OPEN TICKETS">&nbsp;&nbsp;
-    <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="monthlyBtn" value="VIEW MONTHLY">&nbsp;&nbsp;
     @if (auth()->user()->roles->first()->name != "Client")
         <input type="button" class="btn createBtn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" value="CREATE TICKET">&nbsp;&nbsp;
     @endif

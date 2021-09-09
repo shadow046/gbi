@@ -120,7 +120,7 @@
             @include('modal.user')
         @endif
 
-        @if(Request::is('closedtickets'))
+        @if(Request::is('closedticket'))
             @include('modal.ticketdetails')
         @endif
 

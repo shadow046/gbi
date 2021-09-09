@@ -34,6 +34,9 @@ class ViewController extends Controller
     }
     public function dashboard()
     {
+        if (auth()->user()->hasrole('Agent')) {
+            return redirect()->to('/openticket');
+        }
         $open = Ticket::query()
             ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
             ->whereNotIn('Status',['Closed'])

@@ -3,10 +3,11 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">{{\Carbon\Carbon::now()->format('F d, Y')}}</a>
     <a class="navbar-brand" id="navtime" href="#"></a>
-    <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="dashboardBtn" value="DASHBOARD">&nbsp;&nbsp;
-    <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="closedticketsBtn" value="CLOSED TICKETS">&nbsp;&nbsp;
-    <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="monthlyBtn" value="VIEW MONTHLY">&nbsp;&nbsp;
-    @if (auth()->user()->roles->first()->name != "Client")
+    @if (!auth()->user()->hasrole("Agent"))
+        <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="dashboardBtn" value="DASHBOARD">&nbsp;&nbsp;
+        <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="closedticketsBtn" value="CLOSED TICKETS">&nbsp;&nbsp;
+    @endif
+    @if (auth()->user()->hasrole( "Client"))
         <input type="button" class="btn createBtn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" value="CREATE TICKET">&nbsp;&nbsp;
     @endif
     <a href="{{route('logout')}}" class="nav-link ml-auto"><input type="button" class="btn logoutBtn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="logoutBtn" value="LOGOUT"></a>
@@ -19,7 +20,9 @@
     </div>
 @endif
 <div class="table container-fluid" style="overflow-x: auto;white-space: nowrap;">
-    <span style="font-size:130%;color:#00127f"><b>OPEN TICKETS</b></span>
+    @if (!auth()->user()->hasrole("Agent"))
+        <span style="font-size:130%;color:#00127f"><b>OPEN TICKETS</b></span>
+    @endif
     <table class="table-hover gbiTable display nowrap" id="gbiTable" style="font-size:70%;width:100%">
         <thead style="background-color:#00127f;color:white">
             <tr>
