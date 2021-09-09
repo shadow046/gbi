@@ -7,10 +7,8 @@
             <div class="modal-header">
                 <div class="modal-title w-100 text-center">
                     <input type="button" class="btn btn-secondary DetailsBtn" BtnName="Details" value="Ticket Details">
-                    @if (Request::is('openticket'))
-                        @if(!auth()->user()->hasrole('Client'))
-                            <input type="button" class="btn bg-blue DetailsBtn" BtnName="Remarks" value="Remarks">
-                        @endif
+                    @if(!auth()->user()->hasrole('Client'))
+                        <input type="button" class="btn bg-blue DetailsBtn" BtnName="Remarks" value="Remarks">
                     @endif
                     <input type="button" class="btn bg-blue DetailsBtn" BtnName="History" value="History">
                     <a class="close cancel" aria-label="Close" data-dismiss="modal" style="cursor: pointer">
