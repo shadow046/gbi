@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Task;
+use App\Models\Ticket;
 use App\Models\FormField;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -20,6 +20,7 @@ use Maatwebsite\Excel\Concerns\WithCharts;
 use PhpOffice\PhpSpreadsheet\Chart\PlotArea;
 use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
 use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
+use Carbon\Carbon;
 use DB;
 
 class Weekly implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,WithTitle,WithCharts
@@ -148,62 +149,53 @@ class Weekly implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,Wit
 
     public function array(): array
     {
-        $StoreW = Task::query()
-            ->select(DB::raw('COUNT(Task.Id) as count'), DB::raw("DATENAME(week, DateCreated) as Date"))
-            ->join('Form', 'TaskId', 'Task.Id')
-            ->join('FormField', 'FormId', 'Form.Id')
-            ->where('FieldId', 'GBISBU')
-            ->where('Value', 'Store')
-            ->whereYear('DateCreated', $this->year)
-            ->whereMonth('DateCreated', $this->month)
-            ->groupBy(DB::raw("DATENAME(week, DateCreated)"))
+        $weekstart = Carbon::createFromDate($this->year, $this->month, 1)->startofweek(Carbon::SUNDAY)->toDateString();
+        $weekend = Carbon::createFromDate($this->year, $this->month, 30)->endofweek(Carbon::SATURDAY)->toDateString();
+        $week1 = Carbon::parse($weekstart)->formatLocalized('%b %d').' - '.Carbon::parse($weekstart)->addDays(6)->formatLocalized('%b %d');
+        $week2 = Carbon::parse($weekstart)->addDays(7)->formatLocalized('%b %d').' - '.Carbon::parse($weekstart)->addDays(13)->formatLocalized('%b %d');
+        $week3 = Carbon::parse($weekstart)->addDays(14)->formatLocalized('%b %d').' - '.Carbon::parse($weekstart)->addDays(20)->formatLocalized('%b %d');
+        $week4 = Carbon::parse($weekstart)->addDays(21)->formatLocalized('%b %d').' - '.Carbon::parse($weekstart)->addDays(27)->formatLocalized('%b %d');
+        $week5 = Carbon::parse($weekstart)->addDays(28)->formatLocalized('%b %d').' - '.Carbon::parse($weekstart)->addDays(34)->formatLocalized('%b %d');
+        $StoreW = Ticket::query()
+            ->select(DB::raw('COUNT(TaskId) as count'), DB::raw("WEEK(DateCreated) as Date"))
+            ->join('Data','Code','StoreCode')
+            ->where('SBU', 'Store')
+            ->whereNotIn('TaskStatus',['Closed'])
+            ->whereDate('DateCreated','>=',$weekstart)
+            ->whereDate('DateCreated','<=',$weekend)
+            ->groupBy('Date')
             ->get();
-        $PlantW = Task::query()
-            ->select(DB::raw('COUNT(Task.Id) as count'), DB::raw("DATENAME(week, DateCreated) as Date"))
-            // ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
-            ->join('Form', 'TaskId', 'Task.Id')
-            ->join('FormField', 'FormId', 'Form.Id')
-            ->where('FieldId', 'GBISBU')
-            ->where('Value', 'Plant')
-            ->whereYear('DateCreated', $this->year)
-            ->whereMonth('DateCreated', $this->month)
-            ->groupBy(DB::raw("DATENAME(week, DateCreated)"))
+        $PlantW = Ticket::query()
+            ->select(DB::raw('COUNT(TaskId) as count'), DB::raw("WEEK(DateCreated) as Date"))
+            ->join('Data','Code','StoreCode')
+            ->where('SBU', 'Plant')
+            ->whereNotIn('TaskStatus',['Closed'])
+            ->whereDate('DateCreated','>=',$weekstart)
+            ->whereDate('DateCreated','<=',$weekend)
+            ->groupBy('Date')
             ->get();
-        $OfficeW = Task::query()
-            ->select(DB::raw('COUNT(Task.Id) as count'), DB::raw("DATENAME(week, DateCreated) as Date"))
-            // ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
-            ->join('Form', 'TaskId', 'Task.Id')
-            ->join('FormField', 'FormId', 'Form.Id')
-            // ->orderBy('DateCreated', 'Asc')
-            ->where('FieldId', 'GBISBU')
-            ->where('Value', 'Office')
-            ->whereYear('DateCreated', $this->year)
-            ->whereMonth('DateCreated', $this->month)
-            ->groupBy(DB::raw("DATENAME(week, DateCreated)"))
+        $OfficeW = Ticket::query()
+            ->select(DB::raw('COUNT(TaskId) as count'), DB::raw("WEEK(DateCreated) as Date"))
+            ->join('Data','Code','StoreCode')
+            ->where('SBU', 'Office')
+            ->whereNotIn('TaskStatus',['Closed'])
+            ->whereDate('DateCreated','>=',$weekstart)
+            ->whereDate('DateCreated','<=',$weekend)
+            ->groupBy('Date')
             ->get();
-        $dateW = Task::query()
-            ->select(DB::raw("DATENAME(week, DateCreated) as date"))
-            // ->whereDate('DateCreated', '>', Carbon::now()->subMonths(1))
-            ->join('Form', 'TaskId', 'Task.Id')
-            ->join('FormField', 'FormId', 'Form.Id')
-            // ->orderBy('DateCreated', 'Asc')
-            ->where('FieldId', 'GBISBU')
-            ->whereYear('DateCreated', $this->year)
-            ->whereMonth('DateCreated', $this->month)
-            ->whereNotNull('Value')
-            ->groupBy(DB::raw("DATENAME(week, DateCreated)"))
+        $dateW = Ticket::query()
+            ->select(DB::raw("WEEK(DateCreated) as date"))
+            ->whereNotIn('TaskStatus',['Closed'])
+            ->whereDate('DateCreated','>=',$weekstart)
+            ->whereDate('DateCreated','<=',$weekend)
+            ->groupBy('date')
             ->get();
-        $datesW = Task::query()
-            ->select(DB::raw("DATENAME(week, DateCreated) as date"))
-            // ->whereDate('DateCreated', '>', Carbon::now()->subMonths(1))
-            ->join('Form', 'TaskId', 'Task.Id')
-            ->join('FormField', 'FormId', 'Form.Id')
-            // ->orderBy('DateCreated', 'Asc')
-            ->where('FieldId', 'GBISBU')
-            ->whereYear('DateCreated', $this->year)
-            ->whereMonth('DateCreated', $this->month)
-            ->whereNotNull('Value')
-            ->groupBy(DB::raw("DATENAME(week, DateCreated)"))
+        $datesW = Ticket::query()
+            ->select(DB::raw("WEEK(DateCreated) as date"))
+            ->whereNotIn('TaskStatus',['Closed'])
+            ->whereDate('DateCreated','>=',$weekstart)
+            ->whereDate('DateCreated','<=',$weekend)
+            ->groupBy('date')
             ->pluck('date');
         $ofcW = [];
         $plntW = [];
@@ -270,11 +262,11 @@ class Weekly implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,Wit
             [''],
             ['','','','WEEKLY TICKETS'],
             ['','','','STORE','PLANT','OFFICE','GRAND TOTAL'],
-            ['','','Week 1', $strW[0],$plntW[0],$ofcW[0],$grandtotalW[0]],
-            ['','','Week 2', $strW[1],$plntW[1],$ofcW[1],$grandtotalW[1]],
-            ['','','Week 3', $strW[2],$plntW[2],$ofcW[2],$grandtotalW[2]],
-            ['','','Week 4', $strW[3],$plntW[3],$ofcW[3],$grandtotalW[3]],
-            ['','','Week 5', $strW[4],$plntW[4],$ofcW[4],$grandtotalW[4]],
+            ['','',$week1, $strW[0],$plntW[0],$ofcW[0],$grandtotalW[0]],
+            ['','',$week2, $strW[1],$plntW[1],$ofcW[1],$grandtotalW[1]],
+            ['','',$week3, $strW[2],$plntW[2],$ofcW[2],$grandtotalW[2]],
+            ['','',$week4, $strW[3],$plntW[3],$ofcW[3],$grandtotalW[3]],
+            ['','',$week5, $strW[4],$plntW[4],$ofcW[4],$grandtotalW[4]],
             ['','','Grand Total', $strtotalW,$plnttotalW,$ofctotalW,$grandtotalW[5]],
             ['','','Percentage',round(($strtotalW/$grandtotalW[5])*100,2),round(($plnttotalW/$grandtotalW[5])*100,2),round(($ofctotalW/$grandtotalW[5])*100,2),'100%'],
         ];
