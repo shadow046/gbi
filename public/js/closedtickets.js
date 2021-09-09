@@ -156,8 +156,8 @@ $(document).on("click", '.TopIssueLocationBtn', function () {
         $('.TopIssueLocationBtn[TopIssueLocationName=\''+TopIssueLocationNameSelected+'\']').toggleClass('bg-blue');
         $(this).removeClass('bg-blue');
         $(this).toggleClass('btn-secondary');
-        $('.'+TopIssueLocationNameSelected).hide()
-        $('.'+TopIssueLocationName).show();
+        $('#'+TopIssueLocationNameSelected).hide()
+        $('#'+TopIssueLocationName).show();
         TopIssueLocationNameSelected = TopIssueLocationName;
     }
 });
