@@ -182,7 +182,7 @@ $(document).on("click", "#gbiTable tbody tr", function () {
     $('#TicketNumber').val(trdata.TaskNumber);
     $('#gbisbu').val(trdata.gbisbu);
     $('#Status').val(trdata.IncidentStatus);
-
+    $('.DetailsBtn[BtnName=\'Details\']').click();
     $.ajax({
         type: "GET",
         url: "taskdata",
@@ -217,9 +217,14 @@ $(document).on("click", "#gbiTable tbody tr", function () {
             if (data.Remarks.length > 0) {
                 for (let index = 0; index < data.Remarks.length; index++) {
                     var remarksdate = new Date(data.Remarks[index].Timestamp);
-                    remarks +='<div class="container row"><label class="col-sm-3 control-label">'+data.Remarks[index].Author+'<br><small>'+moment(remarksdate).format('lll')+'</small></label><div class="col-sm-9"><div class="text-break">'+data.Remarks[index].Message+'</div></div><hr></div>';
+                    if (data.Remarks[index].Message) {
+                        remarks +='<div class="container row"><label class="col-sm-3 control-label">'+data.Remarks[index].Author+'<br><small>'+moment(remarksdate).format('lll')+'</small></label><div class="col-sm-9"><div class="text-break">'+data.Remarks[index].Message+'</div></div><hr></div>';
+                    }
                 }
-                $('#remarks-details').append(remarks);
+                $('#remarks-details').empty().append(remarks);
+                $('.DetailsBtn[BtnName=\'Remarks\']').show();
+            }else{
+                $('.DetailsBtn[BtnName=\'Remarks\']').hide();
             }
             var history = '';
             console.log(data.History);
