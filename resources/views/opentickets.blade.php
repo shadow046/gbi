@@ -7,7 +7,7 @@
         <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="dashboardBtn" value="DASHBOARD">&nbsp;&nbsp;
         <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="closedticketsBtn" value="CLOSED TICKETS">&nbsp;&nbsp;
     @endif
-    @if (auth()->user()->hasrole( "Client"))
+    @if (!auth()->user()->hasrole( "Client"))
         <input type="button" class="btn createBtn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" value="CREATE TICKET">&nbsp;&nbsp;
     @endif
     <a href="{{route('logout')}}" class="nav-link ml-auto"><input type="button" class="btn logoutBtn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="logoutBtn" value="LOGOUT"></a>
