@@ -246,6 +246,13 @@ class TicketController extends Controller
 
     public function monthlyticketsdata(Request $request)
     {
+        $weekstart = Carbon::createFromDate($request->year, $request->month, 1)->startofweek(Carbon::SUNDAY)->toDateString();
+        $weekend = Carbon::createFromDate($request->year, $request->month, 30)->endofweek(Carbon::SATURDAY)->toDateString();
+        $week1 = Carbon::parse($weekstart)->formatLocalized('%b %d').' - '.Carbon::parse($weekstart)->addDays(6)->formatLocalized('%b %d');
+        $week2 = Carbon::parse($weekstart)->addDays(7)->formatLocalized('%b %d').' - '.Carbon::parse($weekstart)->addDays(13)->formatLocalized('%b %d');
+        $week3 = Carbon::parse($weekstart)->addDays(14)->formatLocalized('%b %d').' - '.Carbon::parse($weekstart)->addDays(20)->formatLocalized('%b %d');
+        $week4 = Carbon::parse($weekstart)->addDays(21)->formatLocalized('%b %d').' - '.Carbon::parse($weekstart)->addDays(27)->formatLocalized('%b %d');
+        $week5 = Carbon::parse($weekstart)->addDays(28)->formatLocalized('%b %d').' - '.Carbon::parse($weekstart)->addDays(34)->formatLocalized('%b %d');
         $Store = Ticket::query()
             ->select(DB::raw('COUNT(TaskId) as count'), DB::raw("DATE_FORMAT(DateCreated, '%m-%d-%Y') as Date"))
             ->join('Data','Code','StoreCode')
@@ -260,8 +267,8 @@ class TicketController extends Controller
             ->join('Data','Code','StoreCode')
             ->where('SBU', 'Store')
             ->whereNotIn('TaskStatus',['Closed'])
-            ->whereYear('DateCreated', $request->year)
-            ->whereMonth('DateCreated', $request->month)
+            ->whereDate('DateCreated','>=',$weekstart)
+            ->whereDate('DateCreated','<=',$weekend)
             ->groupBy('Date')
             ->get();
         $Plant = Ticket::query()
@@ -278,8 +285,8 @@ class TicketController extends Controller
             ->join('Data','Code','StoreCode')
             ->where('SBU', 'Plant')
             ->whereNotIn('TaskStatus',['Closed'])
-            ->whereYear('DateCreated', $request->year)
-            ->whereMonth('DateCreated', $request->month)
+            ->whereDate('DateCreated','>=',$weekstart)
+            ->whereDate('DateCreated','<=',$weekend)
             ->groupBy('Date')
             ->get();
         $Office = Ticket::query()
@@ -296,8 +303,8 @@ class TicketController extends Controller
             ->join('Data','Code','StoreCode')
             ->where('SBU', 'Office')
             ->whereNotIn('TaskStatus',['Closed'])
-            ->whereYear('DateCreated', $request->year)
-            ->whereMonth('DateCreated', $request->month)
+            ->whereDate('DateCreated','>=',$weekstart)
+            ->whereDate('DateCreated','<=',$weekend)
             ->groupBy('Date')
             ->get();
         $date = Ticket::query()
@@ -310,8 +317,10 @@ class TicketController extends Controller
         $dateW = Ticket::query()
             ->select(DB::raw("WEEK(DateCreated) as date"))
             ->whereNotIn('TaskStatus',['Closed'])
-            ->whereYear('DateCreated', $request->year)
-            ->whereMonth('DateCreated', $request->month)
+            // ->whereDate('DateCreated','>=',$weekstart)
+            // ->whereDate('DateCreated','<=',$weekend)
+            ->whereDate('DateCreated','>=',$weekstart)
+            ->whereDate('DateCreated','<=',$weekend)
             ->groupBy('date')
             ->get();
         $dates = Ticket::query()
@@ -324,8 +333,8 @@ class TicketController extends Controller
         $datesW = Ticket::query()
             ->select(DB::raw("WEEK(DateCreated) as date"))
             ->whereNotIn('TaskStatus',['Closed'])
-            ->whereYear('DateCreated', $request->year)
-            ->whereMonth('DateCreated', $request->month)
+            ->whereDate('DateCreated','>=',$weekstart)
+            ->whereDate('DateCreated','<=',$weekend)
             ->groupBy('date')
             ->pluck('date');
         $ofc = [];
@@ -439,7 +448,12 @@ class TicketController extends Controller
             'grandtotalW'=>$grandtotalW,
             'percent'=>$percent,
             'weekcount'=>count($datesW),
-            'weekslabel'=>$weekslabel
+            'weekslabel'=>$weekslabel,
+            'firstweek'=>$week1,
+            'secondweek'=>$week2,
+            'thirdweek'=>$week3,
+            'fourthweek'=>$week4,
+            'fifthweek'=>$week5,
         ];
 
         return response()->json($data);
@@ -457,6 +471,7 @@ class TicketController extends Controller
                     'SUM(CASE WHEN Status = \'Closed\' THEN 1 ELSE 0 END) as Closed'
                 ),
             )
+            ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
             ->groupBy('SubCategory')
             ->get();
         return DataTables::of($TopIssues)
@@ -492,16 +507,16 @@ class TicketController extends Controller
             ->where('TaskNumber', $request->TaskNumber)
             ->first();
 
-        // $Remarks = Task::query()
-        //     ->select('Author', 'Message', 'Timestamp')
-        //     ->join('Remark', 'taskid', 'task.id')
-        //     ->where('TaskNumber', $request->TaskNumber)
-        //     ->get();
-        // $History = Task::query()
-            // ->select('Label as Action', 'Snapshotvalue as Original','Source','Timestamp','UpdatedValue as Updated', 'Message','AuditLevel')
-            // ->join('taskauditlog', 'taskid', 'task.id')
-            // ->where('TaskNumber', $request->TaskNumber)
-            // ->get();
+        $Remarks = Task::query()
+            ->select('Author', 'Message', 'Timestamp')
+            ->join('Remark', 'taskid', 'task.id')
+            ->where('TaskNumber', $request->TaskNumber)
+            ->get();
+        $History = Task::query()
+            ->select('Label as Action', 'Snapshotvalue as Original','Source','Timestamp','UpdatedValue as Updated', 'Message','AuditLevel')
+            ->join('taskauditlog', 'taskid', 'task.id')
+            ->where('TaskNumber', $request->TaskNumber)
+            ->get();
         return response()->json(
             [
                 'Store_Code'=>$store->StoreCode,
@@ -522,8 +537,8 @@ class TicketController extends Controller
                 'Root_Cause'=>$store->RootCause,
                 // 'Remarks'=>$Remarks,
                 // 'History'=>$History,
-                'Remarks'=>'',
-                'History'=>'',
+                'Remarks'=>$Remarks,
+                'History'=>$History,
                 'GBIStoreType'=>$store->StoreType
                 // 'Incident_Status'=>$incidentstatus
             ]
