@@ -33,13 +33,15 @@ class TopIssue implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,W
     protected $monthname;
     protected $store;
     protected $plant;
+    protected $office;
 
-    public function __construct($year, $month, $monthname, $store, $plant) {
+    public function __construct($year, $month, $monthname, $store, $plant, $office) {
         $this->year = $year;
         $this->month = $month;
         $this->monthname = $monthname;
         $this->store = $store;
         $this->plant = $plant;
+        $this->office = $office;
     }
 
     public function title(): string
@@ -49,7 +51,7 @@ class TopIssue implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,W
     public function columnWidths(): array
     {
         return [
-            'D' => 8,            
+            'D' => 40,            
         ];
     }
     
@@ -78,16 +80,33 @@ class TopIssue implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,W
         $sheet->getStyle('D3')->getFont()->setBold(true);
         $sheet->getStyle('D3')->getFont()->setSize(16);
         $sheet->getStyle('D4:E4')->applyFromArray($styleHeader);
-        $storecounts = count($this->store);
-        for ($i=0; $i < $storecounts; $i++) { 
-            $b = $i+5;
-            $sheet->getStyle('A'.$b.':B'.$b)->applyFromArray($styleHeader);
+        $sheet->getStyle('G4')->getFont()->setBold(true);
+        $sheet->getStyle('H4')->getFont()->setBold(true);
+        $sheet->getStyle('G3')->getFont()->setBold(true);
+        $sheet->getStyle('G3')->getFont()->setSize(16);
+        $sheet->getStyle('G4:H4')->applyFromArray($styleHeader);
+        if ($this->store) {
+            $storecounts = count($this->store);
+            for ($i=0; $i < $storecounts; $i++) { 
+                $b = $i+5;
+                $sheet->getStyle('A'.$b.':B'.$b)->applyFromArray($styleHeader);
+            }
         }
-        $plantcounts = count($this->plant);
-        for ($i=0; $i < $plantcounts; $i++) { 
-            $b = $i+5;
-            $sheet->getStyle('D'.$b.':E'.$b)->applyFromArray($styleHeader);
+        if ($this->plant) {
+            $plantcounts = count($this->plant);
+            for ($i=0; $i < $plantcounts; $i++) { 
+                $b = $i+5;
+                $sheet->getStyle('D'.$b.':E'.$b)->applyFromArray($styleHeader);
+            }
         }
+        if ($this->office) {
+            $officecounts = count($this->office);
+            for ($i=0; $i < $officecounts; $i++) { 
+                $b = $i+5;
+                $sheet->getStyle('G'.$b.':H'.$b)->applyFromArray($styleHeader);
+            }
+        }
+        
         // $sheet->setBorder(4, 'thin');
     }
 
@@ -95,20 +114,29 @@ class TopIssue implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,W
     {
         $stores = $this->store;
         $plant = $this->plant;
+        $office = $this->office;
         $issue = array();
         foreach ($stores as $key => $value) {
-            if ($plant[$key]) {
-                $issue[] = [$value->SubCategory,$value->count,'',$plant[$key]->SubCategory,$plant[$key]->count];
+            if (isset($plant[$key])) {
+                if (isset($office[$key])) {
+                    $issue[] = [$value->SubCategory,$value->count,'',$plant[$key]->SubCategory,$plant[$key]->count,'',$office[$key]->SubCategory,$office[$key]->count];
+                }else{
+                    $issue[] = [$value->SubCategory,$value->count,'',$plant[$key]->SubCategory,$plant[$key]->count];
+                }
             }else{
-                $issue[] = [$value->SubCategory,$value->count];
+                if (isset($office[$key])) {
+                    $issue[] = [$value->SubCategory,$value->count,'','','',$office[$key]->SubCategory,$office[$key]->count];
+                }else{
+                    $issue[] = [$value->SubCategory,$value->count];
+                }
             }
         }
         
         return [
             ['TOP ISSUE - '.$this->year.' '.$this->monthname],
             [''],
-            ['STORE TOP ISSUE','','PLANT TOP ISSUE'],
-            ['SubCategory','Count'],
+            ['STORE TOP ISSUE','','','PLANT TOP ISSUE','','','OFFICE TOP ISSUE'],
+            ['SubCategory','Count','','SubCategory','Count','','SubCategory','Count'],
             $issue,
             ['']
         ];

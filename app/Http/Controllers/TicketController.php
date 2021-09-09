@@ -48,8 +48,17 @@ class TicketController extends Controller
             ->groupBy('SubCategory')
             ->orderBy('count', 'DESC')
             ->get();
-
-        return Excel::download(new DataExports($year,$month,$monthname,$store,$plant), $monthname.' - '.$year.'.xlsx');
+        $office = Ticket::query()
+            ->select('SubCategory', DB::raw('COUNT(SubCategory) as count'))
+            ->join('Data','Code', 'StoreCode')
+            ->whereMonth('DateCreated', $month)
+            ->whereYear('DateCreated', $year)
+            ->whereNotNull('SubCategory')
+            ->where('SBU', 'Office')
+            ->groupBy('SubCategory')
+            ->orderBy('count', 'DESC')
+            ->get();
+        return Excel::download(new DataExports($year,$month,$monthname,$store,$plant,$office), $monthname.' - '.$year.'.xlsx');
     }
 
     public function closedtickets()
@@ -317,8 +326,6 @@ class TicketController extends Controller
         $dateW = Ticket::query()
             ->select(DB::raw("WEEK(DateCreated) as date"))
             ->whereNotIn('TaskStatus',['Closed'])
-            // ->whereDate('DateCreated','>=',$weekstart)
-            // ->whereDate('DateCreated','<=',$weekend)
             ->whereDate('DateCreated','>=',$weekstart)
             ->whereDate('DateCreated','<=',$weekend)
             ->groupBy('date')
