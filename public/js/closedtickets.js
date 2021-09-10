@@ -228,7 +228,11 @@ $(document).on("click", "#gbiTable tbody tr", function () {
             }
             var history = '';
             console.log(data.History);
-
+            if (data.History.length > 0) {
+                $('.DetailsBtn[BtnName=\'History\']').show();
+            }else{
+                $('.DetailsBtn[BtnName=\'History\']').hide();
+            }
             for (let index = 0; index < data.History.length; index++) {
                 var historydate = new Date(data.History[index].Timestamp);
                 if (index != 0) {
