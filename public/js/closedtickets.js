@@ -258,7 +258,7 @@ $(document).on("click", "#gbiTable tbody tr", function () {
                     }
                 }
             }
-            $('#tbodyhistory').append(history);
+            $('#tbodyhistory').empty().append(history);
             $('#gbidiv').hide();
         },
         error: function (data) {
