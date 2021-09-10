@@ -259,7 +259,6 @@ $(document).on("click", "#gbiTable tbody tr", function () {
                 }
             }
             $('#tbodyhistory').append(history);
-            console.log(history);
             $('#gbidiv').hide();
         },
         error: function (data) {
