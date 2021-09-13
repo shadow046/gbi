@@ -41,7 +41,7 @@ class ViewController extends Controller
             ->whereNotIn('Status',['Closed'])
             ->count();
         $closed = Ticket::query()
-            // ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
+            ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
             ->where('Status','Closed')
             ->count();
 

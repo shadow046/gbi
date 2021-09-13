@@ -512,14 +512,14 @@ class TicketController extends Controller
             ->where('TaskNumber', $request->TaskNumber)
             ->first();
 
-        $Remarks = Task::query()
+        $Remarks = Ticket::query()
             ->select('Author', 'Message', 'Timestamp')
-            ->join('Remark', 'taskid', 'task.id')
+            ->join('Remark', 'Remark.taskid', 'Ticket.taskid')
             ->where('TaskNumber', $request->TaskNumber)
             ->get();
-        $History = Task::query()
+        $History = Ticket::query()
             ->select('Label as Action', 'Snapshotvalue as Original','Source','Timestamp','UpdatedValue as Updated', 'Message','AuditLevel')
-            ->join('taskauditlog', 'taskid', 'task.id')
+            ->join('History', 'History.TaskId', 'Ticket.TaskId')
             ->where('TaskNumber', $request->TaskNumber)
             ->get();
         return response()->json(
