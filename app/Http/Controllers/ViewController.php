@@ -44,7 +44,8 @@ class ViewController extends Controller
             ->count();
         $closed = Ticket::query()
             // ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
-            ->where('Status','Closed')
+            // ->where('Status','Closed')
+            ->whereIN('IncidentStatus', ['Closed', 'Resolved'])
             ->count();
 
         $TopIssues = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'))
