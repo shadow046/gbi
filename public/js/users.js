@@ -24,6 +24,12 @@ $(document).ready(function()
             { data: 'status', name:'status' }
         ]
     });
+    $('#userTable thead').on( 'keyup', ".column_search",function () {
+        table
+            .column( $(this).parent().index() )
+            .search( this.value )
+            .draw();
+    });
     function updateTime() {
         var currtime = new Date();
         var currtime1 = new Date(currtime.getTime());

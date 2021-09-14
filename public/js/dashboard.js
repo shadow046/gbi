@@ -44,6 +44,12 @@ $(document).ready(function()
         $('#navtime').html(mytime + ":"+ mintime + ":" + minsecs + " " + am);
         // if (start <= 2) {
     }
+    $('#userlogsTable thead').on( 'keyup', ".column_search",function () {
+    userlogsTable
+        .column( $(this).parent().index() )
+        .search( this.value )
+        .draw();
+    });
     function updateGraph() {
         $.ajax({
             type: "GET",
