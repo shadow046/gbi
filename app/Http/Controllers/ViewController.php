@@ -38,12 +38,14 @@ class ViewController extends Controller
             return redirect()->to('/openticket');
         }
         $open = Ticket::query()
+            ->join('Data', 'Code', 'StoreCode')
             ->whereNotIN('TaskStatus',['Closed'])
             ->whereNotIN('IncidentStatus', ['Closed', 'Resolved'])
             // ->whereNotIn('Status',['Closed'])
             ->count();
         $closed = Ticket::query()
             // ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
+            ->join('Data', 'Code', 'StoreCode')
             // ->where('Status','Closed')
             ->whereIN('IncidentStatus', ['Closed', 'Resolved'])
             ->count();
