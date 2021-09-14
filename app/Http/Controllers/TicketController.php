@@ -112,6 +112,7 @@ class TicketController extends Controller
                 )
             ->join('Data', 'Code', 'StoreCode')
             ->whereNotIN('TaskStatus',['Closed'])
+            ->whereNotIN('IncidentStatus', ['Closed', 'Resolved'])
             ->get();
         }else if (auth()->user()->hasrole('Manager')) {
             $tickets = Ticket::query()
