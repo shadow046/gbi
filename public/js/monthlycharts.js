@@ -64,8 +64,8 @@ $(document).on('change', '#yearselect', function(){
             monthoption += '<option value="'+index+'">'+months[index-1]+'</option>';
         }
     }else{
-        for (let index = 0; index < 12 ; index++) {
-            monthoption += '<option value="'+index+'">'+months[index]+'</option>';
+        for (let index = 1; index <= 12 ; index++) {
+            monthoption += '<option value="'+index+'">'+months[index-1]+'</option>';
         }
     }
     $("#monthselect").find('option').remove().end().append(monthoption);
