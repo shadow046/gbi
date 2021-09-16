@@ -87,12 +87,14 @@
                         <input class="input col" style="font-size:11px;font-family:Arial;width:100%;" id="IncidentStatus" type="text" name="IncidentStatus" disabled>
                     </div>
                 </div>
+                @if (!auth()->user()->hasrole('Client'))
                 <div class="container row">
                     <div class="col text-left">
                         <label class="label" for="LatestNotes">Latest Notes</label>
                         <input class="input col" style="font-size:11px;font-family:Arial;width:100%;" id="LatestNotes" type="text" name="LatestNotes" disabled>
                     </div>
                 </div>
+                @endif
             </div>
             <div class="modal-body" id="Remarks" style="max-height:400px;overflow-y:auto;display:none;">
                 <div id="remarks-details">
