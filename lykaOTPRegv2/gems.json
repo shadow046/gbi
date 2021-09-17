@@ -1,1 +1,1 @@
-{"message":"Retrieved the gem info.","status":true,"statusCode":null,"hasMorePages":false,"data":{"totalGem":1,"gemFragment":0,"maximumFragment":100,"bonusGemRate":0.05,"widthdrawalFeeRate":0.05,"allowEncashment":"yes","currencyCode":"PHP","gemRate":1,"isWalletActivated":true},"count":0}
+{"message":"Retrieved the gem info.","status":true,"statusCode":null,"hasMorePages":false,"data":{"totalGem":25.11,"gemFragment":0,"maximumFragment":100,"bonusGemRate":0.05,"widthdrawalFeeRate":0.05,"allowEncashment":"yes","currencyCode":"PHP","gemRate":1,"isWalletActivated":true},"count":0}
