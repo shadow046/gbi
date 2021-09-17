@@ -359,7 +359,9 @@ function allRater($toRates, $mcounters = 0){
                                 if (!in_array($postId, $post)) {
                                     if($postId && !$maxRateX){
                                         $postRep = getPost($rrDevID,$raterCooks,$postId);
-                                        //  echo $postRep->message;
+                                        $dummygemold = getGems($rrDevID,$raterCooks);
+                                        $maingem = getGems($rDevID, $rCooki);
+                                                //  echo $postRep->message;
                                         if($postRep->data->count->rateSent==0){
                                             $ratedX = ratePost($rrDevID,$postId,$uid,$rrToken,$raterCooks);
                                             //  echo $ratedX->message;
@@ -367,7 +369,7 @@ function allRater($toRates, $mcounters = 0){
                                                 $dummygem = getGems($rrDevID,$raterCooks);
                                                 $dummygems = $dummygem;
                                                 echo "\n$yllw--- $wht$rateAcc$yllw ---";
-                                                echo "Total $green Gems: ⬘⬘  ".$wht.$dummygem."$green rated  →$yllw Main $toRates Total $green Gems: ⬘⬘  ".$wht.getGems($rDevID, $rCooki)."\n";
+                                                echo "Total $green Gems: ⬘⬘  $dummygemold ->".$wht.$dummygem."$green rated  →$yllw Main $toRates Total $green Gems: ⬘⬘  $maingem ->".$wht.getGems($rDevID, $rCooki)."\n";
                                                 $pcnt++;
                                                 $postkey++;
                                                 $accntdata[$rateAcc]["post".$postkey] = $postId;
