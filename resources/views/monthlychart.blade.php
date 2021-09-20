@@ -4,8 +4,7 @@
     <a class="navbar-brand" href="#">{{\Carbon\Carbon::now()->format('F d, Y')}}</a>
     <a class="navbar-brand" id="navtime" href="#"></a>
     <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="dashboardBtn" value="LAST 30 DAYS">&nbsp;&nbsp;
-    <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="openticketsBtn" value="OPEN TICKETS">&nbsp;&nbsp;
-    <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="closedticketsBtn" value="CLOSED TICKETS">&nbsp;&nbsp;
+    <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="openticketsBtn" value="TICKETS">&nbsp;&nbsp;
     <a href="{{route('logout')}}" class="nav-link ml-auto"><input type="button" class="btn logoutBtn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="logoutBtn" value="LOGOUT"></a>
 </nav><hr>
 <div class="container-fluid ptext text-center" style="width:100%;height:100%;">

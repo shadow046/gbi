@@ -58,6 +58,7 @@ class TicketController extends Controller
             ->groupBy('SubCategory')
             ->orderBy('count', 'DESC')
             ->get();
+
         return Excel::download(new DataExports($year,$month,$monthname,$store,$plant,$office), $monthname.' - '.$year.'.xlsx');
     }
 
@@ -79,7 +80,7 @@ class TicketController extends Controller
                 // 'TaskStatus'
                 )
             ->join('Data', 'Code', 'StoreCode')
-            // ->whereNotIN('TaskStatus',['Submitted','Closed'])
+            ->whereIN('TaskStatus',['Submitted','Closed'])
             ->whereIN('IncidentStatus', ['Closed', 'Resolved'])
             ->get();
         return DataTables::of($tickets)
@@ -94,14 +95,14 @@ class TicketController extends Controller
 
     public function getticket()
     {
-        if (auth()->user()->roles->first()->name == "Agent") {
-            $tickets = Ticket::query()
+        $tickets = Ticket::query()
             ->select(
                 'DateCreated',
                 'TaskNumber',
                 'TaskStatus',
                 'CreatedBy',
                 'IncidentStatus',
+                'CallType',
                 'SubCategory as Issue',
                 'ProblemCategory',
                 'StoreCode',
@@ -111,48 +112,8 @@ class TicketController extends Controller
                 // 'TaskStatus'
                 )
             ->join('Data', 'Code', 'StoreCode')
-            ->whereNotIN('TaskStatus',['Closed'])
+            ->where('TaskStatus','!=','Closed')
             ->get();
-        }else if (auth()->user()->hasrole('Manager')) {
-            $tickets = Ticket::query()
-            ->select(
-                'DateCreated',
-                'TaskNumber',
-                'TaskStatus',
-                'CreatedBy',
-                'IncidentStatus',
-                'SubCategory as Issue',
-                'ProblemCategory',
-                'StoreCode',
-                'Store_Name as StoreName',
-                'AdditionalStoreDetails',
-                'LatestNotes',
-                'Status'
-                )
-            ->join('Data', 'Code', 'StoreCode')
-            ->whereNotIN('TaskStatus',['Closed'])
-            ->whereNotIN('IncidentStatus', ['Closed', 'Resolved'])
-            ->get();
-        }else if (auth()->user()->roles->first()->name == "Client") {
-            $tickets = Ticket::query()
-            ->select(
-                'DateCreated',
-                'TaskNumber',
-                'TaskStatus',
-                'CreatedBy',
-                'IncidentStatus',
-                'SubCategory as Issue',
-                'ProblemCategory',
-                'StoreCode',
-                'Store_Name as StoreName',
-                'AdditionalStoreDetails',
-                'LatestNotes'
-                )
-            ->join('Data', 'Code', 'StoreCode')
-            ->whereNotIN('TaskStatus',['Closed'])
-            ->whereNotIN('IncidentStatus', ['Closed', 'Resolved'])
-            ->get();
-        }
         
         return DataTables::of($tickets)
         ->addColumn('StoreName', function (Ticket $tickets){
@@ -515,12 +476,14 @@ class TicketController extends Controller
         $Remarks = Ticket::query()
             ->select('Author', 'Message', 'Timestamp')
             ->join('Remark', 'Remark.taskid', 'Ticket.taskid')
+            ->orderBy('Remark.Id', 'DESC')
             ->where('TaskNumber', $request->TaskNumber)
             ->get();
         $History = Ticket::query()
             ->select('Label as Action', 'Snapshotvalue as Original','Source','Timestamp','UpdatedValue as Updated', 'Message','AuditLevel')
             ->join('History', 'History.TaskId', 'Ticket.TaskId')
             ->where('TaskNumber', $request->TaskNumber)
+            ->orderBy('History.Id', 'DESC')
             ->get();
         return response()->json(
             [

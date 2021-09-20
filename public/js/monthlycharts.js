@@ -334,6 +334,7 @@ $(document).on('click', '#openticketsBtn', function () {
 });
 $(document).on('click', '#exportBtn', function () {
     $('#loading').show();
+   
     window.location.href = '/ExportData/'+optionyearselected+'/'+monthselected+'/'+optionmonthselected;
     setTimeout(function() {
         $('#loading').hide();

@@ -16,6 +16,8 @@ $(document).ready(function()
                 $(this).html('<input type="text" style="width:70px" placeholder="Search '+title+'" class="column_search" />' );
         }else if (title == "STORE CODE") {
                 $(this).html('<input type="text" style="width:70px" placeholder="Search Code" class="column_search" />' );
+        }else if (title == "CALL TYPE") {
+                $(this).html('<input type="text" style="width:70px" placeholder="Search '+title+'" class="column_search" />' );
         }else if (title == "CATEGORY") {
                 $(this).html('<input type="text" style="width:100px" placeholder="Search '+title+'" class="column_search" />' );
         }else if (title == "ISSUE") {
@@ -70,12 +72,12 @@ $(document).ready(function()
                     return 'More than 20 days';
                 }
             },"width": "10%"},
+            { data: 'CallType', name:'CallType'},
             { data: 'ProblemCategory', name:'ProblemCategory'},
             { data: 'Issue', name:'Issue'},
             { data: 'StoreCode', name:'StoreCode'},
             { data: 'StoreName', name:'StoreName'},
-            { data: 'IncidentStatus', name:'IncidentStatus'},
-            { data: 'LatestNotes', name:'LatestNotes', "width": "17%"}
+            { data: 'IncidentStatus', name:'IncidentStatus'}
         ]
     });
 

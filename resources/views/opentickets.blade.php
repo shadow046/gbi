@@ -5,7 +5,6 @@
     <a class="navbar-brand" id="navtime" href="#"></a>
     @if (!auth()->user()->hasrole("Agent"))
         <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="dashboardBtn" value="DASHBOARD">&nbsp;&nbsp;
-        <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor: pointer;" id="closedticketsBtn" value="CLOSED TICKETS">&nbsp;&nbsp;
     @endif
     @if (!auth()->user()->hasrole( "Client"))
         <input type="button" class="btn createBtn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" value="CREATE TICKET">&nbsp;&nbsp;
@@ -29,23 +28,23 @@
                 <th>DATE</th>
                 <th>TICKET NUMBER</th>
                 <th>AGE</th>
+                <th>CALL TYPE</th>
                 <th>CATEGORY</th>
                 <th>ISSUE</th>
                 <th>STORE CODE</th>
                 <th>STORE NAME</th>
                 <th>INCIDENT STATUS</th>
-                <th>LATEST NOTES</th>
             </tr>
             <tr>
                 <th>DATE</th>
                 <th>TICKET NUMBER</th>
                 <th>AGE</th>
+                <th>CALL TYPE</th>
                 <th>CATEGORY</th>
                 <th>ISSUE</th>
                 <th>STORE CODE</th>
                 <th>STORE NAME</th>
                 <th>INCIDENT STATUS</th>
-                <th>LATEST NOTES</th>
             </tr>
         </thead>
     </table>

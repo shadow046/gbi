@@ -39,8 +39,8 @@ class ViewController extends Controller
         }
         $open = Ticket::query()
             ->join('Data', 'Code', 'StoreCode')
-            ->whereNotIN('TaskStatus',['Closed'])
-            ->whereNotIN('IncidentStatus', ['Closed', 'Resolved'])
+            ->whereNotIN('TaskStatus',['Submitted'])
+            ->whereNotIN('IncidentStatus', ['Resolved'])
             // ->whereNotIn('Status',['Closed'])
             ->count();
         $closed = Ticket::query()
@@ -48,6 +48,7 @@ class ViewController extends Controller
             ->join('Data', 'Code', 'StoreCode')
             // ->where('Status','Closed')
             ->whereIN('IncidentStatus', ['Closed', 'Resolved'])
+            ->where('TaskStatus','Submitted')
             ->count();
 
         $TopIssues = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'))
@@ -63,6 +64,32 @@ class ViewController extends Controller
             }
         }
         $filtered = $top->sortDesc();
+        $TopAgent = Ticket::select('CreatedBy', DB::raw('Count(CreatedBy) as Total'))
+            ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
+            ->groupBy('CreatedBy')
+            ->get();
+        $topa = collect([]);
+        foreach ($TopAgent as $Agent) {
+            if ($Agent->CreatedBy != Null) {
+                // return $issue->Total;
+                $topa->offsetSet(str_replace("Gbi","",$Agent->CreatedBy),$Agent->Total);
+            }
+        }
+        $filtereda = $topa->sortDesc();
+
+        $incidents = Ticket::select('CallType', DB::raw('Count(CallType) as Total'))
+            ->where('TaskStatus', '!=', 'Submitted')
+            ->where('IncidentStatus', '!=', 'Resolved')
+            ->groupBy('CallType')
+            ->get();
+        $inc = collect([]);
+        foreach ($incidents as $incident) {
+            if ($incident->CallType != Null) {
+                // return $issue->Total;
+                $inc->offsetSet(str_replace("Gbi","",$incident->CallType),$incident->Total);
+            }
+        }
+        $filteredi = $inc->sortDesc();
         $fivedaysStore = Ticket::query()->select('TaskNumber')
             ->join('Data','Code','StoreCode')
             ->where('SBU','Store')
@@ -180,6 +207,8 @@ class ViewController extends Controller
         return view('dashboard',
             compact(
                 'filtered',
+                'filtereda',
+                'filteredi',
                 'lessthan5',
                 'greaterthan20',
                 'greaterthan20Office',
@@ -284,6 +313,7 @@ class ViewController extends Controller
     public function open()
     {
         $TopIssues = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'))
+            ->whereNotIn('TaskStatus',['Submitted','Closed'])
             ->whereNotIN('IncidentStatus', ['Resolved','Closed'])
             ->groupBy('SubCategory')
             ->get();
