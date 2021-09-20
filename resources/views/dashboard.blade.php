@@ -29,18 +29,20 @@
             <a href="{{route('opentickets')}}"><div class="card-text" style="float:left;"><b>Total Tickets</b></div><div class="card-text" style="float:right;"><b>{{number_format($open+$closed)}}</b></div></a><br>
         </div>
     </div>
-    <div class="card mb-4 col-3" style="max-width: 20rem;">
-        <h6 class="card-header text-center" style="color:white;background-color:#00127f;">TOP AGENT</h6>
-        <div class="card-body bg-light">
-            @foreach ($filtereda as $key => $value)
-                @if ($loop->index < 5)
-                    <div class="card-text" style="float:left;">{{$key}}</div><div class="card-text" style="float:right;">{{$value}}</div><br>
-                @endif
-            @endforeach
-            <p></p>
-            {{-- <div class="text-center" style="height:20px;"><a href="#" class="btn btn-secondary" id="TopIssueMore" style="height:25px;margin-bottom:5px;padding-top:1px;font-size:14px;">More</a></div> --}}
+    @if (auth()->user()->hasrole('Manager'))
+        <div class="card mb-4 col-3" style="max-width: 20rem;">
+            <h6 class="card-header text-center" style="color:white;background-color:#00127f;">TOP AGENT</h6>
+            <div class="card-body bg-light">
+                @foreach ($filtereda as $key => $value)
+                    @if ($loop->index < 5)
+                        <div class="card-text" style="float:left;">{{$key}}</div><div class="card-text" style="float:right;">{{$value}}</div><br>
+                    @endif
+                @endforeach
+                <p></p>
+                {{-- <div class="text-center" style="height:20px;"><a href="#" class="btn btn-secondary" id="TopIssueMore" style="height:25px;margin-bottom:5px;padding-top:1px;font-size:14px;">More</a></div> --}}
+            </div>
         </div>
-    </div>
+    @endif
     <div class="card mb-4 col-3" style="max-width: 20rem;">
         <h6 class="card-header text-center" style="color:white;background-color:#00127f;">TOP ISSUES</h6>
         <div class="card-body bg-light">

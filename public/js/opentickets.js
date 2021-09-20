@@ -115,6 +115,7 @@ $(document).ready(function()
         if (currtime.getMinutes() < 10) {
             var mintime = '0'+mintime;
         }
+        
         if (currtime.getSeconds() < 10) {
             var minsecs = '0'+minsecs;
         }
@@ -202,7 +203,6 @@ $(document).on("click", "#gbiTable tbody tr", function () {
             $('#Problem').val(data.Problem_Reported);
             $('#Issue').val(trdata.Issue);
             $('#RootCause').val(data.Root_Cause);
-            $('#LatestNotes').val(data.Latest_Notes);
             $('#IncidentStatus').val(data.IncidentStatus);
             $('#StoreType').val(data.GBIStoreType);
             $('#ActionTaken').val(data.GBIActionTaken);
@@ -211,6 +211,9 @@ $(document).on("click", "#gbiTable tbody tr", function () {
                 for (let index = 0; index < data.Remarks.length; index++) {
                     var remarksdate = new Date(data.Remarks[index].Timestamp);
                     if (data.Remarks[index].Message) {
+                        if (condition) {
+                            $('#LatestNotes').val(data.Remarks[index].Message);
+                        }
                         remarks +='<div class="container row"><label class="col-sm-3 control-label">'+data.Remarks[index].Author+'<br><small>'+moment(remarksdate).format('lll')+'</small></label><div class="col-sm-9"><div class="text-break">'+data.Remarks[index].Message+'</div></div><hr></div>';
                     }
                 }
