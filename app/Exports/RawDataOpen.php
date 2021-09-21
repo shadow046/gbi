@@ -78,9 +78,7 @@ class RawDataOpen implements FromArray,WithHeadings,WithColumnWidths
                 'ProblemReported'
             )
             ->join('Data', 'Code', 'StoreCode')
-            ->where('TaskStatus', '!=', 'Submitted')
-            ->where('TaskStatus', '!=', 'Closed')
-            ->where('IncidentStatus', '!=', 'Resolved')
+            ->whereNotIN('TaskStatus', ['Submitted', 'Closed'])
             ->whereIN('Status',['Open', 'Re Open'])
             ->get();
         return [$open];

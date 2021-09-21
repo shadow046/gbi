@@ -146,9 +146,9 @@ class TicketController extends Controller
                     }else if ($tickets->Status == "Cancelled") {
                         return 'Cancelled';
                     }else if ($tickets->Status == "Open") {
-                        return 'Open';
+                        return 'Open-Submitted';
                     }else if ($tickets->Status == "Re Open") {
-                        return 'Open';
+                        return 'Open-Submitted';
                     }
                 }else{
                     if ($tickets->Status == "Cancelled") {
@@ -160,12 +160,14 @@ class TicketController extends Controller
                     }
                 }
             }else{
-                if ($tickets->Status == "Cancelled") {
-                    return 'Cancelled';
-                }else if ($tickets->Status == "Open") {
-                    return 'Open';
-                }else if ($tickets->Status == "Re Open") {
-                    return 'Open';
+                if ($tickets->TaskStatus != 'Closed') {
+                    if ($tickets->Status == "Cancelled") {
+                        return 'Cancelled';
+                    }else if ($tickets->Status == "Open") {
+                        return 'Open';
+                    }else if ($tickets->Status == "Re Open") {
+                        return 'Open';
+                    }
                 }
             }
         })
