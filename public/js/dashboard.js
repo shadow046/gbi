@@ -198,6 +198,9 @@ $(document).on('click', '#OpenTicketDiv', function () {
 $(document).on('click', '#CloseTicketDiv', function () {
     window.open('closeticketdata', '_blank');
 });
+$(document).on('click', '#CancelledTicketDiv', function () {
+    window.open('cancelticketdata', '_blank');
+});
 
 $(document).on('click', '#closedticketsBtn', function () {
     $('#loading').show();

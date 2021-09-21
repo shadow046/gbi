@@ -26,7 +26,7 @@
             @if (auth()->user()->hasrole('Manager'))
                 <a href="#" id="OpenTicketDiv"><div class="card-text" style="float:left;">Open Tickets</div><div class="card-text" style="float:right;">{{number_format($open)}}</div></a><br>
                 <a href="#" id="CloseTicketDiv"><div class="card-text" style="float:left;">Closed Tickets</div><div class="card-text" style="float:right;">{{number_format($closed)}}</div></a><br>
-                <div class="card-text" style="float:left;">Cancelled Tickets</div><div class="card-text" style="float:right;">{{number_format($cancelled)}}</div><br>
+                <a href="#" id="CancelledTicketDiv"><div class="card-text" style="float:left;">Cancelled Tickets</div><div class="card-text" style="float:right;">{{number_format($cancelled)}}</div></a><br>
             @else
                 <div class="card-text" style="float:left;">Open Tickets</div><div class="card-text" style="float:right;">{{number_format($open)}}</div><br>
                 <div class="card-text" style="float:left;">Closed Tickets</div><div class="card-text" style="float:right;">{{number_format($closed)}}</div><br>

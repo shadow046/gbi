@@ -9,7 +9,7 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Carbon\Carbon;
 use DB;
 
-class RawDataOpen implements FromArray,WithHeadings,WithColumnWidths
+class RawDataCancelled implements FromArray,WithHeadings,WithColumnWidths
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -19,7 +19,6 @@ class RawDataOpen implements FromArray,WithHeadings,WithColumnWidths
         return [
             ['Date/Time',
             'Task Number',
-            'Ticket Age',
             'Store Code',
             'Store Name',
             'SBU',
@@ -42,28 +41,26 @@ class RawDataOpen implements FromArray,WithHeadings,WithColumnWidths
             'A' => 12,
             'B' => 18,  
             'C' => 10,
-            'D' => 10,
-            'E' => 38,
-            'F' => 6,
-            'G' => 17,
-            'H' => 15,
-            'I' => 20,
-            'J' => 15,
-            'K' => 39,
-            'L' => 12,
-            'M' => 22,
-            'N' => 24,
-            'O' => 67,
+            'D' => 38,
+            'E' => 6,
+            'F' => 17,
+            'G' => 15,
+            'H' => 20,
+            'I' => 15,
+            'J' => 39,
+            'K' => 12,
+            'L' => 22,
+            'M' => 24,
+            'N' => 67,
 
         ];
     }
     public function array(): array
     {
-        $open = Ticket::query()
+        $cancelled = Ticket::query()
             ->select(
                 DB::raw("DATE_FORMAT(DateCreated, '%m/%d/%Y %H:%m:%s') as Date"),
                 'TaskNumber',
-                DB::raw("DATEDIFF(NOW(),DateCreated) as Age"),
                 'StoreCode',
                 'Store_Name',
                 'SBU',
@@ -78,10 +75,8 @@ class RawDataOpen implements FromArray,WithHeadings,WithColumnWidths
                 'ProblemReported'
             )
             ->join('Data', 'Code', 'StoreCode')
-            ->where('TaskStatus', '!=', 'Submitted')
-            ->where('IncidentStatus', '!=', 'Resolved')
-            ->whereIN('Status',['Open', 'Re Open'])
+            ->where('Status', 'Cancelled')
             ->get();
-        return [$open];
+        return [$cancelled];
     }
 }

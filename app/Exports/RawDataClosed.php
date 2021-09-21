@@ -75,8 +75,9 @@ class RawDataClosed implements FromArray,WithHeadings,WithColumnWidths
                 'ProblemReported'
             )
             ->join('Data', 'Code', 'StoreCode')
-            ->whereIN('IncidentStatus', ['Resolved'])
             ->where('TaskStatus','Submitted')
+            ->where('IncidentStatus', 'Resolved')
+            ->where('Status', 'Closed')
             ->get();
         return [$closed];
     }

@@ -7,6 +7,7 @@ use Yajra\DataTables\Facades\DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\Sheets\DataExports;
 use App\Exports\RawDataClosed;
+use App\Exports\RawDataCancelled;
 use App\Exports\RawDataOpen;
 use Spatie\Permission\Models\Role;
 use Carbon\Carbon;
@@ -35,7 +36,10 @@ class TicketController extends Controller
     {
         return Excel::download(new RawDataClosed(), Carbon::now()->format('Y-m-d').' - CLosedTickets.xlsx');
     }
-
+    public function cancelTicketData(Request $request) 
+    {
+        return Excel::download(new RawDataCancelled(), Carbon::now()->format('Y-m-d').' - CancelledTickets.xlsx');
+    }
     public function ExportData(Request $request, $year, $month, $monthname) 
     {
         $store = Ticket::query()
