@@ -39,7 +39,6 @@ class ViewController extends Controller
         }
         $open = Ticket::query()
             ->join('Data', 'Code', 'StoreCode')
-            ->whereNotIn('TaskStatus', ['Submitted', 'Closed'])
             ->whereIn('Status',['Open', 'Re Open'])
             ->count();
         $closed = Ticket::query()
