@@ -128,6 +128,7 @@ class TicketController extends Controller
                 )
             ->join('Data', 'Code', 'StoreCode')
             ->where('TaskStatus','!=','Closed')
+            ->whereIN('Status',['Open', 'Re Open', 'Closed', 'Cancelled'])
             ->get();
         
         return DataTables::of($tickets)
