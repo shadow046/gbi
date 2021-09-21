@@ -39,16 +39,15 @@ class ViewController extends Controller
         }
         $open = Ticket::query()
             ->join('Data', 'Code', 'StoreCode')
-            ->whereNotIN('TaskStatus',['Submitted'])
-            // ->whereNotIN('IncidentStatus', ['Resolved'])
-            // ->whereNotIn('Status',['Closed'])
+            ->where('TaskStatus', '!=', 'Submitted')
+            ->where('IncidentStatus', '!=', 'Resolved')
+            ->whereIN('Status',['Open', 'Re Open'])
             ->count();
         $closed = Ticket::query()
-            // ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
             ->join('Data', 'Code', 'StoreCode')
-            // ->where('Status','Closed')
-            ->whereIN('IncidentStatus', ['Closed', 'Resolved'])
             ->where('TaskStatus','Submitted')
+            ->where('IncidentStatus', 'Resolved')
+            ->where('Status', 'Closed')
             ->count();
 
         $TopIssues = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'))

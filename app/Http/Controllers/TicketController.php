@@ -116,6 +116,7 @@ class TicketController extends Controller
                 'SubCategory as Issue',
                 'ProblemCategory',
                 'StoreCode',
+                'Status',
                 'Store_Name as StoreName',
                 'AdditionalStoreDetails',
                 'LatestNotes'
@@ -135,12 +136,32 @@ class TicketController extends Controller
         ->addColumn('SystemStatus', function (Ticket $tickets){
             if ($tickets->TaskStatus == 'Submitted') {
                 if ($tickets->IncidentStatus == 'Resolved') {
-                    return 'Closed';
+                    if ($tickets->Status == "Closed") {
+                        return 'Closed';
+                    }else if ($tickets->Status == "Cancelled") {
+                        return 'Cancelled';
+                    }else if ($tickets->Status == "Open") {
+                        return 'Open';
+                    }else if ($tickets->Status == "Re Open") {
+                        return 'Open';
+                    }
                 }else{
-                    return 'Open';
+                    if ($tickets->Status == "Cancelled") {
+                        return 'Cancelled';
+                    }else if ($tickets->Status == "Open") {
+                        return 'Open';
+                    }else if ($tickets->Status == "Re Open") {
+                        return 'Open';
+                    }
                 }
             }else{
-                return 'Open';
+                if ($tickets->Status == "Cancelled") {
+                    return 'Cancelled';
+                }else if ($tickets->Status == "Open") {
+                    return 'Open';
+                }else if ($tickets->Status == "Re Open") {
+                    return 'Open';
+                }
             }
         })
         ->make(true);
