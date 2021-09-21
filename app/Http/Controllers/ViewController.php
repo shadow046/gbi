@@ -41,7 +41,6 @@ class ViewController extends Controller
             ->join('Data', 'Code', 'StoreCode')
             ->where('TaskStatus', '!=', 'Submitted')
             ->where('TaskStatus', '!=', 'Closed')
-            ->where('IncidentStatus', '!=', 'Resolved')
             ->whereIN('Status',['Open', 'Re Open'])
             ->count();
         $closed = Ticket::query()
