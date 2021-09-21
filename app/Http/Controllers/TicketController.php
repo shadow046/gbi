@@ -133,14 +133,14 @@ class TicketController extends Controller
             return $tickets->StoreName;
         })
         ->addColumn('SystemStatus', function (Ticket $tickets){
-            if ($tickets->TaskStatus != 'Submitted') {
-                if ($tickets->IncidentStatus != 'Resolved') {
-                    return 'Open';
-                }else{
+            if ($tickets->TaskStatus == 'Submitted') {
+                if ($tickets->IncidentStatus == 'Resolved') {
                     return 'Closed';
+                }else{
+                    return 'Open';
                 }
             }else{
-                return 'Closed';
+                return 'Open';
             }
         })
         ->make(true);
