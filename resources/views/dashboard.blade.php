@@ -23,8 +23,13 @@
     <div class="card mb-4 col-3" style="max-width: 20rem;">
         <h6 class="card-header text-center" style="color:white;background-color:#00127f;">TOTAL TICKETS</h6>
         <div class="card-body bg-light">
-            <div class="card-text" style="float:left;">Open Tickets</div><div class="card-text" style="float:right;">{{number_format($open)}}</div><br>
-            <div class="card-text" style="float:left;">Closed Tickets</div><div class="card-text" style="float:right;">{{number_format($closed)}}</div><br>
+            @if (auth()->user()->hasrole('Manager'))
+                <a href="#" id="OpenTicketDiv"><div class="card-text" style="float:left;">Open Tickets</div><div class="card-text" style="float:right;">{{number_format($open)}}</div></a><br>
+                <a href="#" id="CloseTicketDiv"><div class="card-text" style="float:left;">Closed Tickets</div><div class="card-text" style="float:right;">{{number_format($closed)}}</div></a><br>
+            @else
+                <div class="card-text" style="float:left;">Open Tickets</div><div class="card-text" style="float:right;">{{number_format($open)}}</div><br>
+                <div class="card-text" style="float:left;">Closed Tickets</div><div class="card-text" style="float:right;">{{number_format($closed)}}</div><br>
+            @endif
             <hr>
             <a href="{{route('opentickets')}}"><div class="card-text" style="float:left;"><b>Total Tickets</b></div><div class="card-text" style="float:right;"><b>{{number_format($open+$closed)}}</b></div></a><br>
         </div>

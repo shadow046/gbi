@@ -77,6 +77,7 @@ $(document).ready(function()
             { data: 'Issue', name:'Issue'},
             { data: 'StoreCode', name:'StoreCode'},
             { data: 'StoreName', name:'StoreName'},
+            { data: 'SystemStatus', name:'SystemStatus'},
             { data: 'IncidentStatus', name:'IncidentStatus'}
         ]
     });

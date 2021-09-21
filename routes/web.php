@@ -53,6 +53,8 @@ Route::get('monthlyticketsdata', [TicketController::class, 'monthlyticketsdata']
 Route::get('dailyticketsdata', [TicketController::class, 'dailyticketsdata']);
 Route::get('storetopissue', [TicketController::class, 'storetopissue']);
 Route::get('taskdata', [TicketController::class, 'taskdata']);
+Route::get('openticketdata', [TicketController::class, 'openticketdata']);
+Route::get('closeticketdata', [TicketController::class, 'closeticketdata']);
 Route::get('ExportData/{year}/{month}/{monthname}', [TicketController::class, 'ExportData']);
 
 

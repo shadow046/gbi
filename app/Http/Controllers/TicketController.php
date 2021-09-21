@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\Sheets\DataExports;
+use App\Exports\RawDataClosed;
+use App\Exports\RawDataOpen;
 use Spatie\Permission\Models\Role;
 use Carbon\Carbon;
 use App\Models\Ticket;
@@ -24,6 +26,14 @@ class TicketController extends Controller
     {
         $this->middleware(['auth', 'CheckPassword']);
         
+    }
+    public function openTicketData(Request $request) 
+    {
+        return Excel::download(new RawDataOpen(), Carbon::now()->format('Y-m-d').' - OpenTickets.xlsx');
+    }
+    public function closeTicketData(Request $request) 
+    {
+        return Excel::download(new RawDataClosed(), Carbon::now()->format('Y-m-d').' - CLosedTickets.xlsx');
     }
 
     public function ExportData(Request $request, $year, $month, $monthname) 
@@ -121,6 +131,17 @@ class TicketController extends Controller
                 return $tickets->AdditionalStoreDetails;
             }
             return $tickets->StoreName;
+        })
+        ->addColumn('SystemStatus', function (Ticket $tickets){
+            if ($tickets->TaskStatus != 'Submitted') {
+                if ($tickets->IncidentStatus != 'Resolved') {
+                    return 'Open';
+                }else{
+                    return 'Closed';
+                }
+            }else{
+                return 'Closed';
+            }
         })
         ->make(true);
     }

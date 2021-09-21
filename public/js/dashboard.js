@@ -184,6 +184,20 @@ $(document).on('click', '#openticketsBtn', function () {
     $('#loading').show();
     window.location.href = 'openticket';
 });
+$(document).on('click', '#OpenTicketDiv', function () {
+    $('#loading').show();
+    window.location.href = 'openticketdata';
+    $.ajax({
+        type: "GET",
+        url: "openticketdata",
+        success: function(data){
+            $('#loading').hide();
+        }
+    });
+});
+$(document).on('click', '#CloseTicketDiv', function () {
+    window.open('closeticketdata', '_blank');
+});
 
 $(document).on('click', '#closedticketsBtn', function () {
     $('#loading').show();

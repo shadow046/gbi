@@ -32,6 +32,7 @@
                 <th>ISSUE</th>
                 <th>STORE CODE</th>
                 <th>STORE NAME</th>
+                <th>SYSTEM STATUS</th>
                 <th>INCIDENT STATUS</th>
             </tr>
             <tr>
@@ -43,6 +44,7 @@
                 <th>ISSUE</th>
                 <th>STORE CODE</th>
                 <th>STORE NAME</th>
+                <th>SYSTEM STATUS</th>
                 <th>INCIDENT STATUS</th>
             </tr>
         </thead>
