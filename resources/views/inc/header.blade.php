@@ -15,5 +15,6 @@
         </a>
         <i class="fa fa-user-circle fa-4x p-2"></i>
     </div>
+    <input type="hidden" id="role">
     @endauth
 </div>

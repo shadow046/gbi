@@ -49,6 +49,10 @@ class ViewController extends Controller
             ->where('IncidentStatus', 'Resolved')
             ->where('Status', 'Closed')
             ->count();
+        $cancelled = Ticket::query()
+            ->join('Data', 'Code', 'StoreCode')
+            ->where('Status', 'Cancelled')
+            ->count();
 
         $TopIssues = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'))
             ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
@@ -205,6 +209,7 @@ class ViewController extends Controller
         $lessthan5 = $fivedaysOffice+$fivedaysPlant+$fivedaysStore;
         return view('dashboard',
             compact(
+                'cancelled',
                 'filtered',
                 'filtereda',
                 'filteredi',

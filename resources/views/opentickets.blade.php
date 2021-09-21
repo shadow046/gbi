@@ -32,6 +32,9 @@
                 <th>ISSUE</th>
                 <th>STORE CODE</th>
                 <th>STORE NAME</th>
+                @if (auth()->user()->hasrole('Manager'))
+                    <th>PF STATUS</th>
+                @endif
                 <th>SYSTEM STATUS</th>
                 <th>INCIDENT STATUS</th>
             </tr>
@@ -44,6 +47,9 @@
                 <th>ISSUE</th>
                 <th>STORE CODE</th>
                 <th>STORE NAME</th>
+                @if (auth()->user()->hasrole('Manager'))
+                    <th>PF STATUS</th>
+                @endif
                 <th>SYSTEM STATUS</th>
                 <th>INCIDENT STATUS</th>
             </tr>

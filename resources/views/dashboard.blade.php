@@ -29,9 +29,10 @@
             @else
                 <div class="card-text" style="float:left;">Open Tickets</div><div class="card-text" style="float:right;">{{number_format($open)}}</div><br>
                 <div class="card-text" style="float:left;">Closed Tickets</div><div class="card-text" style="float:right;">{{number_format($closed)}}</div><br>
+                <div class="card-text" style="float:left;">Cancelled Tickets</div><div class="card-text" style="float:right;">{{number_format($cancelled)}}</div><br>
             @endif
             <hr>
-            <a href="{{route('opentickets')}}"><div class="card-text" style="float:left;"><b>Total Tickets</b></div><div class="card-text" style="float:right;"><b>{{number_format($open+$closed)}}</b></div></a><br>
+            <a href="{{route('opentickets')}}"><div class="card-text" style="float:left;"><b>Total Tickets</b></div><div class="card-text" style="float:right;"><b>{{number_format($open+$closed+$cancelled)}}</b></div></a><br>
         </div>
     </div>
     @if (auth()->user()->hasrole('Manager'))
