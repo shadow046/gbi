@@ -157,9 +157,11 @@ class TicketController extends Controller
                         return 'Open';
                     }else if ($tickets->Status == "Re Open") {
                         return 'Open';
+                    }else{
+                        return 'Open';
                     }
                 }
-            }else{
+            }else if ($tickets->TaskStatus != ""){
                 if ($tickets->TaskStatus != 'Closed') {
                     if ($tickets->Status == "Cancelled") {
                         return 'Cancelled';
