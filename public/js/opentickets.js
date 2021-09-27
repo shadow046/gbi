@@ -83,56 +83,56 @@ $(document).ready(function()
         });
     }else{
         gbitable =
-    $('table.gbiTable').DataTable({ 
-        "dom": 'tip',
-        "language": {
-                "emptyTable": " ",
-                // "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw"><span class="sr-only">Searching...</span></i>',
-                "loadingRecords": "Please wait - loading..."
+        $('table.gbiTable').DataTable({ 
+            "dom": 'tip',
+            "language": {
+                    "emptyTable": " ",
+                    // "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw"><span class="sr-only">Searching...</span></i>',
+                    "loadingRecords": "Please wait - loading..."
+                },
+            "pageLength": 10,
+            "order": [[ 1, "desc" ]],
+            processing: false,
+            serverSide: false,
+            ajax: {
+                url: 'getticket',
+                statusCode: {
+                    401: function() {
+                        location.reload();
+                    }
+                }
             },
-        "pageLength": 10,
-        "order": [[ 1, "desc" ]],
-        processing: false,
-        serverSide: false,
-        ajax: {
-            url: 'getticket',
-            statusCode: {
-                401: function() {
-                    location.reload();
-                }
-            }
-        },
-        columns: [
-            { data: 'DateCreated', render: function ( data, type, row ) 
-                {
-                    return moment(data).add(8, 'hours').format('lll');
-                }},
-            { data: 'TaskNumber', name:'TaskNumber'},
-            { data: 'DateCreated', render: function ( data, type, row ) {
-                var d1 = moment(data).add(8, 'hours');
-                var d2 = moment();
-                if (d2.diff(d1, 'days') <= 5) {
-                    return 'Less than 5 days';
-                }else if (d2.diff(d1, 'days') >= 6 && d2.diff(d1, 'days') <= 10) {
-                    return '6 to 10 days';
-                }else if (d2.diff(d1, 'days') >= 11 && d2.diff(d1, 'days') <= 15) {
-                    return '11 to 15 days';
-                }else if (d2.diff(d1, 'days') >= 16 && d2.diff(d1, 'days') <= 20) {
-                    return '16 to 20 days';
-                }else if (d2.diff(d1, 'days') >= 21) {
-                    return 'More than 20 days';
-                }
-            },"width": "10%"},
-            { data: 'CallType', name:'CallType'},
-            { data: 'ProblemCategory', name:'ProblemCategory'},
-            { data: 'Issue', name:'Issue'},
-            { data: 'StoreCode', name:'StoreCode'},
-            { data: 'StoreName', name:'StoreName'},
-            { data: 'Status', name:'Status'},
-            { data: 'SystemStatus', name:'SystemStatus'},
-            { data: 'IncidentStatus', name:'IncidentStatus'}
-        ]
-    });
+            columns: [
+                { data: 'DateCreated', render: function ( data, type, row ) 
+                    {
+                        return moment(data).add(8, 'hours').format('lll');
+                    }},
+                { data: 'TaskNumber', name:'TaskNumber'},
+                { data: 'DateCreated', render: function ( data, type, row ) {
+                    var d1 = moment(data).add(8, 'hours');
+                    var d2 = moment();
+                    if (d2.diff(d1, 'days') <= 5) {
+                        return 'Less than 5 days';
+                    }else if (d2.diff(d1, 'days') >= 6 && d2.diff(d1, 'days') <= 10) {
+                        return '6 to 10 days';
+                    }else if (d2.diff(d1, 'days') >= 11 && d2.diff(d1, 'days') <= 15) {
+                        return '11 to 15 days';
+                    }else if (d2.diff(d1, 'days') >= 16 && d2.diff(d1, 'days') <= 20) {
+                        return '16 to 20 days';
+                    }else if (d2.diff(d1, 'days') >= 21) {
+                        return 'More than 20 days';
+                    }
+                },"width": "10%"},
+                { data: 'CallType', name:'CallType'},
+                { data: 'ProblemCategory', name:'ProblemCategory'},
+                { data: 'Issue', name:'Issue'},
+                { data: 'StoreCode', name:'StoreCode'},
+                { data: 'StoreName', name:'StoreName'},
+                { data: 'Status', name:'Status'},
+                { data: 'SystemStatus', name:'SystemStatus'},
+                { data: 'IncidentStatus', name:'IncidentStatus'}
+            ]
+        });
     }
     
 

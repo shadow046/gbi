@@ -32,7 +32,7 @@
                 <th>ISSUE</th>
                 <th>STORE CODE</th>
                 <th>STORE NAME</th>
-                @if (auth()->user()->hasrole('Manager'))
+                @if (auth()->user()->hasanyrole('Manager', 'Agent'))
                     <th>PF STATUS</th>
                 @endif
                 <th>SYSTEM STATUS</th>
@@ -47,7 +47,7 @@
                 <th>ISSUE</th>
                 <th>STORE CODE</th>
                 <th>STORE NAME</th>
-                @if (auth()->user()->hasrole('Manager'))
+                @if (auth()->user()->hasanyrole('Manager', 'Agent'))
                     <th>PF STATUS</th>
                 @endif
                 <th>SYSTEM STATUS</th>
