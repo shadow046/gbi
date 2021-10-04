@@ -34,7 +34,7 @@ class TicketController extends Controller
     }
     public function closeTicketData(Request $request) 
     {
-        return Excel::download(new RawDataClosed(), Carbon::now()->format('Y-m-d').' - CLosedTickets.xlsx');
+        return Excel::download(new RawDataClosed(), Carbon::now()->format('Y-m-d').' - ClosedTickets.xlsx');
     }
     public function cancelTicketData(Request $request) 
     {
