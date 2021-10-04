@@ -112,8 +112,6 @@
 
         @if(Request::is('openticket'))
             @include('modal.ticketdetails')
-            @include('modal.topissue')
-            @include('modal.aging')
         @endif
 
         @if(Request::is('users'))
