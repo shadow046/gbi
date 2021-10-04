@@ -2,8 +2,8 @@
 
 namespace App\Exports;
 
+use App\Models\Ticket;
 use App\Models\Task;
-use App\Models\FormField;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
@@ -20,6 +20,7 @@ use Maatwebsite\Excel\Concerns\WithCharts;
 use PhpOffice\PhpSpreadsheet\Chart\PlotArea;
 use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
 use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
+use Carbon\Carbon;
 use DB;
 
 class Daily implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,WithTitle,WithCharts
@@ -44,12 +45,22 @@ class Daily implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,With
             new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, 'Daily!$A$6', null, 1),
             new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, 'Daily!$A$7', null, 1)
         ];
-        $xAxisTickValues = [new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, 'Daily!$B$4:$AF$4', null, 4)];
-        $dataSeriesValues = [
-            new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$B$5:$AF$5', null,4),
-            new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$B$6:$AF$6', null,4),
-            new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$B$7:$AF$7', null,4),
-        ];
+        if (Carbon::parse($this->year.'-'.$this->month.'-'.'1')->daysInMonth == 31) {
+            $xAxisTickValues = [new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, 'Daily!$B$4:$AF$4', null, 4)];
+            $dataSeriesValues = [
+                new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$B$5:$AF$5', null,4),
+                new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$B$6:$AF$6', null,4),
+                new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$B$7:$AF$7', null,4),
+            ];
+        }else if (Carbon::parse($this->year.'-'.$this->month.'-'.'1')->daysInMonth == 30) {
+            $xAxisTickValues = [new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, 'Daily!$B$4:$AE$4', null, 4)];
+            $dataSeriesValues = [
+                new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$B$5:$AE$5', null,4),
+                new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$B$6:$AE$6', null,4),
+                new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'Daily!$B$7:$AE$7', null,4),
+            ];
+        }
+        
         $series = new DataSeries(
             DataSeries::TYPE_LINECHART, // plotType
             DataSeries::GROUPING_STANDARD, // plotGrouping
@@ -144,62 +155,69 @@ class Daily implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,With
     }
     public function array(): array
     {
-        $Store = Task::query()
-            ->select(DB::raw('COUNT(Task.Id) as count'), DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US') as Date"))
-            ->join('Form', 'TaskId', 'Task.Id')
-            ->join('FormField', 'FormId', 'Form.Id')
-            ->where('FieldId', 'GBISBU')
-            ->where('Value', 'Store')
+        $Store = Ticket::query()
+            ->select(DB::raw('COUNT(TaskId) as count'), DB::raw("DATE_FORMAT(DateCreated, '%m/%d/%Y') as Date"))
+            ->join('Data','Code', 'StoreCode')
+            ->where('SBU', 'Store')
             ->whereYear('DateCreated', $this->year)
             ->whereMonth('DateCreated', $this->month)
-            ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
+            ->groupBy('Date')
             ->get();
-        $Plant = Task::query()
-            ->select(DB::raw('COUNT(Task.Id) as count'), DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US') as Date"))
-            // ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
-            ->join('Form', 'TaskId', 'Task.Id')
-            ->join('FormField', 'FormId', 'Form.Id')
-            ->where('FieldId', 'GBISBU')
-            ->where('Value', 'Plant')
+        $Plant = Ticket::query()
+            ->select(DB::raw('COUNT(TaskId) as count'), DB::raw("DATE_FORMAT(DateCreated, '%m/%d/%Y') as Date"))
+            ->join('Data','Code', 'StoreCode')
+            ->where('SBU', 'Plant')
             ->whereYear('DateCreated', $this->year)
             ->whereMonth('DateCreated', $this->month)
-            ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
+            ->groupBy('Date')
             ->get();
-        $Office = Task::query()
-            ->select(DB::raw('COUNT(Task.Id) as count'), DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US') as Date"))
-            // ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
-            ->join('Form', 'TaskId', 'Task.Id')
-            ->join('FormField', 'FormId', 'Form.Id')
-            // ->orderBy('DateCreated', 'Asc')
-            ->where('FieldId', 'GBISBU')
-            ->where('Value', 'Office')
+            // ->select(DB::raw('COUNT(Task.Id) as count'), DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US') as Date"))
+            // // ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
+            // ->join('Form', 'TaskId', 'Task.Id')
+            // ->join('FormField', 'FormId', 'Form.Id')
+            // ->where('FieldId', 'GBISBU')
+            // ->where('Value', 'Plant')
+            // ->whereYear('DateCreated', $this->year)
+            // ->whereMonth('DateCreated', $this->month)
+            // ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
+            // ->get();
+        $Office = Ticket::query()
+            ->select(DB::raw('COUNT(TaskId) as count'), DB::raw("DATE_FORMAT(DateCreated, '%m/%d/%Y') as Date"))
+            ->join('Data','Code', 'StoreCode')
+            ->where('SBU', 'Office')
             ->whereYear('DateCreated', $this->year)
             ->whereMonth('DateCreated', $this->month)
-            ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
+            ->groupBy('Date')
             ->get();
-        $date = Task::query()
-            ->select(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US') as date"))
+            // Task::query()
+            // ->select(DB::raw('COUNT(Task.Id) as count'), DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US') as Date"))
+            // // ->whereDate('DateCreated', '>=', Carbon::now()->subMonths(1))
+            // ->join('Form', 'TaskId', 'Task.Id')
+            // ->join('FormField', 'FormId', 'Form.Id')
+            // // ->orderBy('DateCreated', 'Asc')
+            // ->where('FieldId', 'GBISBU')
+            // ->where('Value', 'Office')
+            // ->whereYear('DateCreated', $this->year)
+            // ->whereMonth('DateCreated', $this->month)
+            // ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
+            // ->get();
+        $date = Ticket::query()
+            ->select(DB::raw("DATE_FORMAT(DateCreated, '%m/%d/%Y') as date"))
             // ->whereDate('DateCreated', '>', Carbon::now()->subMonths(1))
-            ->join('Form', 'TaskId', 'Task.Id')
-            ->join('FormField', 'FormId', 'Form.Id')
+            ->join('Data','Code', 'StoreCode')
             // ->orderBy('DateCreated', 'Asc')
-            ->where('FieldId', 'GBISBU')
             ->whereYear('DateCreated', $this->year)
             ->whereMonth('DateCreated', $this->month)
-            ->whereNotNull('Value')
-            ->groupBy(DB::raw("Format(DateCreated, 'MM-dd-yyyy', 'en-US')"))
+            ->groupBy('date')
             ->get();
-        $dates = Task::query()
-            ->select(DB::raw("Format(DateCreated, 'dd', 'en-US') as date"))
+        $dates = Ticket::query()
+            ->select(DB::raw("DATE_FORMAT(DateCreated, '%d') as date"))
             // ->whereDate('DateCreated', '>', Carbon::now()->subMonths(1))
-            ->join('Form', 'TaskId', 'Task.Id')
-            ->join('FormField', 'FormId', 'Form.Id')
+            ->join('Data','Code', 'StoreCode')
             // ->orderBy('DateCreated', 'Asc')
-            ->where('FieldId', 'GBISBU')
             ->whereYear('DateCreated', $this->year)
             ->whereMonth('DateCreated', $this->month)
-            ->whereNotNull('Value')
-            ->groupBy(DB::raw("Format(DateCreated, 'dd', 'en-US')"))
+            ->groupBy('date')
             ->pluck('date');
         $ofc = [];
         $plnt = [];
@@ -225,7 +243,6 @@ class Daily implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,With
         $plnt = collect($plnt);
         $str = collect($str);
         $ofc = collect($ofc);
-
         $strtotal = $str->sum(function($item) {
             return $item;
         });
@@ -240,7 +257,6 @@ class Daily implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,With
             array_push($grandtotal, $str[$key]+$plnt[$key]+$ofc[$key]);
         }
         array_push($grandtotal, number_format($strtotal+$plnttotal+$ofctotal));
-        
         $dates->prepend('GBI SBU')->push('GRAND TOTAL');
         $str->prepend('STORE')->push(number_format($strtotal));
         $plnt->prepend('PLANT')->push(number_format($plnttotal));

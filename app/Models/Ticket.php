@@ -10,6 +10,6 @@ class Ticket extends Model
     use HasFactory;
     protected $connection = 'gbi';
     protected $guarded = [];
-    protected $table = 'old_ticket';
+    protected $table = 'Ticket';
     public $timestamps = false;
 }
