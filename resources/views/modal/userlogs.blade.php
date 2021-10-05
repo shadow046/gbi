@@ -12,12 +12,14 @@
                     <table class="table-hover table userlogsTable" id="userlogsTable" style="font-size:70%;width:100%">
                         <thead style="background-color:#00127f;color:white">
                             <tr>
+                                <th>id</th>
                                 <th>Date</th>
                                 <th>Name</th>
                                 <th>Access Level</th>
                                 <th>Activity</th> 
                             </tr>
                             <tr>
+                                <th>id</th>
                                 <th>Date</th>
                                 <th>Name</th>
                                 <th>Access Level</th>

@@ -228,9 +228,17 @@ $(document).on('click', '#userLogsBtn', function () {
         "order": [[ 0, "desc" ]],
         "pageLength": 10,
         processing: false,
-        serverSide: true,
+        serverSide: false,
         ajax: 'userlogs',
+        "columnDefs": [
+            {
+                "targets": [ 0 ],
+                "visible": false,
+                "searchable": false
+            }
+        ],
         columns: [
+            { data: 'id', name:'id'},
             { data: 'Date', name:'Date'},
             { data: 'fullname', name:'fullname'},
             { data: 'Access_Level', name:'Access_Level'},
