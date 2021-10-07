@@ -1,5 +1,6 @@
 <?php
 error_reporting(0);
+
 $b="\033[1;35m";
 $green="\033[1;32m";
 $yllw="\033[1;33m";
@@ -107,6 +108,33 @@ function notkens(){
  return $notiTokn;
 };
 function postX($urlx, $payloader, $cooks = ""){
+    global $uAgent,$sleepSec;
+    $postURL = $urlx;
+    $postHeader = !$cooks 
+        ? array(
+        "Content-Type: application/json; charset=UTF-8",
+        "user-agent: $uAgent") 
+        : array(
+        "Content-Type: application/json; charset=UTF-8",
+        "user-agent: $uAgent","authorization: Bearer $cooks") ;
+        $postCurl = curl_init($postURL);
+        curl_setopt($postCurl, CURLOPT_URL, $postURL);
+        curl_setopt($postCurl, CURLOPT_POST, true);
+        curl_setopt($postCurl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($postCurl, CURLOPT_HTTPHEADER, $postHeader);
+        curl_setopt($postCurl, CURLOPT_POSTFIELDS, $payloader);
+        curl_setopt($postCurl, CURLOPT_SSL_VERIFYHOST, false);
+        // curl_setopt($postCurl, CURLOPT_SSL_VERIFYPEER, false);
+        // curl_setopt($postCurl, CURLOPT_PROXY, "http://p.webshare.io:80");
+        // curl_setopt($postCurl, CURLOPT_PROXYUSERPWD, 'hezcrpaa-rotate:wtogvqgydho4');
+        sleep($sleepSec);
+        $postResp = curl_exec($postCurl);
+    //   echo "\n".$postResp;
+        curl_close($postCurl);
+        $postjson = json_decode($postResp);
+        return $postjson;
+};
+function postXX($urlx, $payloader, $cooks = ""){
     global $uAgent,$sleepSec;
     $postURL = $urlx;
     $postHeader = !$cooks 
@@ -240,7 +268,7 @@ function lykalogin($accntun,$accntpw){
 
 
 };
-function lykalogout($accntun){
+function llykalogout($accntun){
     global $uAgent;
     global $accntdata, $yllw,$green;
     
@@ -346,7 +374,7 @@ function allRater($toRates, $mcounters = 0){
                 $maxRateX = false;
                 $attmpts = 0;
                 $pcnt = 0;
-                if ($main == 'no') {
+                if ($main == 'no' || $mcounters >= 50) {
                     if($postArrs->data??null && $raterCooks!=""){
                         $dummygems = getGems($rrDevID,$raterCooks);
                         $postkey = 0;
@@ -354,32 +382,45 @@ function allRater($toRates, $mcounters = 0){
                         $countpost = 0;
                         foreach ($postArrs->data as $arrb) {
                             $postId = $arrb->id;
+                            // echo "\n".$postId;
                             $countpost++;
+                            // echo "\n".$countpost;
                             if ($countpost < 11) {
                                 if (!in_array($postId, $post)) {
                                     if($postId && !$maxRateX){
                                         $postRep = getPost($rrDevID,$raterCooks,$postId);
-                                                //  echo $postRep->message;
-                                        if($postRep->data->count->rateSent==0){
+                                        // echo "\n".$postRep->message;
+                                        // echo "\n".$postRep->data->count->rateSent;
+                                        if($postRep->data->count->rateSent <=4){
                                             $ratedX = ratePost($rrDevID,$postId,$uid,$rrToken,$raterCooks);
                                             //  echo $ratedX->message;
+                                            
                                             if($ratedX->status){
-                                                $dummygem = getGems($rrDevID,$raterCooks);
-                                                $dummygems = $dummygem;
-                                                echo "\n$yllw--- $wht$rateAcc$yllw ---";
-                                                echo "Total $green Gems: ⬘⬘ ".$wht.$dummygem."$green rated  →$yllw Main $toRates Total $green Gems: ⬘⬘ ".$wht.getGems($rDevID, $rCooki)."\n";
+                                                // $dummygem = getGems($rrDevID,$raterCooks);
+                                                // $dummygems = $dummygem;
+                                                echo "\n".$ratedX->message;
+                                                // echo $ratedX->status;
+                                                // echo "\n$yllw--- $wht$rateAcc$yllw --- Main $toRates ".getGems($rDevID, $rCooki);
+                                                if ($countpost == 1) {
+                                                    $ratedX = ratePost($rrDevID,$postArrs->data[10]->id,$uid,$rrToken,$raterCooks);
+                                                    echo "\n".$ratedX->message;
+                                                    // echo "\n$yllw--- $wht$rateAcc$yllw --- additional mr Main $toRates ".getGems($rDevID, $rCooki);
+                                                }
+                                                // echo "Total $green Gems: ⬘⬘ ".$wht.$dummygem."$green rated  →$yllw Main $toRates Total $green Gems: ⬘⬘ ".$wht.getGems($rDevID, $rCooki)."\n";
                                                 $pcnt++;
                                                 $postkey++;
-                                                $accntdata[$rateAcc]["post".$postkey] = $postId;
+                                                $accntdata[$rateAcc]["post".$postkey] = "$postId";
                                                 $newaccntdata = json_encode($accntdata);
                                                 file_put_contents('lyaccnts.json', $newaccntdata);
                                                 $cookyStr = file_get_contents('lyaccnts.json');
                                                 $accntdata = json_decode($cookyStr, true);
                                             } else if($pcnt>=11) {
                                                 $maxRateX = false;
+                                                // echo "\n".$ratedX->message;
                                                 break;
                                             }
                                         }else if($postRep->data->count->rateSent==5){
+                                            echo "\nAlready Rated this account.";
                                             break;
                                         }
                                     }
@@ -388,7 +429,7 @@ function allRater($toRates, $mcounters = 0){
                                 }
                             }
                         }
-                        echo "$wht$rateAcc$yllw maxed. Total $green Gems: ⬘⬘  ".$wht.$dummygems." $lred|$yllw Main $toRates Total $green Gems: ⬘⬘  ".$wht.getGems($rDevID, $rCooki)."\n";
+                        echo "\n$wht$rateAcc$yllw maxed. Total $green Gems: ⬘⬘  ".$wht.getGems($rrDevID,$raterCooks)." $lred|$yllw Main $toRates Total $green Gems: ⬘⬘  ".$wht.getGems($rDevID, $rCooki)."\n";
                         $accntdata[$rateAcc]["main".$mcounters] = "yes";
                         $newaccntdata = json_encode($accntdata);
                         file_put_contents('lyaccnts.json', $newaccntdata);
@@ -477,6 +518,7 @@ function uploader($fdevIds,$fcookie, $fuid ,$fdataM, $unamer,$xmain = false){
         $fdataTitle =  $fdat["title"];
         $fdataContent =  $fdat["content"];
         //Query upload
+        $oldgem = getGems($fdevIds, $fcookie);
         $uploadUrlxx = "https://posting.mylykaapps.com/api/v3/posts/AddImagePost";
         $uploadRe = PostX($uploadUrlxx,payload($fdevIds,'"files": ['.$fdataUp.'],"isHighlight": true,"isSharedLink":false,"mediaTags": "[[]]","title": "'.$fdataTitle.'-'.$mnt.$dy.'","content": "'.$fdataContent.'"'),$fcookie);
         //Moments 
@@ -682,6 +724,7 @@ function uploaderMoment($fdevIds,$fcookie, $fuid, $xmain = false){
                     $momnts = PostX($uploadMoment,payload($fdevIds,'"files":[{"height":2081,"key":"'.$mediaID.'", "RemoteStorage":"lyka-legacy-images-input" ,"type":"image","width":1079}]'),$fcookie);
                     $momntsss = $momnts->message;
                    // echo $momnts->message;
+                   $oldgem = getGems($fdevIds, $fcookie);
                     if( $momntsss == "Moment retrieved."){
                         echo "$yllw →$wht Moment posted →$yllw Gems: ".getGems($fdevIds, $fcookie)."\n";
                         $cmoments++;
@@ -733,7 +776,7 @@ function iniStorage($storageName){
  while($x44){
     @system("clear");
 echo "$green$lykM";
-echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh v1.3";
+echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh revised version";
 echo "\n$b----------------------------------------------\n\n\n"."$green 1. Upload Photo & Moment"."\n";
 echo "$yllw 2. Max Rate"."\n";
 echo "$lred 3. Transfer Gems"."\n";
@@ -777,73 +820,111 @@ if($postMe == 9){
         $accntgetupload= json_decode($getupload, true);
         if($uploadAll!=""){
             $sopt = explode(",",$uploadAll);
+            $exclude = explode(",",'09708569738,emorej046,shadow046,+639568933008');
             if(in_array("1",$sopt)){ //update all
                 foreach($accntdata as $accnts => $vals) {
                     if ($tcountr >= $accntgetupload['upload'] ) {
-                        if($vals["cookie"]??null){
-                            $mcCookie =$vals["cookie"];
-                            $mcDev = $vals["devId"];
-                            //Uploader 
-                            @system("clear");
-                            echo "\n$green$upldr";
-                            echo "\n";
-                            echo "\n\n$wht------- $cyn$accnts$wht -------- .. $tcountr \n\n";
-                            $getUID = getX("https://profiles.mylykaapps.com/api/v3/profiles/GetUserProfileForEditing?os=android", $mcDev,$mcCookie);
-                            if($getUID->data??null){
-                                $fuid = $getUID->data->id;
-                                if(in_array("5",$sopt)){ //Delete photos
-                                    if(in_array("2",$sopt)){
-                                        $postArr2 = getX("https://profiles.mylykaapps.com/api/v3/profiles/GetProfilePosts?os=android&pageIndex=1&pageSize=200&id=$fuid&category=ALL",$ $mcDev, $mcCookie);
-                                        echo "→ Deleting posts";
-                                        if($postArr2->data??null){
-                                            foreach ($postArr2->data as $arrb) {
-                                                $postIdx = $arrb->id;
-                                                $deljson = delPost($mcDev,$mcCookie,$postIdx);
-                                                    if($deljson->message){
+                        if (!in_array($accnts,$exclude)) {
+                            if($vals["cookie"]??null){
+                                $mcCookie =$vals["cookie"];
+                                $mcDev = $vals["devId"];
+                                //Uploader 
+                                @system("clear");
+                                echo "\n$green$upldr";
+                                echo "\n";
+                                echo "\n\n$wht------- $cyn$accnts$wht -------- .. $tcountr \n\n";
+                                $getUID = getX("https://profiles.mylykaapps.com/api/v3/profiles/GetUserProfileForEditing?os=android", $mcDev,$mcCookie);
+                                if($getUID->data??null){
+                                    $fuid = $getUID->data->id;
+                                    if(in_array("5",$sopt)){ //Delete photos
+                                        if (in_array("del",$sopt)) {
+                                            if(!in_array("2",$sopt)){
+                                                $postArr2 = getX("https://profiles.mylykaapps.com/api/v3/profiles/GetProfilePosts?os=android&pageIndex=1&pageSize=200&id=$fuid&category=ALL",$ $mcDev, $mcCookie);
+                                                echo "→ Deleting posts";
+                                                if($postArr2->data??null){
+                                                    foreach ($postArr2->data as $arrb) {
+                                                        $postIdx = $arrb->id;
+                                                        $deljson = delPost($mcDev,$mcCookie,$postIdx);
+                                                            if($deljson->message){
+                                                                echo ".";
+                                                            }
+                                                    } //forEach IDs
+                                                }
+                                                echo "\n\n";
+                                            }
+                                            
+                                            if(!in_array("3",$sopt)){
+                                                $postArrMom = getX("https://moments.mylykaapps.com/api/v3/moments/gethomemoments?os=android&pageIndex=1&pageSize=200",$mcDev, $mcCookie);
+                                                $arrb2 = $postArrMom->data[0];
+                                                echo "→ Deleting moments";
+                                                if($arrb2->mediaContents??null){
+                                                foreach($arrb2->mediaContents as $medme){
+                                                    $postIdx2 = $medme->id;
+                                                    $del2json = delMoment($mcDev,$mcCookie,$postIdx2);
+                                                    if($del2json->message){
                                                         echo ".";
                                                     }
-                                            } //forEach IDs
-                                        }
-                                        echo "\n\n";
-                                    }
+                                                }
+                                            }
+                                            echo "\n\n";
+                                            }
+                                        }else{
+                                            if(in_array("2",$sopt)){
+                                                $postArr2 = getX("https://profiles.mylykaapps.com/api/v3/profiles/GetProfilePosts?os=android&pageIndex=1&pageSize=200&id=$fuid&category=ALL",$ $mcDev, $mcCookie);
+                                                echo "→ Deleting posts";
+                                                if($postArr2->data??null){
+                                                    foreach ($postArr2->data as $arrb) {
+                                                        $postIdx = $arrb->id;
+                                                        $deljson = delPost($mcDev,$mcCookie,$postIdx);
+                                                            if($deljson->message){
+                                                                echo ".";
+                                                            }
+                                                    } //forEach IDs
+                                                }
+                                                echo "\n\n";
+                                            }
 
-                                    if(in_array("3",$sopt)){
-                                        $postArrMom = getX("https://moments.mylykaapps.com/api/v3/moments/gethomemoments?os=android&pageIndex=1&pageSize=200",$mcDev, $mcCookie);
-                                        $arrb2 = $postArrMom->data[0];
-                                        echo "→ Deleting moments";
-                                        if($arrb2->mediaContents??null){
-                                        foreach($arrb2->mediaContents as $medme){
-                                            $postIdx2 = $medme->id;
-                                            $del2json = delMoment($mcDev,$mcCookie,$postIdx2);
-                                            if($del2json->message){
-                                                echo ".";
+                                            if(in_array("3",$sopt)){
+                                                $postArrMom = getX("https://moments.mylykaapps.com/api/v3/moments/gethomemoments?os=android&pageIndex=1&pageSize=200",$mcDev, $mcCookie);
+                                                $arrb2 = $postArrMom->data[0];
+                                                echo "→ Deleting moments";
+                                                if($arrb2->mediaContents??null){
+                                                foreach($arrb2->mediaContents as $medme){
+                                                    $postIdx2 = $medme->id;
+                                                    $del2json = delMoment($mcDev,$mcCookie,$postIdx2);
+                                                    if($del2json->message){
+                                                        echo ".";
+                                                    }
+                                                }
+                                            }
+                                            echo "\n\n";
                                             }
                                         }
                                     }
-                                    echo "\n\n";
+                                    $uploadjson = 0;
+                                    if(in_array("2",$sopt)){
+                                        $uploadjson = uploader($mcDev,$mcCookie, $fuid ,$filesdata,$accnts,in_array("4",$sopt));
+                                        echo "\n";
+                                        if($uploadjson > 0){ 
+                                            echo "\nUploaded $uploadjson Photos.. ";
+                                            echo "\n";
+                                        }
                                     }
-                                }
-                                $uploadjson = 0;
-                                if(in_array("2",$sopt)){
-                                    $uploadjson = uploader($mcDev,$mcCookie, $fuid ,$filesdata,$accnts,in_array("4",$sopt));
-                                    echo "\n";
-                                    if($uploadjson > 0){ 
-                                        echo "\nUploaded $uploadjson Photos.. ";
+                                    if(in_array("3",$sopt)){
+                                        uploaderMoment($mcDev,$mcCookie ,$fuid);
+                                        echo "\nUploaded $uploadjson Moments.. ";
                                         echo "\n";
                                     }
-                                }
-                                if(in_array("3",$sopt)){
-                                    uploaderMoment($mcDev,$mcCookie ,$fuid);
-                                    echo "\nUploaded $uploadjson Moments.. ";
                                     echo "\n";
                                 }
                                 echo "\n";
+                                $tcountr++;
+                                $accntgetupload['upload'] = "$tcountr";
+                                $newupload = json_encode($accntgetupload);
+                                file_put_contents('lyupload.json', $newupload);
                             }
-                            echo "\n";
+                        }else{
                             $tcountr++;
-                            $accntgetupload['upload'] = "$tcountr";
-                            $newupload = json_encode($accntgetupload);
-                            file_put_contents('lyupload.json', $newupload);
                         }
                     }else{
                         $tcountr++;
@@ -993,7 +1074,26 @@ else if($postMe == 2){
         echo "\n$wht---------------------------------$wht\n";
         echo "Time Ended: ".$timesended."\n";
 
-    } 
+    }else if($rateL==15){
+        @system("clear");
+        $mainCnt = 10;
+        $timestarted = date("h:i:sa");
+        shuffle($accntdata);
+        foreach($accntdata as $rateAcc => $vals){
+            allRater($rateAcc,$mainCnt); 
+            $mainCnt+=10;
+        }
+        // foreach( $accntX["mainAccounts"] as $rme){
+        //     allRater($rme,$mainCnt); 
+        //     $mainCnt+=10;
+        // }
+        $timesended = date("h:i:sa");
+        echo "\n$wht---------------------------------$wht\n";
+        echo "Time Started: ".$timestarted."\n";
+        echo "\n$wht---------------------------------$wht\n";
+        echo "Time Ended: ".$timesended."\n";
+
+    }
     else if($rateL==3){
         @system("clear");
         echo "$yllw";
@@ -1030,7 +1130,7 @@ else if($postMe == 2){
             $accntdata[$accnts]["main20"] = "no";
             $accntdata[$accnts]["main30"] = "no";
             $accntdata[$accnts]["main40"] = "no";
-            for ($i=1; $i < 41; $i++) { 
+            for ($i=1; $i < 51; $i++) { 
                 $accntdata[$accnts]["post".$i] = "";
             }
         }
@@ -1170,16 +1270,18 @@ else if($postMe == 5 || $postMe == 3){
                    if(!$notinArr){
                         $tGem1 = getGems($sdid, $scooks);
                         if($tGem1>0){
+                            echo "$wht $accnts gems:$yllw ₱$tGem1 $lred-> ";
                             $sendJsonF = postX("https://wallets.mylykaapps.com/api/v3/wallets/SendGemV2", payload($sdid,'"recipientId": '.$fuidx.',"amount": '.$tGem1, $sntokn),$scooks);
-                            echo "$green.";
+                            echo "$wht $accnts gems:$yllw ₱".getGems($sdid, $scooks);
+                            echo "$green.\n";
                            // echo $sendJsonF->message."\n";
-                        } //if balance is more than 0
+                        }else{
+                            echo "$wht $accnts gems:$yllw ₱0\n";
+                        }
                    }
                 }
-
-                @system("clear");
+                // 09354455772
                 echo "$lcyan";
-                echo $gmss;
                 echo "$yllw\n\n---------------------------------\n$wht$xDeal\n\n";
                 $itxGems = getGems($xdlDev, $xdlCooky); 
                 echo "\nTransfer done!";
@@ -1237,9 +1339,9 @@ else if($postMe == "x"){
     $conPro = readline("→  ");
 } 
 else if($postMe == 6){
-    @system("clear");
+    // @system("clear");
     echo "$yllw$lykM";
-    echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh v1.3";
+    echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh revised version";
     echo "\n$b----------------------------------------------\n";
     echo "$wh\n1.$wht Login";
     echo "$wh\n2.$wht Logout \n\n\n";
@@ -1251,18 +1353,18 @@ else if($postMe == 6){
 
     $conPros = "y";
     while($conPros=="y"){
-    @system("clear");
+    // @system("clear");
     echo "$yllw$lykM";
     echo "\n\n\n$wht → Lyka Login";
     echo "\n$b----------------------------------------------\n\n\n$wht";
     $nPosts = readline("username →  ");
-    $nPassw = readline("password →  ");
+    $nPassw = 'Maricaris24';
 
     if($nPosts!="" && $nPassw!=""){
         lykalogin($nPosts,$nPassw);
     } 
     echo "\n\n$yllw";
-    $conPros = readline("y ? →  ");
+    $conPros = readline("→  ");
     }
     } //end ofLogin 
     else if($nPosts==2){
@@ -1285,7 +1387,7 @@ else if($postMe == 7){
     @system("clear");
     echo "$green$lykM";
     $totalGms = 0;
-    echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh v1.3";
+    echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh revised version";
     echo "\n$b----------------------------------------------\n\n$wht";
     $iniStores = file_get_contents($accntX['accountStorage']);
     $iniStoresData = json_decode($cookyStr,true);
@@ -1315,7 +1417,7 @@ else if($postMe == 8){
     //default is lyaccnt.json
     @system("clear");
     echo "$green$lykM";
-    echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh v1.3";
+    echo "\n\n$lred\n ©e$wht"."LYK$lred"."tr$wht"."A$wh revised version";
     echo "\n$b----------------------------------------------\n\n$wht";
 
     echo "$wht 1. Set JSON account storage"."\n\n\n";
