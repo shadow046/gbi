@@ -56,7 +56,7 @@ $(document).ready(function()
 $(document).on('change', '#yearselect', function(){
     var monthoption = '<option selected disabled>select month</option>';
     if ($(this).val() == yearstart) {
-        for (let index = 7; index <= curmonth ; index++) {
+        for (let index = 10; index <= curmonth ; index++) {
             monthoption += '<option value="'+index+'">'+months[index-1]+'</option>';
         }
     }else if ($(this).val() == curyear) {
