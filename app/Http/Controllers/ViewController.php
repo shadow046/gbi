@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use App\Models\Ticket;
 use App\Models\Task;
+use App\Models\Data;
 use DB;
 
 class ViewController extends Controller
@@ -21,6 +22,18 @@ class ViewController extends Controller
     public function users()
     {
         return view('users');
+    }
+
+    public function email()
+    {
+        $datas = Data::select('Code', 'Email')
+            ->where('Email', "")
+            ->where('Code', 'regexp', '^[0-9]')
+            ->get();
+        foreach ($datas as $data) {
+            Data::where('Code', $data->Code)->update(['Email'=>'store.'.$data->Code.'@goldilocks.com']);
+        }
+        return "done";
     }
     
     public function monthlytickets()

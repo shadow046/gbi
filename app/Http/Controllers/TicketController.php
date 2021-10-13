@@ -22,7 +22,6 @@ class TicketController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
     public function __construct()
     {
         $this->middleware(['auth', 'CheckPassword']);
@@ -120,6 +119,7 @@ class TicketController extends Controller
                 'SubCategory as Issue',
                 'ProblemCategory',
                 'StoreCode',
+                'SBU',
                 'Status',
                 'Store_Name as StoreName',
                 'AdditionalStoreDetails',

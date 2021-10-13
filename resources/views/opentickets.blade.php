@@ -32,6 +32,7 @@
                 <th>ISSUE</th>
                 <th>STORE CODE</th>
                 <th>STORE NAME</th>
+                <th>GBI-SBU</th>
                 @if (auth()->user()->hasanyrole('Manager', 'Agent'))
                     <th>PF STATUS</th>
                 @endif
@@ -47,6 +48,7 @@
                 <th>ISSUE</th>
                 <th>STORE CODE</th>
                 <th>STORE NAME</th>
+                <th>GBI-SBU</th>
                 @if (auth()->user()->hasanyrole('Manager', 'Agent'))
                     <th>PF STATUS</th>
                 @endif

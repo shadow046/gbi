@@ -16,6 +16,8 @@ $(document).ready(function()
                 $(this).html('<input type="text" style="width:70px" placeholder="Search '+title+'" class="column_search" />' );
         }else if (title == "STORE CODE") {
                 $(this).html('<input type="text" style="width:70px" placeholder="Search Code" class="column_search" />' );
+        }else if (title == "GBI-SBU") {
+                $(this).html('<input type="text" style="width:50px" placeholder="Search Code" class="column_search" />' );
         }else if (title == "CALL TYPE") {
                 $(this).html('<input type="text" style="width:70px" placeholder="Search '+title+'" class="column_search" />' );
         }else if (title == "CATEGORY") {
@@ -77,6 +79,7 @@ $(document).ready(function()
                 { data: 'Issue', name:'Issue'},
                 { data: 'StoreCode', name:'StoreCode'},
                 { data: 'StoreName', name:'StoreName'},
+                { data: 'SBU', name:'SBU'},
                 { data: 'SystemStatus', name:'SystemStatus'},
                 { data: 'IncidentStatus', name:'IncidentStatus'}
             ]
@@ -128,6 +131,7 @@ $(document).ready(function()
                 { data: 'Issue', name:'Issue'},
                 { data: 'StoreCode', name:'StoreCode'},
                 { data: 'StoreName', name:'StoreName'},
+                { data: 'SBU', name:'SBU'},
                 { data: 'Status', name:'Status'},
                 { data: 'SystemStatus', name:'SystemStatus'},
                 { data: 'IncidentStatus', name:'IncidentStatus'}

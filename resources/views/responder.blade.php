@@ -1,11 +1,20 @@
 <div>
-<p>Hi test,</p>
-<p>Thank you for your feedback. The support team have noted your concern and will get back to as soon as possible.</p>
-<p>If you have urgent concerns you may contact us in our Viber numbers below:<br>
+<p>Hi {{ $Store }},</p>
+<p>Good day!</p>
+<p>This is to acknowledge your reported concern.</p>
+<p>Your report has been logged and forwarded to technical support with <b>TICKET NO: {{$Ticket}}</b>.<br>
+A technical support representative will call you within the day for further diagnostic and resolution.</p>
+{{-- For any concern to this report, please use the Ticket Number as reference. --}}
+<p>Should you require futher information, you may contact Customer Support through any of the following:<br><br>
+Hotline: (632) 88-652-420<br>
+Smart: 0999-220-5391<br>
+Globe: 0917-873-1801<br><br>
+E-mail: itservicedesk@goldilocks.com<br>
 {{-- <span><img src="{{asset('viber.png')}}" alt="viber.png" style="width: auto; height: 25px;"></span> --}}
-09992206507 / 09568772910
 </p>
-<p>BSMS Support Team,<br>
-{{-- <span><img src="{{asset('idsi.png')}}" alt="idsi.png" style="width: auto; height: 50px;"></span> --}}
+<p>Thank you!<br><br>
+
+*Note: This is a system generated email.<br>
+Please do not reply to this message.
 </p>
 </div>

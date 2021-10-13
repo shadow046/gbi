@@ -36,6 +36,7 @@ Route::get('weeklytickets', [ViewController::class, 'weeklytickets'])->name('gbi
 Route::get('dailytickets', [ViewController::class, 'dailytickets'])->name('gbi.daily.blade');
 Route::get('change-password', [UserController::class, 'changepass']);
 Route::get('dashboard', [ViewController::class, 'dashboard']);
+Route::get('email', [ViewController::class, 'email']);
 
 //For users controller
 Route::get('getusers', [UserController::class, 'getusers']);
