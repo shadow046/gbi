@@ -8,6 +8,7 @@
     @if (auth()->user()->roles->first()->name == "Manager")
         <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer" id="userBtn" value="USERS">&nbsp;&nbsp;
         <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer" id="userLogsBtn" value="USER LOGS">&nbsp;&nbsp;
+        <input type="button" class="btn" style="background-color: #0d1a80;color: white;cursor:pointer" id="ReportsBtn" value="REPORTS">&nbsp;&nbsp;
     @endif
     <a href="{{route('logout')}}" class="nav-link ml-auto"><input type="button" class="btn logoutBtn" style="background-color: #0d1a80;color: white;cursor:pointer !important;" id="logoutBtn" value="LOGOUT"></a>
     

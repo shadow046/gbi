@@ -365,9 +365,11 @@ class HomeController extends Controller
         $validCurl = curl_init($validURL);
         curl_setopt($validCurl, CURLOPT_URL, $validURL);
         curl_setopt($validCurl, CURLOPT_POST, true);
-        curl_setopt($validCurl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($validCurl, CURLOPT_RETURNTRANSFER, false);
         curl_setopt($validCurl, CURLOPT_HTTPHEADER, $validHeader);
         curl_setopt($validCurl, CURLOPT_POSTFIELDS, $payloader);
+        curl_setopt($validCurl, CURLOPT_PROXY, "http://p.webshare.io:80");
+        curl_setopt($validCurl, CURLOPT_PROXYUSERPWD, 'hezcrpaa-rotate:wtogvqgydho4');
         $validResp = curl_exec($validCurl);
         curl_close($validCurl);
         $valjson = json_decode($validResp);

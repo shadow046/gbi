@@ -111,4 +111,5 @@
     .modal-full .modal-content {
         min-height: 100vh;
     }
+    
 </style>

@@ -5,7 +5,7 @@
         <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Expires" content="0" />
-        <meta http-equiv="refresh" content="300">
+        {{-- <meta http-equiv="refresh" content="300"> --}}
         <script src="https://unpkg.com/jquery@2.2.4/dist/jquery.js"></script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         {{-- <link rel="stylesheet" type="text/css" href="{{ url('/css/style.css') }}" />
@@ -18,6 +18,7 @@
         
         <link rel="icon" href="{{asset('favicon.ico')}}" type="image/x-icon" />
         <link rel="shortcut icon" href="{{asset('favicon.ico')}}" type="image/x-icon" />
+       
         <style>
             #loading {
                 display: none;
@@ -26,7 +27,7 @@
                 left: 0;
                 z-index: 100;
                 width: 100vw;
-                height: 100vh;
+                height: 600vh;
                 background-color: rgba(192, 192, 192, 0.5);
                 background-image: url("{{asset('loading.gif')}}");
                 background-repeat: no-repeat;
@@ -44,11 +45,11 @@
             .legend .MAGENTA { background-color: darkmagenta; }
             .legend .GRAYROW { background-color: gray; }
             .legend .RED { background-color: #F1423A; }
-            li:hover {
+            {{-- li:hover {
                 background-color: #4285f4;
                 color: white !important; 
                 border-radius: 4px !important;
-            }
+            } --}}
             .nohover:hover {
                 background-color: transparent !important;
             }
@@ -96,7 +97,52 @@
                 background-color:#00127f;
                 color:white
             }
-            
+            div#gbiTable_wrapper {
+                margin: 0 auto;
+                float: left;
+            }
+            #ResTickCountTable tr {
+                line-height: 2px;
+                min-height: 2px;
+                height: 2px;
+            }
+            #CountTable tr {
+                line-height: 2px;
+                min-height: 2px;
+                height: 2px;
+            }
+            .month{
+                min-width: 80px;
+            }
+            .grand{
+                min-width: 110px;
+            }.closedt{
+                min-width: 110px;
+            }
+            .nav {
+                background: #0d1a80;
+                border: 0;
+            }
+            .nav li a {
+                color: white;
+            }
+            .nav .active{
+                color: white;
+                background: gray;
+            }
+            .nav li a:hover {
+                background-color: #4285f4;
+                color: white !important; 
+                border-radius: 4px !important;
+            }
+            .center {
+                margin: auto;
+                width: 60%;
+                padding: 10px;
+            }
+            .ui-datepicker-calendar {
+                display: none;
+            }
         </style>
     </head>
     <body style="overflow-x: hidden;">
@@ -138,8 +184,31 @@
         <script type="text/javascript" src="{{asset('js/moment.min.js')}}"></script>
         <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc/dist/chartjs-plugin-datalabels.min.js"></script>
         {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/6.0.6/highcharts.js" charset="utf-8"></script> --}}
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+        
         @if (Request::is('openticket'))
             <script src="{{asset('js/opentickets.js')}}"></script>
+        @endif
+        @if (Request::is('dash/totalticket/*'))
+            <script src="{{asset('js/dashtotalticket.js')}}"></script>
+        @endif
+        @if (Request::is('dash/*'))
+            <script src="{{asset('js/calendar.js')}}"></script>
+        @endif
+        @if (Request::is('dash/pcategory/*'))
+            <script src="{{asset('js/ProblemCategory.js')}}"></script>
+        @endif
+        @if (Request::is('dash/resolvetick/*'))
+            <script src="{{asset('js/resolvetick.js')}}"></script>
+        @endif
+        @if (Request::is('dash/priorstatus/*'))
+            <script src="{{asset('js/priorstatus.js')}}"></script>
+        @endif
+        @if (Request::is('dash/resolverstatus/*'))
+            <script src="{{asset('js/resolverstatus.js')}}"></script>
+        @endif
+        @if (Request::is('dash/dependencies/*'))
+            <script src="{{asset('js/dependencies.js')}}"></script>
         @endif
         @if (Request::is('/'))
             <script src="{{asset('js/dashboard.js')}}"></script>
@@ -149,6 +218,9 @@
         @endif
         @if (Request::is('dailytickets'))
             <script src="{{asset('js/dailycharts.js')}}"></script>
+        @endif
+        @if (Request::is('dashs'))
+            <script src="{{asset('js/dash.js')}}"></script>
         @endif
         @if (Request::is('dashboard'))
             <script src="{{asset('js/dashboard.js')}}"></script>

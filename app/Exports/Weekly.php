@@ -246,11 +246,11 @@ class Weekly implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,Wit
             array_push($percent, round(($ofctotalW/$grandtotalW[5])*100,2).'%');
         }
         $percent = collect($percent);
-        $weekslabel = array();
-        for ($i=1; $i <= count($datesW); $i++) { 
-           array_push($weekslabel, 'Week '.$i);
-        }
-        $weekslabel=collect($weekslabel);
+        // $weekslabel = array();
+        // for ($i=1; $i <= count($datesW); $i++) { 
+        //    array_push($weekslabel, 'Week '.$i);
+        // }
+        // $weekslabel=collect($weekslabel);
         
         // $dates->prepend('GBI SBU')->push('GRAND TOTAL');
         // $str->prepend('STORE')->push(number_format($strtotal));
@@ -266,7 +266,6 @@ class Weekly implements FromArray,ShouldAutoSize,WithColumnWidths,WithStyles,Wit
             ['','',$week2, $strW[1],$plntW[1],$ofcW[1],$grandtotalW[1]],
             ['','',$week3, $strW[2],$plntW[2],$ofcW[2],$grandtotalW[2]],
             ['','',$week4, $strW[3],$plntW[3],$ofcW[3],$grandtotalW[3]],
-            ['','',$week5, $strW[4],$plntW[4],$ofcW[4],$grandtotalW[4]],
             ['','','Grand Total', $strtotalW,$plnttotalW,$ofctotalW,$grandtotalW[5]],
             ['','','Percentage',round(($strtotalW/$grandtotalW[5])*100,2),round(($plnttotalW/$grandtotalW[5])*100,2),round(($ofctotalW/$grandtotalW[5])*100,2),'100%'],
         ];

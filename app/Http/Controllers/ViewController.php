@@ -331,6 +331,1419 @@ class ViewController extends Controller
     {
         return view('opentickets');
     }
+    public function monthCompare($a, $b)
+    {
+        $months = array('JAN' => 1, 'FEB' =>2,'MAR' => 3,'APR' => 4,'MAY' => 5,'JUN' => 6,'JULY' => 7,'AUG' => 8, 'SEP' => 9, 'OCT' => 10, 'NOV' => 11, 'DEC' => 12);
+        if($a[0] == $b[0])
+        {
+            return 0;
+        }
+        return ($months[$a[0]] > $months[$b[0]]) ? 1 : -1;
+    
+    }
+    
+    public function dash()
+    {
+        
+        // return $TopIssues;
+
+        // usort($TopIssues, function($a, $b) {
+        //     // if ($a['ProblemCategory'] != $b['ProblemCategory']) {
+        //     //     return $b['ProblemCategory'] <=> $a['ProblemCategory'];
+        //     // }
+        //     return $b['Total'] <=> $a['Total'];
+        // });
+        $TopIssuesSoftware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+            ->join('Data','Code','StoreCode')
+            ->whereNotNull('SubCategory')
+            ->where('ProblemCategory', 'Software/ Application')
+            ->groupBy('SubCategory')
+            ->get();
+            
+        $TopSoftware = collect([]);
+        foreach ($TopIssuesSoftware as $issue) {
+            if ($issue->SubCategory != Null) {
+                $TopSoftware->offsetSet($issue->SubCategory,$issue->Total);
+            }
+        }
+        $TopSoftware = $TopSoftware->sortDesc();
+        $TopSoft = collect([]);
+        $SoftCount = 1;
+        $TotalSoft = 0;
+        foreach ($TopSoftware as $key => $value) {
+            $TotalSoft = $TotalSoft+$value;
+            if ($SoftCount < 4 && $key != "Others") {
+                $SoftCount++;
+                $TopSoft[$key] = $value;
+            }else if ($SoftCount >= 4) {
+                if ($key != "Others") {
+                    if (isset($TopSoft['Others'])) {
+                        $TopSoft['Others'] = $TopSoft['Others']+$value;
+                    }else{
+                        $TopSoft['Others'] = $value;
+                    }
+                }else{
+                    $TopSoft[$key] = $value;
+                }
+            }else if ($key == "Others") {
+                if (isset($TopSoft['Others'])) {
+                    $TopSoft['Others'] = $TopSoft['Others']+$value;
+                }else{
+                    $TopSoft['Others'] = $value;
+                }
+            }
+        }
+        $TopSoft['Total'] = $TotalSoft;
+
+        $TopIssuesHardware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+            ->join('Data','Code','StoreCode')
+            ->whereNotNull('SubCategory')
+            ->where('ProblemCategory', 'Hardware')
+            ->groupBy('SubCategory')
+            ->get();
+            
+        $TopHardware = collect([]);
+        foreach ($TopIssuesHardware as $issue) {
+            if ($issue->SubCategory != Null) {
+                $TopHardware->offsetSet($issue->SubCategory,$issue->Total);
+            }
+        }
+        $TopHardware = $TopHardware->sortDesc();
+        $TopHard = collect([]);
+        $HardCount = 1;
+        $TotalHard = 0;
+        foreach ($TopHardware as $key => $value) {
+            $TotalHard = $TotalHard+$value;
+            if ($HardCount < 4 && $key != "Others") {
+                $HardCount++;
+                $TopHard[$key] = $value;
+            }else if ($HardCount >= 4) {
+                if ($key != "Others") {
+                    if (isset($TopHard['Others'])) {
+                        $TopHard['Others'] = $TopHard['Others']+$value;
+                    }else{
+                        $TopHard['Others'] = $value;
+                    }
+                }else{
+                    $TopHard[$key] = $value;
+                }
+            }else if ($key == "Others") {
+                if (isset($TopHard['Others'])) {
+                    $TopHard['Others'] = $TopHard['Others']+$value;
+                }else{
+                    $TopHard['Others'] = $value;
+                }
+            }
+        }
+        $TopHard['Total'] = $TotalHard;
+
+        $TopIssuesInfrastructure = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+            ->join('Data','Code','StoreCode')
+            ->whereNotNull('SubCategory')
+            ->where('ProblemCategory', 'Infrastructure')
+            ->groupBy('SubCategory')
+            ->get();
+            
+        $TopInfrastructure = collect([]);
+        foreach ($TopIssuesInfrastructure as $issue) {
+            if ($issue->SubCategory != Null) {
+                $TopInfrastructure->offsetSet($issue->SubCategory,$issue->Total);
+            }
+        }
+        $TopInfrastructure = $TopInfrastructure->sortDesc();
+        $TopInfra = collect([]);
+        $InfraCount = 1;
+        $TotalInfra = 0;
+        foreach ($TopInfrastructure as $key => $value) {
+            $TotalInfra = $TotalInfra+$value;
+            if ($InfraCount < 4 && $key != "Others") {
+                $InfraCount++;
+                $TopInfra[$key] = $value;
+            }else if ($InfraCount >= 4) {
+                if ($key != "Others") {
+                    if (isset($TopInfra['Others'])) {
+                        $TopInfra['Others'] = $TopInfra['Others']+$value;
+                    }else{
+                        $TopInfra['Others'] = $value;
+                    }
+                }else{
+                    $TopInfra[$key] = $value;
+                }
+            }else if ($key == "Others") {
+                if (isset($TopInfra['Others'])) {
+                    $TopInfra['Others'] = $TopInfra['Others']+$value;
+                }else{
+                    $TopInfra['Others'] = $value;
+                }
+            }
+        }
+        $TopInfra['Total'] = $TotalInfra;
+
+        $TopIssuesOthers = Ticket::select('ProblemCategory', DB::raw('Count(ProblemCategory) as Total'))
+            ->join('Data','Code','StoreCode')
+            ->where('ProblemCategory', 'Others')
+            ->groupBy('ProblemCategory')
+            ->get();
+            
+        $TopOthers = collect([]);
+        foreach ($TopIssuesOthers as $issue) {
+            if ($issue->ProblemCategory != Null) {
+                $TopOthers->offsetSet($issue->ProblemCategory,$issue->Total);
+            }
+        }
+        $TopOthers = $TopOthers->sortDesc();
+        // return $TopOthers;
+        $softwarekey = [];
+        foreach ($TopSoft as $key => $value) {
+            if (count($softwarekey) < 3) {
+                if ($key != "Others") {
+                    array_push($softwarekey, $key);
+                }
+            }else if (count($softwarekey) < 4) {
+                array_push($softwarekey, 'Others');
+                array_push($softwarekey, 'Total');
+            }
+        }
+        $softwareval = [];
+        foreach ($TopSoft as $key => $value) {
+            if (count($softwareval) < 3) {
+                if ($key != "Others") {
+                    array_push($softwareval, $value);
+                }
+            }else if (count($softwareval) < 4) {
+                array_push($softwareval, $TopSoft['Others']);
+                array_push($softwareval, $TopSoft['Total']);
+            }
+        }
+        $Hardwarekey = [];
+        foreach ($TopHard as $key => $value) {
+            if (count($Hardwarekey) < 3) {
+                if ($key != "Others") {
+                    array_push($Hardwarekey, $key);
+                }
+            }else if (count($Hardwarekey) < 4) {
+                array_push($Hardwarekey, 'Others');
+                array_push($Hardwarekey, 'Total');
+            }
+        }
+        $Hardwareval = [];
+        foreach ($TopHard as $key => $value) {
+            if (count($Hardwareval) < 3) {
+                if ($key != "Others") {
+                    array_push($Hardwareval, $value);
+                }
+            }else if (count($Hardwareval) < 4) {
+                array_push($Hardwareval, $TopHard['Others']);
+                array_push($Hardwareval, $TopHard['Total']);
+            }
+        }
+        $Infrawarekey = [];
+        foreach ($TopInfra as $key => $value) {
+            if (count($Infrawarekey) < 3) {
+                if ($key != "Others") {
+                    array_push($Infrawarekey, $key);
+                }
+            }else if (count($Infrawarekey) < 4) {
+                array_push($Infrawarekey, 'Others');
+                array_push($Infrawarekey, 'Total');
+            }
+        }
+        $Infrawareval = [];
+        foreach ($TopInfra as $key => $value) {
+            if (count($Infrawareval) < 3) {
+                if ($key != "Others") {
+                    array_push($Infrawareval, $value);
+                }
+            }else if (count($Infrawareval) < 4) {
+                array_push($Infrawareval, $TopInfra['Others']);
+                array_push($Infrawareval, $TopInfra['Total']);
+            }
+        }
+
+        
+        $ResTickCount = Ticket::query()
+            ->select(
+                DB::raw("monthname(DateCreated) as Month"),
+                DB::raw("max(Year(DateCreated)) as Year"),
+                DB::raw('max(DateCreated) as DateCreated'),
+                // DB::raw('DATEDIFF(DateandTimeFinished,DateCreated) = 1 as oneday')
+                // DB::raw('DATEDIFF(DateandTimeFinished,DateCreated) = 2 as twoday')
+                DB::raw(
+                    'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) <= 1 and TimeFinished is Null THEN 1 ELSE 0 END) as onedt'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) <= 1 and TimeFinished is not Null THEN 1 ELSE 0 END) as onet'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) = 2 and TimeFinished is Null THEN 1 ELSE 0 END) as twodt'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) = 2 and TimeFinished is not Null THEN 1 ELSE 0 END) as twot'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) = 3 and TimeFinished is Null THEN 1 ELSE 0 END) as threedt'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) = 3 and TimeFinished is not Null THEN 1 ELSE 0 END) as threet'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) = 4 and TimeFinished is Null THEN 1 ELSE 0 END) as fourdt'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) = 4 and TimeFinished is not Null THEN 1 ELSE 0 END) as fourt'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) = 5 and TimeFinished is Null THEN 1 ELSE 0 END) as fivedt'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) = 5 and TimeFinished is not Null THEN 1 ELSE 0 END) as fivet'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) > 5 and TimeFinished is Null THEN 1 ELSE 0 END) as morethanfivedt'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) > 5 and TimeFinished is not Null THEN 1 ELSE 0 END) as morethanfivet'
+                ),
+                DB::raw(
+                    'count(*) as TotalTicket'
+                )
+            )
+            ->join('Data','Code','StoreCode')
+            ->where('Data.SBU','Store')
+            ->where('TaskStatus', 'Submitted')
+            // ->whereNull('TimeFinished')
+            // ->whereRaw('DATEDIFF(DateandTimeFinished,DateCreated) = 1')
+            ->orderBy('DateCreated', 'asc')
+            ->groupBy('Month')
+            ->get();
+
+            $PriorTickCount = Ticket::query()
+            ->select(
+                DB::raw("monthname(DateCreated) as Month"),
+                DB::raw("max(Year(DateCreated)) as Year"),
+                DB::raw('max(DateCreated) as DateCreated'),
+                // DB::raw('DATEDIFF(DateandTimeFinished,DateCreated) = 1 as oneday')
+                // DB::raw('DATEDIFF(DateandTimeFinished,DateCreated) = 2 as twoday')
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P1\' and SBU = \'Office\' THEN 1 ELSE 0 END) as OfficeP1'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P2\' and SBU = \'Offce\' THEN 1 ELSE 0 END) as OfficeP2'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P3\' and SBU = \'Office\' THEN 1 ELSE 0 END) as OfficeP3'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P1\' and SBU = \'Store\' THEN 1 ELSE 0 END) as StoreP1'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P2\' and SBU = \'Store\' THEN 1 ELSE 0 END) as StoreP2'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P3\' and SBU = \'Store\' THEN 1 ELSE 0 END) as StoreP3'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P1\' and SBU = \'Plant\' THEN 1 ELSE 0 END) as PlantP1'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P2\' and SBU = \'Plant\' THEN 1 ELSE 0 END) as PlantP2'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P3\' and SBU = \'Plant\' THEN 1 ELSE 0 END) as PlantP3'
+                )
+            )
+            ->join('Data','Code','StoreCode')
+            ->where('Data.SBU','Store')
+            ->where('TaskStatus', 'Submitted')
+            ->orderBy('DateCreated', 'asc')
+            ->groupBy('Month')
+            ->get();
+
+        $ResolverTickCount = Ticket::select(
+            DB::raw("monthname(DateCreated) as Month"),
+            DB::raw("max(Year(DateCreated)) as Year"),
+            DB::raw('max(DateCreated) as DateCreated'),
+            DB::raw(
+                'SUM(CASE WHEN TicketType = \'["L1"]\' THEN 1 ELSE 0 END) as L1'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN TicketType = \'["L2"]\' THEN 1 ELSE 0 END) as L2'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN TicketType LIKE \'%["Escalated L2"]\' THEN 1 ELSE 0 END) as Escalated'
+            ),
+            DB::raw(
+                'SUM(CASE WHEN TicketType is not null THEN 1 ELSE 0 END) as ResolverTotal'
+            )
+        )
+        ->join('Data','Code','StoreCode')
+        ->where('TaskStatus', 'Submitted')
+        ->orderBy('DateCreated', 'asc')
+        ->groupBy('Month')
+        ->get();
+    // return $ResolverTickCount;
+
+    $ResolutionTickCount = Ticket::select(
+        DB::raw("monthname(DateCreated) as Month"),
+        DB::raw("max(Year(DateCreated)) as Year"),
+        DB::raw('max(DateCreated) as DateCreated'),
+        DB::raw(
+            'SUM(CASE WHEN TypeofResolution Is Not Null and SBU = \'Office\'  THEN 1 ELSE 0 END) as OfficeTotal'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN TypeofResolution Is Not Null and SBU = \'Plant\'  THEN 1 ELSE 0 END) as PlantTotal'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN TypeofResolution Is Not Null and SBU = \'Store\'  THEN 1 ELSE 0 END) as StoreTotal'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN TypeofResolution = \'Onsite\' and SBU = \'Office\'  THEN 1 ELSE 0 END) as OnsiteOffice'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN TypeofResolution = \'Phone Assistance\' and SBU = \'Office\'  THEN 1 ELSE 0 END) as PhoneAssistanceOffice'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN TypeofResolution = \'Remote\' and SBU = \'Office\'  THEN 1 ELSE 0 END) as RemoteOffice'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN TypeofResolution = \'Onsite\' and SBU = \'Plant\'  THEN 1 ELSE 0 END) as OnsitePlant'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN TypeofResolution = \'Phone Assistance\' and SBU = \'Plant\'  THEN 1 ELSE 0 END) as PhoneAssistancePlant'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN TypeofResolution = \'Remote\' and SBU = \'Plant\'  THEN 1 ELSE 0 END) as RemotePlant'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN TypeofResolution = \'Onsite\' and SBU = \'Store\'  THEN 1 ELSE 0 END) as OnsiteStore'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN TypeofResolution = \'Phone Assistance\' and SBU = \'Store\'  THEN 1 ELSE 0 END) as PhoneAssistanceStore'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN TypeofResolution = \'Remote\' and SBU = \'Store\'  THEN 1 ELSE 0 END) as RemoteStore'
+        ),
+        DB::raw(
+            'SUM(CASE WHEN TypeofResolution Is Not Null and SBU Is Not Null THEN 1 ELSE 0 END) as ResolutionTotal'
+        )
+    )
+    ->join('Data','Code','StoreCode')
+    ->where('TaskStatus', 'Submitted')
+    ->orderBy('DateCreated', 'asc')
+    ->groupBy('Month')
+    ->get();
+
+
+
+
+    $StoreTopIssues = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'))
+            ->join('Data','Code','StoreCode')
+            ->where('SBU', 'Store')
+            ->groupBy('SubCategory')
+            ->get();
+        $Stop = collect([]);
+        foreach ($StoreTopIssues as $issue) {
+            if ($issue->SubCategory != Null) {
+                $Stop->offsetSet($issue->SubCategory,$issue->Total);
+            }
+        }
+        $StoreTop = $Stop->sortDesc();
+        $OfficeTopIssues = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'))
+            ->join('Data','Code','StoreCode')
+            ->where('SBU', 'Office')
+            ->groupBy('SubCategory')
+            ->get();
+        $Otop = collect([]);
+        foreach ($OfficeTopIssues as $issue) {
+            if ($issue->SubCategory != Null) {
+                $Otop->offsetSet($issue->SubCategory,$issue->Total);
+            }
+        }
+        $OfficeTop = $Otop->sortDesc();
+        $PlantTopIssues = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'))
+            ->join('Data','Code','StoreCode')
+            ->where('SBU', 'Plant')
+            ->groupBy('SubCategory')
+            ->get();
+        $Ptop = collect([]);
+        foreach ($PlantTopIssues as $issue) {
+            if ($issue->SubCategory != Null) {
+                $Ptop->offsetSet($issue->SubCategory,$issue->Total);
+            }
+        }
+        $PlantTop = $Ptop->sortDesc();
+    // return $ResolutionTickCount;
+        return view('dash', compact(
+            'StoreTop',
+            'OfficeTop',
+            'PlantTop',
+            'TopSoft',
+            'TopHard',
+            'TopInfra',
+            'softwarekey',
+            'softwareval',
+            'Hardwareval',
+            'Hardwarekey',
+            'Infrawareval',
+            'Infrawarekey',
+            'TopOthers',
+            'ResTickCount',
+            'PriorTickCount',
+            'ResolverTickCount',
+            'ResolutionTickCount'
+        ));
+    }
+
+    public function priorstatus(Request $request, $datefrom, $dateto)
+    {   
+        if ($datefrom == 'default') {
+            $PriorTickCount = Ticket::query()
+            ->select(
+                DB::raw("monthname(DateCreated) as Month"),
+                DB::raw("max(Year(DateCreated)) as Year"),
+                DB::raw('max(DateCreated) as DateCreated'),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P1\' and SBU = \'Office\' THEN 1 ELSE 0 END) as OfficeP1'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P2\' and SBU = \'Offce\' THEN 1 ELSE 0 END) as OfficeP2'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P3\' and SBU = \'Office\' THEN 1 ELSE 0 END) as OfficeP3'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P1\' and SBU = \'Store\' THEN 1 ELSE 0 END) as StoreP1'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P2\' and SBU = \'Store\' THEN 1 ELSE 0 END) as StoreP2'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P3\' and SBU = \'Store\' THEN 1 ELSE 0 END) as StoreP3'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P1\' and SBU = \'Plant\' THEN 1 ELSE 0 END) as PlantP1'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P2\' and SBU = \'Plant\' THEN 1 ELSE 0 END) as PlantP2'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P3\' and SBU = \'Plant\' THEN 1 ELSE 0 END) as PlantP3'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority is not null and SBU is not null THEN 1 ELSE 0 END) as GrandTotal'
+                )
+            )
+            ->join('Data','Code','StoreCode')
+            ->where('Data.SBU','Store')
+            ->where('TaskStatus', 'Submitted')
+            ->whereMonth('DateCreated', '>=', Carbon::now()->subMonths(3))
+            ->whereMonth('DateCreated', '<', Carbon::now())
+            ->orderBy('DateCreated', 'asc')
+            ->groupBy('Month')
+            ->get();
+        }else{
+            $PriorTickCount = Ticket::query()
+            ->select(
+                DB::raw("monthname(DateCreated) as Month"),
+                DB::raw("max(Year(DateCreated)) as Year"),
+                DB::raw('max(DateCreated) as DateCreated'),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P1\' and SBU = \'Office\' THEN 1 ELSE 0 END) as OfficeP1'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P2\' and SBU = \'Offce\' THEN 1 ELSE 0 END) as OfficeP2'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P3\' and SBU = \'Office\' THEN 1 ELSE 0 END) as OfficeP3'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P1\' and SBU = \'Store\' THEN 1 ELSE 0 END) as StoreP1'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P2\' and SBU = \'Store\' THEN 1 ELSE 0 END) as StoreP2'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P3\' and SBU = \'Store\' THEN 1 ELSE 0 END) as StoreP3'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P1\' and SBU = \'Plant\' THEN 1 ELSE 0 END) as PlantP1'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P2\' and SBU = \'Plant\' THEN 1 ELSE 0 END) as PlantP2'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority = \'P3\' and SBU = \'Plant\' THEN 1 ELSE 0 END) as PlantP3'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN Priority is not null and SBU is not null THEN 1 ELSE 0 END) as GrandTotal'
+                )
+            )
+            ->join('Data','Code','StoreCode')
+            ->where('Data.SBU','Store')
+            ->where('TaskStatus', 'Submitted')
+            ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
+            ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+            ->orderBy('DateCreated', 'asc')
+            ->groupBy('Month')
+            ->get();
+        }
+        return view('dashpriorstatus', compact(
+            'PriorTickCount'
+        ));
+    }
+
+    public function resolverstatus(Request $request, $datefrom, $dateto)
+    {
+        if ($datefrom == 'default') {
+            $ResolverTickCount = Ticket::select(
+                DB::raw("monthname(DateCreated) as Month"),
+                DB::raw("max(Year(DateCreated)) as Year"),
+                DB::raw('max(DateCreated) as DateCreated'),
+                DB::raw(
+                    'SUM(CASE WHEN TicketType = \'["L1"]\' THEN 1 ELSE 0 END) as L1'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TicketType = \'["L2"]\' THEN 1 ELSE 0 END) as L2'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TicketType LIKE \'%["Escalated L2"]\' THEN 1 ELSE 0 END) as Escalated'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TicketType is not null THEN 1 ELSE 0 END) as ResolverTotal'
+                )
+            )
+            ->join('Data','Code','StoreCode')
+            ->where('TaskStatus', 'Submitted')
+            ->whereMonth('DateCreated', '>=', Carbon::now()->subMonths(3))
+            ->whereMonth('DateCreated', '<', Carbon::now())
+            ->orderBy('DateCreated', 'asc')
+            ->groupBy('Month')
+            ->get();
+        }else{
+            $ResolverTickCount = Ticket::select(
+                DB::raw("monthname(DateCreated) as Month"),
+                DB::raw("max(Year(DateCreated)) as Year"),
+                DB::raw('max(DateCreated) as DateCreated'),
+                DB::raw(
+                    'SUM(CASE WHEN TicketType = \'["L1"]\' THEN 1 ELSE 0 END) as L1'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TicketType = \'["L2"]\' THEN 1 ELSE 0 END) as L2'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TicketType LIKE \'%["Escalated L2"]\' THEN 1 ELSE 0 END) as Escalated'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TicketType is not null THEN 1 ELSE 0 END) as ResolverTotal'
+                )
+            )
+            ->join('Data','Code','StoreCode')
+            ->where('TaskStatus', 'Submitted')
+            ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
+            ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+            ->orderBy('DateCreated', 'asc')
+            ->groupBy('Month')
+            ->get();
+        }
+        return view('dashresolvestatus', compact(
+            'ResolverTickCount'
+        ));
+    }
+    
+    public function dependencies(Request $request, $datefrom, $dateto)
+    {
+        if ($datefrom == 'default') {
+            $ResolutionTickCount = Ticket::select(
+                DB::raw("monthname(DateCreated) as Month"),
+                DB::raw("max(Year(DateCreated)) as Year"),
+                DB::raw('max(DateCreated) as DateCreated'),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution Is Not Null and SBU = \'Office\'  THEN 1 ELSE 0 END) as OfficeTotal'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution Is Not Null and SBU = \'Plant\'  THEN 1 ELSE 0 END) as PlantTotal'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution Is Not Null and SBU = \'Store\'  THEN 1 ELSE 0 END) as StoreTotal'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Onsite\' and SBU = \'Office\'  THEN 1 ELSE 0 END) as OnsiteOffice'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Phone Assistance\' and SBU = \'Office\'  THEN 1 ELSE 0 END) as PhoneAssistanceOffice'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Remote\' and SBU = \'Office\'  THEN 1 ELSE 0 END) as RemoteOffice'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Onsite\' and SBU = \'Plant\'  THEN 1 ELSE 0 END) as OnsitePlant'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Phone Assistance\' and SBU = \'Plant\'  THEN 1 ELSE 0 END) as PhoneAssistancePlant'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Remote\' and SBU = \'Plant\'  THEN 1 ELSE 0 END) as RemotePlant'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Onsite\' and SBU = \'Store\'  THEN 1 ELSE 0 END) as OnsiteStore'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Phone Assistance\' and SBU = \'Store\'  THEN 1 ELSE 0 END) as PhoneAssistanceStore'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Remote\' and SBU = \'Store\'  THEN 1 ELSE 0 END) as RemoteStore'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution Is Not Null and SBU Is Not Null THEN 1 ELSE 0 END) as ResolutionTotal'
+                )
+            )
+            ->join('Data','Code','StoreCode')
+            ->where('TaskStatus', 'Submitted')
+            ->whereMonth('DateCreated', '>=', Carbon::now()->subMonths(3))
+            ->whereMonth('DateCreated', '<', Carbon::now())
+            ->orderBy('DateCreated', 'asc')
+            ->groupBy('Month')
+            ->get();
+        }else{
+            $ResolutionTickCount = Ticket::select(
+                DB::raw("monthname(DateCreated) as Month"),
+                DB::raw("max(Year(DateCreated)) as Year"),
+                DB::raw('max(DateCreated) as DateCreated'),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution Is Not Null and SBU = \'Office\'  THEN 1 ELSE 0 END) as OfficeTotal'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution Is Not Null and SBU = \'Plant\'  THEN 1 ELSE 0 END) as PlantTotal'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution Is Not Null and SBU = \'Store\'  THEN 1 ELSE 0 END) as StoreTotal'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Onsite\' and SBU = \'Office\'  THEN 1 ELSE 0 END) as OnsiteOffice'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Phone Assistance\' and SBU = \'Office\'  THEN 1 ELSE 0 END) as PhoneAssistanceOffice'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Remote\' and SBU = \'Office\'  THEN 1 ELSE 0 END) as RemoteOffice'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Onsite\' and SBU = \'Plant\'  THEN 1 ELSE 0 END) as OnsitePlant'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Phone Assistance\' and SBU = \'Plant\'  THEN 1 ELSE 0 END) as PhoneAssistancePlant'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Remote\' and SBU = \'Plant\'  THEN 1 ELSE 0 END) as RemotePlant'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Onsite\' and SBU = \'Store\'  THEN 1 ELSE 0 END) as OnsiteStore'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Phone Assistance\' and SBU = \'Store\'  THEN 1 ELSE 0 END) as PhoneAssistanceStore'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution = \'Remote\' and SBU = \'Store\'  THEN 1 ELSE 0 END) as RemoteStore'
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN TypeofResolution Is Not Null and SBU Is Not Null THEN 1 ELSE 0 END) as ResolutionTotal'
+                )
+            )
+            ->join('Data','Code','StoreCode')
+            ->where('TaskStatus', 'Submitted')
+            ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
+            ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+            ->orderBy('DateCreated', 'asc')
+            ->groupBy('Month')
+            ->get();
+        }
+        return view('dashdependencies', compact(
+            'ResolutionTickCount'
+        ));
+    }
+    
+    public function statsum()
+    {
+        return view('dashstatsum', compact(
+            'ResTickCount',
+            'PriorTickCount',
+            'ResolverTickCount',
+            'ResolutionTickCount'
+        ));
+    }
+
+    public function resolvetick(Request $request, $datefrom, $dateto)
+    {
+        if ($datefrom == 'default') {
+            $ResTickCount = Ticket::query()
+                ->select(
+                    DB::raw("monthname(DateCreated) as Month"),
+                    DB::raw("max(Year(DateCreated)) as Year"),
+                    DB::raw('max(DateCreated) as DateCreated'),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) <= 1 and TimeFinished is Null THEN 1 ELSE 0 END) as onedt'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) <= 1 and TimeFinished is not Null THEN 1 ELSE 0 END) as onet'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) = 2 and TimeFinished is Null THEN 1 ELSE 0 END) as twodt'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) = 2 and TimeFinished is not Null THEN 1 ELSE 0 END) as twot'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) = 3 and TimeFinished is Null THEN 1 ELSE 0 END) as threedt'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) = 3 and TimeFinished is not Null THEN 1 ELSE 0 END) as threet'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) = 4 and TimeFinished is Null THEN 1 ELSE 0 END) as fourdt'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) = 4 and TimeFinished is not Null THEN 1 ELSE 0 END) as fourt'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) = 5 and TimeFinished is Null THEN 1 ELSE 0 END) as fivedt'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) = 5 and TimeFinished is not Null THEN 1 ELSE 0 END) as fivet'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) > 5 and TimeFinished is Null THEN 1 ELSE 0 END) as morethanfivedt'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) > 5 and TimeFinished is not Null THEN 1 ELSE 0 END) as morethanfivet'
+                    ),
+                    DB::raw(
+                        'count(*) as TotalTicket'
+                    )
+                )
+                ->join('Data','Code','StoreCode')
+                ->where('Data.SBU','Store')
+                ->where('TaskStatus', 'Submitted')
+                ->whereMonth('DateCreated', '>=', Carbon::now()->subMonths(3))
+                ->whereMonth('DateCreated', '<', Carbon::now())
+                ->orderBy('DateCreated', 'asc')
+                ->groupBy('Month')
+                ->get();
+        }else{
+            $ResTickCount = Ticket::query()
+                ->select(
+                    DB::raw("monthname(DateCreated) as Month"),
+                    DB::raw("max(Year(DateCreated)) as Year"),
+                    DB::raw('max(DateCreated) as DateCreated'),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) <= 1 and TimeFinished is Null THEN 1 ELSE 0 END) as onedt'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) <= 1 and TimeFinished is not Null THEN 1 ELSE 0 END) as onet'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) = 2 and TimeFinished is Null THEN 1 ELSE 0 END) as twodt'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) = 2 and TimeFinished is not Null THEN 1 ELSE 0 END) as twot'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) = 3 and TimeFinished is Null THEN 1 ELSE 0 END) as threedt'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) = 3 and TimeFinished is not Null THEN 1 ELSE 0 END) as threet'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) = 4 and TimeFinished is Null THEN 1 ELSE 0 END) as fourdt'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) = 4 and TimeFinished is not Null THEN 1 ELSE 0 END) as fourt'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) = 5 and TimeFinished is Null THEN 1 ELSE 0 END) as fivedt'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) = 5 and TimeFinished is not Null THEN 1 ELSE 0 END) as fivet'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(DateandTimeFinished,DateCreated) > 5 and TimeFinished is Null THEN 1 ELSE 0 END) as morethanfivedt'
+                    ),
+                    DB::raw(
+                        'SUM(CASE WHEN DATEDIFF(TimeFinished,DateCreated) > 5 and TimeFinished is not Null THEN 1 ELSE 0 END) as morethanfivet'
+                    ),
+                    DB::raw(
+                        'count(*) as TotalTicket'
+                    )
+                )
+                ->join('Data','Code','StoreCode')
+                ->where('Data.SBU','Store')
+                ->where('TaskStatus', 'Submitted')
+                ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
+                ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+                ->orderBy('DateCreated', 'asc')
+                ->groupBy('Month')
+                ->get();
+        }
+
+        return view('dashresolvetick', compact(
+            'ResTickCount'
+        ));
+    }
+
+    public function pcategory(Request $request, $datefrom, $dateto)
+    {   
+
+        if ($datefrom != "default") {
+            if (strtotime($datefrom) == false || strtotime($dateto) == false) {
+                return view('errors.404');
+            }
+        }else{
+            if ($dateto != 1) {
+                return view('errors.404');
+            }
+        }
+
+        if ($datefrom != "default") {
+            $TopIssuesSoftware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+                ->join('Data','Code','StoreCode')
+                ->whereNotNull('SubCategory')
+                ->where('ProblemCategory', 'Software/ Application')
+                ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
+                ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+                ->groupBy('SubCategory')
+                ->get();
+                
+            $TopSoftware = collect([]);
+            foreach ($TopIssuesSoftware as $issue) {
+                if ($issue->SubCategory != Null) {
+                    $TopSoftware->offsetSet($issue->SubCategory,$issue->Total);
+                }
+            }
+            $TopSoftware = $TopSoftware->sortDesc();
+            $TopSoft = collect([]);
+            $SoftCount = 1;
+            $TotalSoft = 0;
+            foreach ($TopSoftware as $key => $value) {
+                $TotalSoft = $TotalSoft+$value;
+                if ($SoftCount < 4 && $key != "Others") {
+                    $SoftCount++;
+                    $TopSoft[$key] = $value;
+                }else if ($SoftCount >= 4) {
+                    if ($key != "Others") {
+                        if (isset($TopSoft['Others'])) {
+                            $TopSoft['Others'] = $TopSoft['Others']+$value;
+                        }else{
+                            $TopSoft['Others'] = $value;
+                        }
+                    }else{
+                        $TopSoft[$key] = $value;
+                    }
+                }else if ($key == "Others") {
+                    if (isset($TopSoft['Others'])) {
+                        $TopSoft['Others'] = $TopSoft['Others']+$value;
+                    }else{
+                        $TopSoft['Others'] = $value;
+                    }
+                }
+            }
+            $TopSoft['Total'] = $TotalSoft;
+
+            $TopIssuesHardware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+                ->join('Data','Code','StoreCode')
+                ->whereNotNull('SubCategory')
+                ->where('ProblemCategory', 'Hardware')
+                ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
+                ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+                ->groupBy('SubCategory')
+                ->get();
+                
+            $TopHardware = collect([]);
+            foreach ($TopIssuesHardware as $issue) {
+                if ($issue->SubCategory != Null) {
+                    $TopHardware->offsetSet($issue->SubCategory,$issue->Total);
+                }
+            }
+            $TopHardware = $TopHardware->sortDesc();
+            $TopHard = collect([]);
+            $HardCount = 1;
+            $TotalHard = 0;
+            foreach ($TopHardware as $key => $value) {
+                $TotalHard = $TotalHard+$value;
+                if ($HardCount < 4 && $key != "Others") {
+                    $HardCount++;
+                    $TopHard[$key] = $value;
+                }else if ($HardCount >= 4) {
+                    if ($key != "Others") {
+                        if (isset($TopHard['Others'])) {
+                            $TopHard['Others'] = $TopHard['Others']+$value;
+                        }else{
+                            $TopHard['Others'] = $value;
+                        }
+                    }else{
+                        $TopHard[$key] = $value;
+                    }
+                }else if ($key == "Others") {
+                    if (isset($TopHard['Others'])) {
+                        $TopHard['Others'] = $TopHard['Others']+$value;
+                    }else{
+                        $TopHard['Others'] = $value;
+                    }
+                }
+            }
+            $TopHard['Total'] = $TotalHard;
+
+            $TopIssuesInfrastructure = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+                ->join('Data','Code','StoreCode')
+                ->whereNotNull('SubCategory')
+                ->where('ProblemCategory', 'Infrastructure')
+                ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
+                ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+                ->groupBy('SubCategory')
+                ->get();
+                
+            $TopInfrastructure = collect([]);
+            foreach ($TopIssuesInfrastructure as $issue) {
+                if ($issue->SubCategory != Null) {
+                    $TopInfrastructure->offsetSet($issue->SubCategory,$issue->Total);
+                }
+            }
+            $TopInfrastructure = $TopInfrastructure->sortDesc();
+            $TopInfra = collect([]);
+            $InfraCount = 1;
+            $TotalInfra = 0;
+            foreach ($TopInfrastructure as $key => $value) {
+                $TotalInfra = $TotalInfra+$value;
+                if ($InfraCount < 4 && $key != "Others") {
+                    $InfraCount++;
+                    $TopInfra[$key] = $value;
+                }else if ($InfraCount >= 4) {
+                    if ($key != "Others") {
+                        if (isset($TopInfra['Others'])) {
+                            $TopInfra['Others'] = $TopInfra['Others']+$value;
+                        }else{
+                            $TopInfra['Others'] = $value;
+                        }
+                    }else{
+                        $TopInfra[$key] = $value;
+                    }
+                }else if ($key == "Others") {
+                    if (isset($TopInfra['Others'])) {
+                        $TopInfra['Others'] = $TopInfra['Others']+$value;
+                    }else{
+                        $TopInfra['Others'] = $value;
+                    }
+                }
+            }
+            $TopInfra['Total'] = $TotalInfra;
+
+            $TopIssuesOthers = Ticket::select('ProblemCategory', DB::raw('Count(ProblemCategory) as Total'))
+                ->join('Data','Code','StoreCode')
+                ->where('ProblemCategory', 'Others')
+                ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
+                ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+                ->groupBy('ProblemCategory')
+                ->get();
+                
+            $TopOthers = collect([]);
+            foreach ($TopIssuesOthers as $issue) {
+                if ($issue->ProblemCategory != Null) {
+                    $TopOthers->offsetSet($issue->ProblemCategory,$issue->Total);
+                }
+            }
+            $TopOthers = $TopOthers->sortDesc();
+            // return $TopOthers;
+            $softwarekey = [];
+            foreach ($TopSoft as $key => $value) {
+                if (count($softwarekey) < 3) {
+                    if ($key != "Others") {
+                        array_push($softwarekey, $key);
+                    }
+                }else if (count($softwarekey) < 4) {
+                    array_push($softwarekey, 'Others');
+                    array_push($softwarekey, 'Total');
+                }
+            }
+            $softwareval = [];
+            foreach ($TopSoft as $key => $value) {
+                if (count($softwareval) < 3) {
+                    if ($key != "Others") {
+                        array_push($softwareval, $value);
+                    }
+                }else if (count($softwareval) < 4) {
+                    array_push($softwareval, $TopSoft['Others']);
+                    array_push($softwareval, $TopSoft['Total']);
+                }
+            }
+            $Hardwarekey = [];
+            foreach ($TopHard as $key => $value) {
+                if (count($Hardwarekey) < 3) {
+                    if ($key != "Others") {
+                        array_push($Hardwarekey, $key);
+                    }
+                }else if (count($Hardwarekey) < 4) {
+                    array_push($Hardwarekey, 'Others');
+                    array_push($Hardwarekey, 'Total');
+                }
+            }
+            $Hardwareval = [];
+            foreach ($TopHard as $key => $value) {
+                if (count($Hardwareval) < 3) {
+                    if ($key != "Others") {
+                        array_push($Hardwareval, $value);
+                    }
+                }else if (count($Hardwareval) < 4) {
+                    array_push($Hardwareval, $TopHard['Others']);
+                    array_push($Hardwareval, $TopHard['Total']);
+                }
+            }
+            $Infrawarekey = [];
+            foreach ($TopInfra as $key => $value) {
+                if (count($Infrawarekey) < 3) {
+                    if ($key != "Others") {
+                        array_push($Infrawarekey, $key);
+                    }
+                }else if (count($Infrawarekey) < 4) {
+                    array_push($Infrawarekey, 'Others');
+                    array_push($Infrawarekey, 'Total');
+                }
+            }
+            $Infrawareval = [];
+            foreach ($TopInfra as $key => $value) {
+                if (count($Infrawareval) < 3) {
+                    if ($key != "Others") {
+                        array_push($Infrawareval, $value);
+                    }
+                }else if (count($Infrawareval) < 4) {
+                    array_push($Infrawareval, $TopInfra['Others']);
+                    array_push($Infrawareval, $TopInfra['Total']);
+                }
+            }
+        }else{
+            $TopIssuesSoftware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+                ->join('Data','Code','StoreCode')
+                ->whereNotNull('SubCategory')
+                ->where('ProblemCategory', 'Software/ Application')
+                ->groupBy('SubCategory')
+                ->get();
+                
+            $TopSoftware = collect([]);
+            foreach ($TopIssuesSoftware as $issue) {
+                if ($issue->SubCategory != Null) {
+                    $TopSoftware->offsetSet($issue->SubCategory,$issue->Total);
+                }
+            }
+            $TopSoftware = $TopSoftware->sortDesc();
+            $TopSoft = collect([]);
+            $SoftCount = 1;
+            $TotalSoft = 0;
+            foreach ($TopSoftware as $key => $value) {
+                $TotalSoft = $TotalSoft+$value;
+                if ($SoftCount < 4 && $key != "Others") {
+                    $SoftCount++;
+                    $TopSoft[$key] = $value;
+                }else if ($SoftCount >= 4) {
+                    if ($key != "Others") {
+                        if (isset($TopSoft['Others'])) {
+                            $TopSoft['Others'] = $TopSoft['Others']+$value;
+                        }else{
+                            $TopSoft['Others'] = $value;
+                        }
+                    }else{
+                        $TopSoft[$key] = $value;
+                    }
+                }else if ($key == "Others") {
+                    if (isset($TopSoft['Others'])) {
+                        $TopSoft['Others'] = $TopSoft['Others']+$value;
+                    }else{
+                        $TopSoft['Others'] = $value;
+                    }
+                }
+            }
+            $TopSoft['Total'] = $TotalSoft;
+
+            $TopIssuesHardware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+                ->join('Data','Code','StoreCode')
+                ->whereNotNull('SubCategory')
+                ->where('ProblemCategory', 'Hardware')
+                ->groupBy('SubCategory')
+                ->get();
+                
+            $TopHardware = collect([]);
+            foreach ($TopIssuesHardware as $issue) {
+                if ($issue->SubCategory != Null) {
+                    $TopHardware->offsetSet($issue->SubCategory,$issue->Total);
+                }
+            }
+            $TopHardware = $TopHardware->sortDesc();
+            $TopHard = collect([]);
+            $HardCount = 1;
+            $TotalHard = 0;
+            foreach ($TopHardware as $key => $value) {
+                $TotalHard = $TotalHard+$value;
+                if ($HardCount < 4 && $key != "Others") {
+                    $HardCount++;
+                    $TopHard[$key] = $value;
+                }else if ($HardCount >= 4) {
+                    if ($key != "Others") {
+                        if (isset($TopHard['Others'])) {
+                            $TopHard['Others'] = $TopHard['Others']+$value;
+                        }else{
+                            $TopHard['Others'] = $value;
+                        }
+                    }else{
+                        $TopHard[$key] = $value;
+                    }
+                }else if ($key == "Others") {
+                    if (isset($TopHard['Others'])) {
+                        $TopHard['Others'] = $TopHard['Others']+$value;
+                    }else{
+                        $TopHard['Others'] = $value;
+                    }
+                }
+            }
+            $TopHard['Total'] = $TotalHard;
+
+            $TopIssuesInfrastructure = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+                ->join('Data','Code','StoreCode')
+                ->whereNotNull('SubCategory')
+                ->where('ProblemCategory', 'Infrastructure')
+                ->groupBy('SubCategory')
+                ->get();
+                
+            $TopInfrastructure = collect([]);
+            foreach ($TopIssuesInfrastructure as $issue) {
+                if ($issue->SubCategory != Null) {
+                    $TopInfrastructure->offsetSet($issue->SubCategory,$issue->Total);
+                }
+            }
+            $TopInfrastructure = $TopInfrastructure->sortDesc();
+            $TopInfra = collect([]);
+            $InfraCount = 1;
+            $TotalInfra = 0;
+            foreach ($TopInfrastructure as $key => $value) {
+                $TotalInfra = $TotalInfra+$value;
+                if ($InfraCount < 4 && $key != "Others") {
+                    $InfraCount++;
+                    $TopInfra[$key] = $value;
+                }else if ($InfraCount >= 4) {
+                    if ($key != "Others") {
+                        if (isset($TopInfra['Others'])) {
+                            $TopInfra['Others'] = $TopInfra['Others']+$value;
+                        }else{
+                            $TopInfra['Others'] = $value;
+                        }
+                    }else{
+                        $TopInfra[$key] = $value;
+                    }
+                }else if ($key == "Others") {
+                    if (isset($TopInfra['Others'])) {
+                        $TopInfra['Others'] = $TopInfra['Others']+$value;
+                    }else{
+                        $TopInfra['Others'] = $value;
+                    }
+                }
+            }
+            $TopInfra['Total'] = $TotalInfra;
+
+            $TopIssuesOthers = Ticket::select('ProblemCategory', DB::raw('Count(ProblemCategory) as Total'))
+                ->join('Data','Code','StoreCode')
+                ->where('ProblemCategory', 'Others')
+                ->groupBy('ProblemCategory')
+                ->get();
+                
+            $TopOthers = collect([]);
+            foreach ($TopIssuesOthers as $issue) {
+                if ($issue->ProblemCategory != Null) {
+                    $TopOthers->offsetSet($issue->ProblemCategory,$issue->Total);
+                }
+            }
+            $TopOthers = $TopOthers->sortDesc();
+            // return $TopOthers;
+            $softwarekey = [];
+            foreach ($TopSoft as $key => $value) {
+                if (count($softwarekey) < 3) {
+                    if ($key != "Others") {
+                        array_push($softwarekey, $key);
+                    }
+                }else if (count($softwarekey) < 4) {
+                    array_push($softwarekey, 'Others');
+                    array_push($softwarekey, 'Total');
+                }
+            }
+            $softwareval = [];
+            foreach ($TopSoft as $key => $value) {
+                if (count($softwareval) < 3) {
+                    if ($key != "Others") {
+                        array_push($softwareval, $value);
+                    }
+                }else if (count($softwareval) < 4) {
+                    array_push($softwareval, $TopSoft['Others']);
+                    array_push($softwareval, $TopSoft['Total']);
+                }
+            }
+            $Hardwarekey = [];
+            foreach ($TopHard as $key => $value) {
+                if (count($Hardwarekey) < 3) {
+                    if ($key != "Others") {
+                        array_push($Hardwarekey, $key);
+                    }
+                }else if (count($Hardwarekey) < 4) {
+                    array_push($Hardwarekey, 'Others');
+                    array_push($Hardwarekey, 'Total');
+                }
+            }
+            $Hardwareval = [];
+            foreach ($TopHard as $key => $value) {
+                if (count($Hardwareval) < 3) {
+                    if ($key != "Others") {
+                        array_push($Hardwareval, $value);
+                    }
+                }else if (count($Hardwareval) < 4) {
+                    array_push($Hardwareval, $TopHard['Others']);
+                    array_push($Hardwareval, $TopHard['Total']);
+                }
+            }
+            $Infrawarekey = [];
+            foreach ($TopInfra as $key => $value) {
+                if (count($Infrawarekey) < 3) {
+                    if ($key != "Others") {
+                        array_push($Infrawarekey, $key);
+                    }
+                }else if (count($Infrawarekey) < 4) {
+                    array_push($Infrawarekey, 'Others');
+                    array_push($Infrawarekey, 'Total');
+                }
+            }
+            $Infrawareval = [];
+            foreach ($TopInfra as $key => $value) {
+                if (count($Infrawareval) < 3) {
+                    if ($key != "Others") {
+                        array_push($Infrawareval, $value);
+                    }
+                }else if (count($Infrawareval) < 4) {
+                    array_push($Infrawareval, $TopInfra['Others']);
+                    array_push($Infrawareval, $TopInfra['Total']);
+                }
+            }
+        }
+        return view('dashpcategory', compact(
+            'TopSoft',
+            'TopHard',
+            'TopInfra',
+            'softwarekey',
+            'softwareval',
+            'Hardwareval',
+            'Hardwarekey',
+            'Infrawareval',
+            'Infrawarekey',
+            'TopOthers'
+        ));
+    }
+
+    public function totalticket(Request $request, $datefrom, $dateto)
+    {
+        if ($datefrom != "default") {
+            if (strtotime($datefrom) == false || strtotime($dateto) == false) {
+                return view('errors.404');
+            }
+        }else{
+            if ($dateto != 1) {
+                return view('errors.404');
+            }
+        }
+        if ($datefrom == "default") {
+            $StoreTopIssues = Ticket::query()->select('SubCategory', DB::raw('Count(SubCategory) as Total'))
+                ->join('Data','Code','StoreCode')
+                ->where('SBU', 'Store')
+                ->whereMonth('DateCreated', '>=', Carbon::now()->subMonths(3))
+                ->whereMonth('DateCreated', '<', Carbon::now())
+                ->groupBy('SubCategory')
+                ->get();
+            $Stop = collect([]);
+            foreach ($StoreTopIssues as $issue) {
+                if ($issue->SubCategory != Null) {
+                    $Stop->offsetSet($issue->SubCategory,$issue->Total);
+                }
+            }
+            $StoreTop = $Stop->sortDesc();
+            $OfficeTopIssues = Ticket::query()->select('SubCategory', DB::raw('Count(SubCategory) as Total'))
+                ->join('Data','Code','StoreCode')
+                ->where('SBU', 'Office')
+                ->whereMonth('DateCreated', '>=', Carbon::now()->subMonths(3))
+                ->whereMonth('DateCreated', '<', Carbon::now())
+                ->groupBy('SubCategory')
+                ->get();
+            $Otop = collect([]);
+            foreach ($OfficeTopIssues as $issue) {
+                if ($issue->SubCategory != Null) {
+                    $Otop->offsetSet($issue->SubCategory,$issue->Total);
+                }
+            }
+            $OfficeTop = $Otop->sortDesc();
+            $PlantTopIssues = Ticket::query()->select('SubCategory', DB::raw('Count(SubCategory) as Total'))
+                ->join('Data','Code','StoreCode')
+                ->where('SBU', 'Plant')
+                ->whereMonth('DateCreated', '>=', Carbon::now()->subMonths(3))
+                ->whereMonth('DateCreated', '<', Carbon::now())
+                ->groupBy('SubCategory')
+                ->get();
+            $Ptop = collect([]);
+            foreach ($PlantTopIssues as $issue) {
+                if ($issue->SubCategory != Null) {
+                    $Ptop->offsetSet($issue->SubCategory,$issue->Total);
+                }
+            }
+            $PlantTop = $Ptop->sortDesc();
+        }else{
+            $StoreTopIssues = Ticket::query()->select('SubCategory', DB::raw('Count(SubCategory) as Total'))
+                ->join('Data','Code','StoreCode')
+                ->where('SBU', 'Store')
+                ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
+                ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+                ->groupBy('SubCategory')
+                ->get();
+            $Stop = collect([]);
+            foreach ($StoreTopIssues as $issue) {
+                if ($issue->SubCategory != Null) {
+                    $Stop->offsetSet($issue->SubCategory,$issue->Total);
+                }
+            }
+            $StoreTop = $Stop->sortDesc();
+            $OfficeTopIssues = Ticket::query()->select('SubCategory', DB::raw('Count(SubCategory) as Total'))
+                ->join('Data','Code','StoreCode')
+                ->where('SBU', 'Office')
+                ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
+                ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+                ->groupBy('SubCategory')
+                ->get();
+            $Otop = collect([]);
+            foreach ($OfficeTopIssues as $issue) {
+                if ($issue->SubCategory != Null) {
+                    $Otop->offsetSet($issue->SubCategory,$issue->Total);
+                }
+            }
+            $OfficeTop = $Otop->sortDesc();
+            $PlantTopIssues = Ticket::query()->select('SubCategory', DB::raw('Count(SubCategory) as Total'))
+                ->join('Data','Code','StoreCode')
+                ->where('SBU', 'Plant')
+                ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
+                ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+                ->groupBy('SubCategory')
+                ->get();
+            $Ptop = collect([]);
+            foreach ($PlantTopIssues as $issue) {
+                if ($issue->SubCategory != Null) {
+                    $Ptop->offsetSet($issue->SubCategory,$issue->Total);
+                }
+            }
+            $PlantTop = $Ptop->sortDesc();
+        }
+
+        return view('dashtotalticket', compact(
+            'StoreTop',
+            'OfficeTop',
+            'PlantTop',
+        ));
+    }
 
     public function closed(Request $request)
     {

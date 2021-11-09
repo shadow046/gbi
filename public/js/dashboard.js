@@ -94,51 +94,51 @@ $(document).ready(function()
                 $('#databody').append(databodyoffice);
                 $('#datafoot').append(datafoot);
                 barChartData = {
-                labels: data.dates,
-                datasets: [
-                    {
-                        label: 'Store',
-                        fill: false,
-                        borderColor: '#D4CFCF',
-                        data: data.str,
-                    },
-                    {
-                        label: 'Plant',
-                        fill: false,
-                        borderColor: '#E88406',
-                        data: data.plnt,
-                    },
-                    {
-                        label: 'Office',
-                        fill: false,
-                        borderColor: '#4496F3',
-                        data: data.ofc,
-                        datalabels: {
-                            align: 'end',
-                            anchor: 'end'
+                    labels: data.dates,
+                    datasets: [
+                        {
+                            label: 'Store',
+                            fill: false,
+                            borderColor: '#D4CFCF',
+                            data: data.str,
+                        },
+                        {
+                            label: 'Plant',
+                            fill: false,
+                            borderColor: '#E88406',
+                            data: data.plnt,
+                        },
+                        {
+                            label: 'Office',
+                            fill: false,
+                            borderColor: '#4496F3',
+                            data: data.ofc,
+                            datalabels: {
+                                align: 'end',
+                                anchor: 'end'
+                            }
+                        }
+                    ]
+                };
+                var ctx = $('#dailyChart');
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: barChartData,
+                    options: {
+                        elements: {
+                            rectangle: {
+                                borderWidth: 2,
+                                borderColor: '#c1c1c1',
+                                borderSkipped: 'bottom'
+                            }
+                        },
+                        responsive: false,
+                        title: {
+                            display: true,
+                            text: 'Daily Tickets'
                         }
                     }
-                ]
-            };
-            var ctx = $('#dailyChart');
-            var myChart = new Chart(ctx, {
-                type: 'line',
-                data: barChartData,
-                options: {
-                    elements: {
-                        rectangle: {
-                            borderWidth: 2,
-                            borderColor: '#c1c1c1',
-                            borderSkipped: 'bottom'
-                        }
-                    },
-                    responsive: false,
-                    title: {
-                        display: true,
-                        text: 'Daily Tickets'
-                    }
-                }
-            });
+                });
             }
         });
         // $('#dailyChart').width($('#data').width());
@@ -183,6 +183,10 @@ $(document).on('click', '#monthlyBtn', function () {
 $(document).on('click', '#openticketsBtn', function () {
     $('#loading').show();
     window.location.href = 'openticket';
+});
+$(document).on('click', '#ReportsBtn', function () {
+    $('#loading').show();
+    window.location.href = '/dash/totalticket/default/1';
 });
 $(document).on('click', '#OpenTicketDiv', function () {
     $('#loading').show();

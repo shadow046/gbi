@@ -36,6 +36,14 @@ Route::get('weeklytickets', [ViewController::class, 'weeklytickets'])->name('gbi
 Route::get('dailytickets', [ViewController::class, 'dailytickets'])->name('gbi.daily.blade');
 Route::get('change-password', [UserController::class, 'changepass']);
 Route::get('dashboard', [ViewController::class, 'dashboard']);
+Route::get('dashs', [ViewController::class, 'dash']);
+Route::get('dash/totalticket/{datefrom}/{dateto}', [ViewController::class, 'totalticket']);
+Route::get('dash/pcategory/{datefrom}/{dateto}', [ViewController::class, 'pcategory']);
+Route::get('dash/statsum', [ViewController::class, 'statsum']);
+Route::get('dash/resolvetick/{datefrom}/{dateto}', [ViewController::class, 'resolvetick']);
+Route::get('dash/priorstatus/{datefrom}/{dateto}', [ViewController::class, 'priorstatus']);
+Route::get('dash/resolverstatus/{datefrom}/{dateto}', [ViewController::class, 'resolverstatus']);
+Route::get('dash/dependencies/{datefrom}/{dateto}', [ViewController::class, 'dependencies']);
 Route::get('email', [ViewController::class, 'email']);
 
 //For users controller
@@ -50,19 +58,23 @@ Route::post('change-password', [UserController::class, 'storepass'])->name('chan
 //For ticket Controller
 Route::get('closedtickets', [TicketController::class, 'closedtickets']);
 Route::get('getticket', [TicketController::class, 'getticket']);
+Route::get('dashdata/{datefrom}/{dateto}', [TicketController::class, 'dashdata']);
+Route::get('ResTickCount', [TicketController::class, 'ResTickCount']);
 Route::get('monthlyticketsdata', [TicketController::class, 'monthlyticketsdata']);
 Route::get('dailyticketsdata', [TicketController::class, 'dailyticketsdata']);
 Route::get('storetopissue', [TicketController::class, 'storetopissue']);
 Route::get('taskdata', [TicketController::class, 'taskdata']);
 Route::get('openticketdata', [TicketController::class, 'openticketdata']);
 Route::get('closeticketdata', [TicketController::class, 'closeticketdata']);
+Route::get('piedata', [TicketController::class, 'piedata']);
+Route::get('totalticketdata', [TicketController::class, 'totalticketdata']);
+Route::get('pcategory', [TicketController::class, 'pcategory']);
+Route::get('dashpercent', [TicketController::class, 'dashpercent']);
 Route::get('cancelticketdata', [TicketController::class, 'cancelticketdata']);
 Route::get('ExportData/{year}/{month}/{monthname}', [TicketController::class, 'ExportData']);
-
-
+Route::get('ExportDashboard/{from}/{to}', [TicketController::class, 'ExportDashboard']);
 
 //dummies
-
 
 Route::get('createlyka', [HomeController::class, 'createuserlyka']);
 Route::any('check', [HomeController::class, 'check']);
