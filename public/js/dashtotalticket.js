@@ -41,7 +41,7 @@ function updateGraph() {
                                 "#3498db",
                                 "#95a5a6"
                             ],
-                            data: [data[0].Store,data[0].Plant,data[0].Office],
+                            data: [data[0].Store.replace(/,/g, ''),data[0].Plant.replace(/,/g, ''),data[0].Office.replace(/,/g, '')],
                         }
                     ]
                 },
@@ -78,9 +78,9 @@ function updateGraph() {
                 const ChartOfficeData= [];
                 for (let index = 0; index < data.data.length; index++) {
                     ChartLabels.push(data.data[index].Month);
-                    ChartStoreData.push(data.data[index].Store)
-                    ChartPlantData.push(data.data[index].Plant)
-                    ChartOfficeData.push(data.data[index].Office)
+                    ChartStoreData.push(data.data[index].Store.replace(/,/g, ''))
+                    ChartPlantData.push(data.data[index].Plant.replace(/,/g, ''))
+                    ChartOfficeData.push(data.data[index].Office.replace(/,/g, ''))
                 }
                 var ctx = $('#dailyChart');
                 var myChart = new Chart(ctx, {
@@ -154,9 +154,9 @@ function updateGraph() {
                 const ChartOfficeData= [];
                 for (let index = 0; index < data.data.length; index++) {
                     ChartLabels.push(data.data[index].Month);
-                    ChartStoreData.push(data.data[index].Store)
-                    ChartPlantData.push(data.data[index].Plant)
-                    ChartOfficeData.push(data.data[index].Office)
+                    ChartStoreData.push(data.data[index].Store.replace(/,/g, ''));
+                    ChartPlantData.push(data.data[index].Plant.replace(/,/g, ''));
+                    ChartOfficeData.push(data.data[index].Office.replace(/,/g, ''));
                 }
                 var ctx = $('#dailyChart');
                 var myChart = new Chart(ctx, {

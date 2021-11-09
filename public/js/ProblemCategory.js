@@ -16,7 +16,7 @@ $(document).ready(function()
                         "#ff7600",
                         "#9ba5a6"
                     ],
-                    data: [$('#software').val(),$('#hardware').val(),$('#infra').val(),$('#others').val()],
+                    data: [$('#software').val().replace(/,/g, ''),$('#hardware').val().replace(/,/g, ''),$('#infra').val().replace(/,/g, ''),$('#others').val().replace(/,/g, '')],
                 }
             ]
         },
