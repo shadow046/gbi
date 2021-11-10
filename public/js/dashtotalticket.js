@@ -259,7 +259,6 @@ $(document).ready(function()
         updateGraph();
     },500);
     if (pathfrom == "default") {
-        console.log('shoot');
         gbitable =
         $('table.gbiTable').DataTable({ 
             "dom": 't',

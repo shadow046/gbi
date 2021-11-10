@@ -1,7 +1,7 @@
 <div>
     <div class="container-fluid d-flex">
-        <a href="/"><input type="button" class="btn" style="margin-left:0px;margin-right:0px;border-radius: 0px;background-color: #0d1a80;color: white;cursor: pointer;" id="dashboardBtn" value="DASHBOARD"></a>&nbsp;&nbsp;
-        <input type="button" class="btn" style="margin-left:-5px;margin-right:0px;border-radius: 0px;background-color: gray;color: white;cursor: pointer;" id="dashboardBtn" value="REPORTS">&nbsp;&nbsp;
+        <a href="/"><input type="button" class="btn" style="margin-left:0px;margin-right:0px;border-radius: 0px;background-color: gray;color: white;cursor: pointer;" id="dashboardBtn" value="DASHBOARD"></a>&nbsp;&nbsp;
+        <input type="button" class="btn" style="margin-left:-5px;margin-right:0px;border-radius: 0px;background-color: #0d1a80;color: white;cursor: pointer;" id="dashboardBtn" value="REPORTS">&nbsp;&nbsp;
         <input type="button" class="btn logoutBtn ml-auto" style="border-radius: 0px;background-color: #0d1a80;color: white;cursor:pointer !important;" id="logoutBtn" value="LOGOUT">
     </div>
     <ul class="nav mr-auto list-inline" style="font-size: 14px">

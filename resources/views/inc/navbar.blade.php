@@ -1,7 +1,7 @@
 <nav class="nav nav-tabs navbar-expand-md">
     <div class="navbar-collapse collapse justify-content-between align-items-center w-100">
         @auth
-        <ul class="nav mr-auto" style="font-size: 14px">.
+        <ul class="nav mr-auto" style="font-size: 14px">
             @if(!auth()->user()->hasanyrole('Viewer', 'Viewer PLSI', 'Viewer IDSI','Repair'))
             <li class="nav-item">
                 <a class="nav-link {{ Request::is('/') ? 'active' : '' }}" href="{{ url('/') }}">Home</a>
