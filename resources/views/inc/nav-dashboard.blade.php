@@ -21,10 +21,10 @@
             <a class="nav-link {{ Request::is('dash/priorstatus/*/*') ? 'active' : '' }}" href="#" id="PriorStatus">PRIORITY STATUS</a>
         </li>
         <li class="nav-item" style="margin-left:0px;margin-right:0px;padding-top: 5px;">
-            <a class="nav-link {{ Request::is('dash/resolverstatus') ? 'active' : '' }}" href="#" id="ResolverStatus">RESOLVER STATUS</a>
+            <a class="nav-link {{ Request::is('dash/resolverstatus/*/*') ? 'active' : '' }}" href="#" id="ResolverStatus">RESOLVER STATUS</a>
         </li>
         <li class="nav-item" style="margin-left:0px;margin-right:0px;padding-top: 5px;">
-            <a class="nav-link {{ Request::is('dash/dependencies') ? 'active' : '' }}" href="#" id="Dependencies">DEPENDENCIES</a>
+            <a class="nav-link {{ Request::is('dash/dependencies/*/*') ? 'active' : '' }}" href="#" id="Dependencies">DEPENDENCIES</a>
         </li>
     </ul>
     <br>
