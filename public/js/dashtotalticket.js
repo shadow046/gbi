@@ -375,7 +375,7 @@ $(document).ready(function()
                 start++;
                 if (start == 1) {
                     if (window.location.pathname.split("/")[4].split("-")[1] ==  window.location.pathname.split("/")[3].split("-")[1]) {
-                        $('td', nRow).eq(5).text(Math.trunc(aData.Tot / ((window.location.pathname.split("/")[4].split("-")[2]-window.location.pathname.split("/")[4].split("-")[2])+1)))
+                        $('td', nRow).eq(5).text(Math.trunc(aData.Tot / ((window.location.pathname.split("/")[4].split("-")[2]-window.location.pathname.split("/")[3].split("-")[2])+1)))
                     }else if (month == window.location.pathname.split("/")[3].split("-")[1]) {
                         $('td', nRow).eq(5).text(Math.trunc(aData.Tot / ((d.getDate()-window.location.pathname.split("/")[3].split("-")[2])+1)))
                     }
