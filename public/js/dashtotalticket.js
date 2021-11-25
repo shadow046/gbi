@@ -330,7 +330,7 @@ $(document).ready(function()
                         plugins: {
                             datalabels: {
                             formatter: (value, ctx) => {
-                                return (value * 100 / ctx.dataset._meta[1].total).toFixed(2) + "%";
+                                return (value * 100 / ctx.dataset._meta[0].total).toFixed(2) + "%";
                             },
                             color: '#41e',
                             }
@@ -455,7 +455,7 @@ $(document).ready(function()
                         plugins: {
                             datalabels: {
                             formatter: (value, ctx) => {
-                                return (value * 100 / ctx.dataset._meta[1].total).toFixed(2) + "%";
+                                return (value * 100 / ctx.dataset._meta[0].total).toFixed(2) + "%";
                             },
                             color: '#41e',
                             }
