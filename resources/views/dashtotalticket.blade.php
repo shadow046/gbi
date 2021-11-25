@@ -15,6 +15,9 @@
                         <th>DAILY AVERAGE</th>
                     </tr>
                 </thead>
+                <tfoot>
+                    <tr><th>GRAND TOTAL</th><th id="TStore"></th><th id="TOffice"></th><th id="TPlant"></th><th></th><th></th></tr>
+                </tfoot>
             </table>
         </div>
         <div class="col-md-3">

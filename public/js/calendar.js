@@ -4,13 +4,13 @@ $(function() {
     $('#datefrom').datepicker( {
         changeMonth: true,
         changeYear: true,
-        showButtonPanel: true,
-        dateFormat: 'yy-mm',
-        minDate: new Date('2021', '5', '1'),
-        maxDate: new Date(new Date().getFullYear(), new Date().getMonth()-1, 1),
+        dateFormat: 'yy-mm-dd',
+        minDate: new Date('2021', '09', '1'),
+        // new Date().getFullYear(), new Date().getMonth()-1, 1
+        maxDate: new Date(),
         onClose: function(dateText, inst) { 
-            $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
-            $("#dateto").datepicker("option", "minDate", new Date(inst.selectedYear, inst.selectedMonth, 1));
+            $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+            $("#dateto").datepicker("option", "minDate", new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
             $("#dateto").prop('disabled', false);
             $("#goBtn").prop('disabled', true);
             setTimeout(function(){
@@ -21,11 +21,10 @@ $(function() {
     $('#dateto').datepicker( {
         changeMonth: true,
         changeYear: true,
-        showButtonPanel: true,
-        dateFormat: 'yy-mm',
-        maxDate: new Date(new Date().getFullYear(), new Date().getMonth()-1, 1),
+        dateFormat: 'yy-mm-dd',
+        maxDate: new Date(),
         onClose: function(dateTexts, insts) { 
-            $(this).datepicker('setDate', new Date(insts.selectedYear, insts.selectedMonth, 1));
+            $(this).datepicker('setDate', new Date(insts.selectedYear, insts.selectedMonth, insts.selectedDay));
             $("#goBtn").prop('disabled', false);
         }
     });
@@ -40,7 +39,7 @@ $(document).ready(function()
         datefrom = pathfrom;
         dateto = pathto;
     }else{
-        if (moment(pathfrom+'-01' , 'YYYY-MM-DD', true).isValid() && moment(pathto+'-01' , 'YYYY-MM-DD', true).isValid()) {
+        if (moment(pathfrom, 'YYYY-MM-DD', true).isValid() && moment(pathto , 'YYYY-MM-DD', true).isValid()) {
             $('#datefrom').val(pathfrom);
             $('#dateto').val(pathto);
             datefrom = pathfrom;

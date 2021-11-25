@@ -12,7 +12,10 @@
                         <th>PERCENTAGE</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tfoot>
+                    <tr><th>TOTAL</th><th></th><th></th></tr>
+                </tfoot>
+                {{-- <tbody>
                     <tr>
                         <td>SOFTWARE/APPLICATION</td>
                         <td>{{number_format($TopSoft['Total'])}}</td>
@@ -38,7 +41,7 @@
                         <td><b>{{number_format($TopSoft['Total']+$TopHard['Total']+$TopInfra['Total']+$TopOthers['Others'])}}</b></td>
                         <td><b>{{round((($TopSoft['Total']+$TopHard['Total']+$TopInfra['Total']+$TopOthers['Others'])/($TopSoft['Total']+$TopHard['Total']+$TopInfra['Total']+$TopOthers['Others']))*100,2)}}%</b></td>
                     </tr>
-                </tbody>
+                </tbody> --}}
             </table>
         </div>
         <div class="col">
@@ -48,7 +51,7 @@
             <input type="hidden" id="others" value='{{round(($TopOthers['Others']/($TopSoft['Total']+$TopHard['Total']+$TopInfra['Total']+$TopOthers['Others']))*100,2)}}'>
             <canvas id="pie1Chart" height="120" width='300' style="margin:0 auto"></canvas>
         </div>
-        <div class="table col" >
+        {{-- <div class="table col" >
             <table class="table-hover ProblemCategoryTable display nowrap" id="ProblemCategoryTable" style="font-size:70%;width:100%;">
                 <thead style="background-color:#00127f;color:white;height:14px;overflow:hidden;">
                     <tr>
@@ -102,11 +105,64 @@
                         <td><b>{{number_format($Infrawareval[4])}}</b></td>
                         <td><b>{{round(($Infrawareval[4]/$TopInfra['Total'])*100,2)}}%</b></td>
                     </tr>
-                    {{-- <tr><td>Total</td><td>{{$TopSoft['Total']}}</td><td>100%</td></tr> --}}
+                    <tr><td>Total</td><td>{{$TopSoft['Total']}}</td><td>100%</td></tr>
                 </tbody>
+            </table>
+        </div> --}}
+    </div>
+    <div class="container-fluid row">
+        <table style="width:100%;">
+                <thead style="background-color:#00127f;color:white;height:20px;overflow:hidden;">
+                    <tr>
+                        <th valign="top" colspan="9"><center>TOP ISSUE – PER PROBLEM CATEGORY</center></th>
+                    </tr>
+                </thead>
+        </table>
+        <div class="table col">
+            <table class="table-hover ProblemCatSoftTable display nowrap" id="ProblemCatSoftTable" style="font-size:70%;width:100%;">
+                <thead style="background-color:#00127f;color:white;height:14px;overflow:hidden;">
+                    <tr style="line-height: 2px;min-height: 2px;height: 2px;">
+                        <th>SOFTWARE</th>
+                        <th>COUNT</th>
+                        <th>PERCENTAGE</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr><th>TOTAL</th><th></th><th></th></tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="table col">
+            <table class="table-hover ProblemCatHardTable display nowrap" id="ProblemCatHardTable" style="font-size:70%;width:100%;">
+                <thead style="background-color:#00127f;color:white;height:14px;overflow:hidden;">
+                    <tr style="line-height: 2px;min-height: 2px;height: 2px;">
+                        <th>HARDWARE</th>
+                        <th>COUNT</th>
+                        <th>PERCENTAGE</th>
+                        {{-- <th>INFRASTRUCTURE</th>
+                        <th>COUNT</th>
+                        <th>PERCENTAGE</th> --}}
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr><th>TOTAL</th><th></th><th></th></tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="table col">
+            <table class="table-hover ProblemCatInfraTable display nowrap" id="ProblemCatInfraTable" style="font-size:70%;width:100%;">
+                <thead style="background-color:#00127f;color:white;height:14px;overflow:hidden;">
+                    <tr style="line-height: 2px;min-height: 2px;height: 2px;">
+                        <th>INFRASTRUCTURE</th>
+                        <th>COUNT</th>
+                        <th>PERCENTAGE</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr><th>TOTAL</th><th></th><th></th></tr>
+                </tfoot>
             </table>
         </div>
     </div>
-    
     <hr>
 @endsection

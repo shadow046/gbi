@@ -4,6 +4,7 @@
         <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
         <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta http-equiv="Pragma" content="no-cache" />
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta http-equiv="Expires" content="0" />
         {{-- <meta http-equiv="refresh" content="300"> --}}
         <script src="https://unpkg.com/jquery@2.2.4/dist/jquery.js"></script>
@@ -139,9 +140,6 @@
                 margin: auto;
                 width: 60%;
                 padding: 10px;
-            }
-            .ui-datepicker-calendar {
-                display: none;
             }
         </style>
     </head>

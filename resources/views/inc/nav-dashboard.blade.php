@@ -31,7 +31,7 @@
     <div class="container d-flex">
         <label class="ml-auto">SELECT DATE RANGE :</label>&nbsp;&nbsp;&nbsp;
         <input type="text" style="color: black" class="form-control-sm datepicker" value="from" name="datefrom" id="datefrom" readonly="readonly" autocomplete="off">&nbsp;&nbsp;&nbsp;
-        <input type="text" style="color: black" class="form-control-sm datepicker2" value="to" name="dateto" id="dateto" readonly="readonly" autocomplete="off">&nbsp;&nbsp;&nbsp;
+        <input type="text" style="color: black" class="form-control-sm datepicker2" value="to" name="dateto" id="dateto" readonly="readonly" autocomplete="off" disabled>&nbsp;&nbsp;&nbsp;
         <input type="button" class="btn" style="margin-top:-5px;margin-right:0px;border-radius: 20px;background-color: #0d1a80;color: white;cursor: pointer;" id="goBtn" value="Go" disabled>
     </div>
 </div>

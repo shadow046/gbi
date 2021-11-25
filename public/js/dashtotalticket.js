@@ -10,6 +10,7 @@ var curyear = serverTime.getFullYear();
 var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var monthshort = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "August", "September", "October", "November", "December"];
 var go = 0;
+let start = 0;
 var count = 0;
 var datefrom = 'from', dateto = 'to';
 var piechart;
@@ -22,49 +23,6 @@ function getRandomColor() {
         return color;
 }
 function updateGraph() {
-    $.ajax({
-        type: "GET",
-        url: "/piedata",
-        data: {
-            datefrom: "default",
-        },
-        async: false,
-        success: function(data){
-            piechart = new Chart($('#pieChart'), {
-                type: 'pie',
-                data: {
-                    labels: ['Store','Plant','Office'],
-                    datasets: [
-                        {
-                            backgroundColor: [
-                                "#2ecc71",
-                                "#3498db",
-                                "#95a5a6"
-                            ],
-                            data: [data[0].Store.replace(/,/g, ''),data[0].Plant.replace(/,/g, ''),data[0].Office.replace(/,/g, '')],
-                        }
-                    ]
-                },
-                options: {
-                    tooltips: {
-                        enabled: true
-                    },
-                    plugins: {
-                        datalabels: {
-                        formatter: (value, ctx) => {
-                            console.log(ctx);
-                            return (value * 100 / ctx.dataset._meta[0].total).toFixed(2) + "%";
-                        },
-                        color: '#41e',
-                        }
-                    },
-                    animation: {
-                        duration: 3000,
-                    },
-                }
-            });
-        }
-    });
     
     if (window.location.pathname.split("/")[3]== "default") {
         $.ajax({
@@ -76,11 +34,13 @@ function updateGraph() {
                 const ChartStoreData= [];
                 const ChartPlantData= [];
                 const ChartOfficeData= [];
+                const ChartBlankData= [];
                 for (let index = 0; index < data.data.length; index++) {
                     ChartLabels.push(data.data[index].Month);
                     ChartStoreData.push(data.data[index].Store.replace(/,/g, ''))
                     ChartPlantData.push(data.data[index].Plant.replace(/,/g, ''))
                     ChartOfficeData.push(data.data[index].Office.replace(/,/g, ''))
+                    // ChartBlankData.push(data.data[index].Blank.replace(/,/g, ''))
                 }
                 var ctx = $('#dailyChart');
                 var myChart = new Chart(ctx, {
@@ -103,6 +63,11 @@ function updateGraph() {
                                 backgroundColor: "#95a5a6",
                                 data: ChartOfficeData
                             }
+                            // {
+                            //     label: 'Blank SBU',
+                            //     backgroundColor: "#95cca6",
+                            //     data: ChartBlankData
+                            // }
                         ]
                     },
                     options: {
@@ -152,11 +117,13 @@ function updateGraph() {
                 const ChartStoreData= [];
                 const ChartPlantData= [];
                 const ChartOfficeData= [];
+                const ChartBlankData= [];
                 for (let index = 0; index < data.data.length; index++) {
                     ChartLabels.push(data.data[index].Month);
                     ChartStoreData.push(data.data[index].Store.replace(/,/g, ''));
                     ChartPlantData.push(data.data[index].Plant.replace(/,/g, ''));
                     ChartOfficeData.push(data.data[index].Office.replace(/,/g, ''));
+                    // ChartBlankData.push(data.data[index].Blank.replace(/,/g, ''));
                 }
                 var ctx = $('#dailyChart');
                 var myChart = new Chart(ctx, {
@@ -179,6 +146,11 @@ function updateGraph() {
                                 backgroundColor: "#95a5a6",
                                 data: ChartOfficeData
                             }
+                            // {
+                            //     label: 'Blank SBU',
+                            //     backgroundColor: "#95cca6",
+                            //     data: ChartBlankData
+                            // }
                         ]
                     },
                     options: {
@@ -246,7 +218,7 @@ $(document).ready(function()
         datefrom = pathfrom;
         dateto = pathto;
     }else{
-        if (moment(pathfrom+'-01' , 'YYYY-MM-DD', true).isValid() && moment(pathto+'-01' , 'YYYY-MM-DD', true).isValid()) {
+        if (moment(pathfrom, 'YYYY-MM-DD', true).isValid() && moment(pathto , 'YYYY-MM-DD', true).isValid()) {
             $('#datefrom').val(pathfrom);
             $('#dateto').val(pathto);
             datefrom = pathfrom;
@@ -285,9 +257,9 @@ $(document).ready(function()
                 var today = new Date();
                 var curMonth = today.getMonth()+1;
                 if (month == curMonth) {
-                    $('td', nRow).eq(5).text(Math.trunc(aData.Tot / today.getDate()))
+                    $('td', nRow).eq(6).text(Math.trunc(aData.Tot / window.location.pathname.split("/")[4].split("-")[2]))
                 }else{
-                    $('td', nRow).eq(5).text(Math.trunc(aData.Tot / d.getDate()))
+                    $('td', nRow).eq(6).text(Math.trunc(aData.Tot / d.getDate()))
                 }
             },
             columns: [
@@ -297,7 +269,81 @@ $(document).ready(function()
                 { data: 'Office', name:'Office'},
                 { data: 'Total', name:'Total'},
                 { data: 'Tot', name:'Tot'}
-            ]
+            ],
+            "footerCallback": function(row, data, start, end, display) {
+                var api = this.api(), data;
+                // Remove the formatting to get integer data for summation
+                var intVal = function ( i ) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '')*1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+                // Total over all pages
+                storesum = api
+                    .column( 1 )
+                    .data()
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+
+                // Update footer
+                $( api.column( 1 ).footer() ).html(storesum.toLocaleString());
+                officesum = api
+                    .column( 2 )
+                    .data()
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+                $( api.column( 2 ).footer() ).html(officesum.toLocaleString());
+                plantsum = api
+                    .column( 3 )
+                    .data()
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+                $( api.column( 3 ).footer() ).html(plantsum.toLocaleString());
+                grandtotal = api
+                    .column( 4 )
+                    .data()
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+                $( api.column( 4 ).footer() ).html(grandtotal.toLocaleString());
+            },
+            "initComplete": function(){
+                piechart = new Chart($('#pieChart'), {
+                    type: 'pie',
+                    data: {
+                        labels: ['Store','Office','Plant'],
+                        datasets: [
+                            {
+                                backgroundColor: ["#2ecc71","#3498db","#95a5a6"],
+                                data: [$('#TStore').html().split(",").join(""),$('#TOffice').html().split(",").join(""),$('#TPlant').html().split(",").join("")]
+                            }
+                        ]
+                    },
+                    options: {
+                        tooltips: {
+                            enabled: true
+                        },
+                        plugins: {
+                            datalabels: {
+                            formatter: (value, ctx) => {
+                                return (value * 100 / ctx.dataset._meta[1].total).toFixed(2) + "%";
+                            },
+                            color: '#41e',
+                            }
+                        },
+                        animation: {
+                            duration: 3000,
+                        },
+                        legend:{
+                            position: 'right',
+                        },
+                    }
+                });
+            }
         });
     }else{
         gbitable =
@@ -326,10 +372,19 @@ $(document).ready(function()
                 var d = new Date(aData.Year,month,0);
                 var today = new Date();
                 var curMonth = today.getMonth()+1;
-                if (month == curMonth) {
-                    $('td', nRow).eq(5).text(Math.trunc(aData.Tot / today.getDate()))
+                start++;
+                if (start == 1) {
+                    if (window.location.pathname.split("/")[4].split("-")[1] ==  window.location.pathname.split("/")[3].split("-")[1]) {
+                        $('td', nRow).eq(5).text(Math.trunc(aData.Tot / ((window.location.pathname.split("/")[4].split("-")[2]-window.location.pathname.split("/")[4].split("-")[2])+1)))
+                    }else if (month == window.location.pathname.split("/")[3].split("-")[1]) {
+                        $('td', nRow).eq(5).text(Math.trunc(aData.Tot / ((d.getDate()-window.location.pathname.split("/")[3].split("-")[2])+1)))
+                    }
                 }else{
-                    $('td', nRow).eq(5).text(Math.trunc(aData.Tot / d.getDate()))
+                    if (month == curMonth) {
+                        $('td', nRow).eq(5).text(Math.trunc(aData.Tot / window.location.pathname.split("/")[4].split("-")[2]))
+                    }else{
+                        $('td', nRow).eq(5).text(Math.trunc(aData.Tot / d.getDate()))
+                    }
                 }
             },
             columns: [
@@ -339,7 +394,81 @@ $(document).ready(function()
                 { data: 'Office', name:'Office'},
                 { data: 'Total', name:'Total'},
                 { data: 'Tot', name:'Tot'}
-            ]
+            ],
+            "footerCallback": function(row, data, start, end, display) {
+                var api = this.api(), data;
+                // Remove the formatting to get integer data for summation
+                var intVal = function ( i ) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '')*1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+                // Total over all pages
+                storesum = api
+                    .column( 1 )
+                    .data()
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+
+                // Update footer
+                $( api.column( 1 ).footer() ).html(storesum.toLocaleString());
+                officesum = api
+                    .column( 2 )
+                    .data()
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+                $( api.column( 2 ).footer() ).html(officesum.toLocaleString());
+                plantsum = api
+                    .column( 3 )
+                    .data()
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+                $( api.column( 3 ).footer() ).html(plantsum.toLocaleString());
+                grandtotal = api
+                    .column( 4 )
+                    .data()
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+                $( api.column( 4 ).footer() ).html(grandtotal.toLocaleString());
+            },
+            "initComplete": function(){
+                piechart = new Chart($('#pieChart'), {
+                    type: 'pie',
+                    data: {
+                        labels: ['Store','Office','Plant'],
+                        datasets: [
+                            {
+                                backgroundColor: ["#2ecc71","#3498db","#95a5a6"],
+                                data: [$('#TStore').html().split(",").join(""),$('#TOffice').html().split(",").join(""),$('#TPlant').html().split(",").join("")]
+                            }
+                        ]
+                    },
+                    options: {
+                        tooltips: {
+                            enabled: true
+                        },
+                        plugins: {
+                            datalabels: {
+                            formatter: (value, ctx) => {
+                                return (value * 100 / ctx.dataset._meta[1].total).toFixed(2) + "%";
+                            },
+                            color: '#41e',
+                            }
+                        },
+                        animation: {
+                            duration: 3000,
+                        },
+                        legend:{
+                            position: 'right',
+                        },
+                    }
+                });
+            }
         });
     }
 });

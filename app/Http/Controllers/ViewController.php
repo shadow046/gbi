@@ -353,7 +353,7 @@ class ViewController extends Controller
         //     // }
         //     return $b['Total'] <=> $a['Total'];
         // });
-        $TopIssuesSoftware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+        $TopIssuesSoftware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from Ticket)*100),2) as percentage'))
             ->join('Data','Code','StoreCode')
             ->whereNotNull('SubCategory')
             ->where('ProblemCategory', 'Software/ Application')
@@ -395,7 +395,7 @@ class ViewController extends Controller
         }
         $TopSoft['Total'] = $TotalSoft;
 
-        $TopIssuesHardware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+        $TopIssuesHardware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from Ticket)*100),2) as percentage'))
             ->join('Data','Code','StoreCode')
             ->whereNotNull('SubCategory')
             ->where('ProblemCategory', 'Hardware')
@@ -437,7 +437,7 @@ class ViewController extends Controller
         }
         $TopHard['Total'] = $TotalHard;
 
-        $TopIssuesInfrastructure = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+        $TopIssuesInfrastructure = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from Ticket)*100),2) as percentage'))
             ->join('Data','Code','StoreCode')
             ->whereNotNull('SubCategory')
             ->where('ProblemCategory', 'Infrastructure')
@@ -881,8 +881,8 @@ class ViewController extends Controller
             ->join('Data','Code','StoreCode')
             ->where('Data.SBU','Store')
             ->where('TaskStatus', 'Submitted')
-            ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
-            ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+            ->whereDate('DateCreated', '>=', Carbon::parse($datefrom))
+            ->whereDate('DateCreated', '<=', Carbon::parse($dateto))
             ->orderBy('DateCreated', 'asc')
             ->groupBy('Month')
             ->get();
@@ -939,8 +939,8 @@ class ViewController extends Controller
             )
             ->join('Data','Code','StoreCode')
             ->where('TaskStatus', 'Submitted')
-            ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
-            ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+            ->whereDate('DateCreated', '>=', Carbon::parse($datefrom))
+            ->whereDate('DateCreated', '<=', Carbon::parse($dateto))
             ->orderBy('DateCreated', 'asc')
             ->groupBy('Month')
             ->get();
@@ -1051,8 +1051,8 @@ class ViewController extends Controller
             )
             ->join('Data','Code','StoreCode')
             ->where('TaskStatus', 'Submitted')
-            ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
-            ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+            ->whereDate('DateCreated', '>=', Carbon::parse($datefrom))
+            ->whereDate('DateCreated', '<=', Carbon::parse($dateto))
             ->orderBy('DateCreated', 'asc')
             ->groupBy('Month')
             ->get();
@@ -1177,8 +1177,8 @@ class ViewController extends Controller
                 ->join('Data','Code','StoreCode')
                 ->where('Data.SBU','Store')
                 ->where('TaskStatus', 'Submitted')
-                ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
-                ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+                ->whereDate('DateCreated', '>=', Carbon::parse($datefrom))
+                ->whereDate('DateCreated', '<=', Carbon::parse($dateto))
                 ->orderBy('DateCreated', 'asc')
                 ->groupBy('Month')
                 ->get();
@@ -1203,7 +1203,7 @@ class ViewController extends Controller
         }
 
         if ($datefrom != "default") {
-            $TopIssuesSoftware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+            $TopIssuesSoftware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from Ticket)*100),2) as percentage'))
                 ->join('Data','Code','StoreCode')
                 ->whereNotNull('SubCategory')
                 ->where('ProblemCategory', 'Software/ Application')
@@ -1247,7 +1247,7 @@ class ViewController extends Controller
             }
             $TopSoft['Total'] = $TotalSoft;
 
-            $TopIssuesHardware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+            $TopIssuesHardware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from Ticket)*100),2) as percentage'))
                 ->join('Data','Code','StoreCode')
                 ->whereNotNull('SubCategory')
                 ->where('ProblemCategory', 'Hardware')
@@ -1291,7 +1291,7 @@ class ViewController extends Controller
             }
             $TopHard['Total'] = $TotalHard;
 
-            $TopIssuesInfrastructure = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+            $TopIssuesInfrastructure = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from Ticket)*100),2) as percentage'))
                 ->join('Data','Code','StoreCode')
                 ->whereNotNull('SubCategory')
                 ->where('ProblemCategory', 'Infrastructure')
@@ -1418,10 +1418,12 @@ class ViewController extends Controller
                 }
             }
         }else{
-            $TopIssuesSoftware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+            $TopIssuesSoftware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from Ticket)*100),2) as percentage'))
                 ->join('Data','Code','StoreCode')
                 ->whereNotNull('SubCategory')
                 ->where('ProblemCategory', 'Software/ Application')
+                ->whereDate('DateCreated', '>=', Carbon::parse($request->datefrom))
+                ->whereDate('DateCreated', '<=', Carbon::parse($request->dateto))
                 ->groupBy('SubCategory')
                 ->get();
                 
@@ -1460,7 +1462,7 @@ class ViewController extends Controller
             }
             $TopSoft['Total'] = $TotalSoft;
 
-            $TopIssuesHardware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+            $TopIssuesHardware = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from Ticket)*100),2) as percentage'))
                 ->join('Data','Code','StoreCode')
                 ->whereNotNull('SubCategory')
                 ->where('ProblemCategory', 'Hardware')
@@ -1502,7 +1504,7 @@ class ViewController extends Controller
             }
             $TopHard['Total'] = $TotalHard;
 
-            $TopIssuesInfrastructure = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from old_ticket)*100),2) as percentage'))
+            $TopIssuesInfrastructure = Ticket::select('SubCategory', DB::raw('Count(SubCategory) as Total'), DB::raw('round((Count(SubCategory)/(select count(*) from Ticket)*100),2) as percentage'))
                 ->join('Data','Code','StoreCode')
                 ->whereNotNull('SubCategory')
                 ->where('ProblemCategory', 'Infrastructure')
@@ -1697,8 +1699,8 @@ class ViewController extends Controller
             $StoreTopIssues = Ticket::query()->select('SubCategory', DB::raw('Count(SubCategory) as Total'))
                 ->join('Data','Code','StoreCode')
                 ->where('SBU', 'Store')
-                ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
-                ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+                ->whereDate('DateCreated', '>=', Carbon::parse($datefrom))
+                ->whereDate('DateCreated', '<=', Carbon::parse($dateto))
                 ->groupBy('SubCategory')
                 ->get();
             $Stop = collect([]);
@@ -1711,8 +1713,8 @@ class ViewController extends Controller
             $OfficeTopIssues = Ticket::query()->select('SubCategory', DB::raw('Count(SubCategory) as Total'))
                 ->join('Data','Code','StoreCode')
                 ->where('SBU', 'Office')
-                ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
-                ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+                ->whereDate('DateCreated', '>=', Carbon::parse($datefrom))
+                ->whereDate('DateCreated', '<=', Carbon::parse($dateto))
                 ->groupBy('SubCategory')
                 ->get();
             $Otop = collect([]);
@@ -1725,8 +1727,8 @@ class ViewController extends Controller
             $PlantTopIssues = Ticket::query()->select('SubCategory', DB::raw('Count(SubCategory) as Total'))
                 ->join('Data','Code','StoreCode')
                 ->where('SBU', 'Plant')
-                ->whereMonth('DateCreated', '>=', Carbon::parse($datefrom))
-                ->whereMonth('DateCreated', '<=', Carbon::parse($dateto))
+                ->whereDate('DateCreated', '>=', Carbon::parse($datefrom))
+                ->whereDate('DateCreated', '<=', Carbon::parse($dateto))
                 ->groupBy('SubCategory')
                 ->get();
             $Ptop = collect([]);
