@@ -8,7 +8,7 @@ var yearstart = '2021';
 var curmonth = serverTime.getMonth()+1;
 var curyear = serverTime.getFullYear();
 var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-var monthshort = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "August", "September", "October", "November", "December"];
+var monthshort = ["0","Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var go = 0;
 let start = 0;
 var count = 0;
@@ -22,177 +22,177 @@ function getRandomColor() {
         }
         return color;
 }
-function updateGraph() {
+// function updateGraph() {
     
-    if (window.location.pathname.split("/")[3]== "default") {
-        $.ajax({
-            type: "GET",
-            url: "/dashdata/default/1",
-            async: false,
-            success: function(data){
-                const ChartLabels = [];
-                const ChartStoreData= [];
-                const ChartPlantData= [];
-                const ChartOfficeData= [];
-                const ChartBlankData= [];
-                for (let index = 0; index < data.data.length; index++) {
-                    ChartLabels.push(data.data[index].Month);
-                    ChartStoreData.push(data.data[index].Store.replace(/,/g, ''))
-                    ChartPlantData.push(data.data[index].Plant.replace(/,/g, ''))
-                    ChartOfficeData.push(data.data[index].Office.replace(/,/g, ''))
-                    // ChartBlankData.push(data.data[index].Blank.replace(/,/g, ''))
-                }
-                var ctx = $('#dailyChart');
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                    labels: ChartLabels,
-                        datasets: [
-                            {
-                                label: 'Store',
-                                backgroundColor: "#2ecc71",
-                                data: ChartStoreData
-                            },
-                            {
-                                label: 'Plant',
-                                backgroundColor: "#3498db",
-                                data: ChartPlantData
-                            },
-                            {
-                                label: 'Office',
-                                backgroundColor: "#95a5a6",
-                                data: ChartOfficeData
-                            }
-                            // {
-                            //     label: 'Blank SBU',
-                            //     backgroundColor: "#95cca6",
-                            //     data: ChartBlankData
-                            // }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                beginAtZero: true,
-                                }
-                            }]
-                        },
-                        plugins: {
-                            datalabels: {
-                                anchor: 'end',
-                                align: 'top',
-                                formatter: Math.round,
-                                font: {
-                                weight: 'bold'
-                                }
-                            }
-                        },
-                        legend:{
-                            position: 'bottom',
-                            labels:{
-                                fontColor: "black"
-                            },
-                        },
-                        layout: {
-                            padding: {
-                                top: 30
-                            }
-                        },
-                        animation: {
-                            duration: 3000,
-                        },
-                    }
-                });
-            }
-        });
-    }else{
-        $.ajax({
-            type: "GET",
-            url: '/dashdata/'+window.location.pathname.split("/")[3]+'/'+window.location.pathname.split("/")[4],
-            async: false,
-            success: function(data){
-                const ChartLabels = [];
-                const ChartStoreData= [];
-                const ChartPlantData= [];
-                const ChartOfficeData= [];
-                const ChartBlankData= [];
-                for (let index = 0; index < data.data.length; index++) {
-                    ChartLabels.push(data.data[index].Month);
-                    ChartStoreData.push(data.data[index].Store.replace(/,/g, ''));
-                    ChartPlantData.push(data.data[index].Plant.replace(/,/g, ''));
-                    ChartOfficeData.push(data.data[index].Office.replace(/,/g, ''));
-                    // ChartBlankData.push(data.data[index].Blank.replace(/,/g, ''));
-                }
-                var ctx = $('#dailyChart');
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                    labels: ChartLabels,
-                        datasets: [
-                            {
-                                label: 'Store',
-                                backgroundColor: "#2ecc71",
-                                data: ChartStoreData
-                            },
-                            {
-                                label: 'Plant',
-                                backgroundColor: "#3498db",
-                                data: ChartPlantData
-                            },
-                            {
-                                label: 'Office',
-                                backgroundColor: "#95a5a6",
-                                data: ChartOfficeData
-                            }
-                            // {
-                            //     label: 'Blank SBU',
-                            //     backgroundColor: "#95cca6",
-                            //     data: ChartBlankData
-                            // }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                beginAtZero: true,
-                                }
-                            }]
-                        },
-                        plugins: {
-                            datalabels: {
-                                anchor: 'end',
-                                align: 'top',
-                                formatter: Math.round,
-                                font: {
-                                weight: 'bold'
-                                }
-                            }
-                        },
-                        legend:{
-                            position: 'bottom',
-                            labels:{
-                                fontColor: "black"
-                            },
-                        },
-                        layout: {
-                            padding: {
-                                top: 30
-                            }
-                        },
-                        animation: {
-                            duration: 3000,
-                        },
-                    }
-                });
-            }
-        });
-    }
-    $('#loading').hide();
-}
+//     if (window.location.pathname.split("/")[3]== "default") {
+//         $.ajax({
+//             type: "GET",
+//             url: "/dashdata/default/1",
+//             async: false,
+//             success: function(data){
+//                 const ChartLabels = [];
+//                 const ChartStoreData= [];
+//                 const ChartPlantData= [];
+//                 const ChartOfficeData= [];
+//                 const ChartBlankData= [];
+//                 for (let index = 0; index < data.data.length; index++) {
+//                     ChartLabels.push(data.data[index].Month);
+//                     ChartStoreData.push(data.data[index].Store.replace(/,/g, ''))
+//                     ChartPlantData.push(data.data[index].Plant.replace(/,/g, ''))
+//                     ChartOfficeData.push(data.data[index].Office.replace(/,/g, ''))
+//                     // ChartBlankData.push(data.data[index].Blank.replace(/,/g, ''))
+//                 }
+//                 var ctx = $('#dailyChart');
+//                 var myChart = new Chart(ctx, {
+//                     type: 'bar',
+//                     data: {
+//                     labels: ChartLabels,
+//                         datasets: [
+//                             {
+//                                 label: 'Store',
+//                                 backgroundColor: "#2ecc71",
+//                                 data: ChartStoreData
+//                             },
+//                             {
+//                                 label: 'Plant',
+//                                 backgroundColor: "#3498db",
+//                                 data: ChartPlantData
+//                             },
+//                             {
+//                                 label: 'Office',
+//                                 backgroundColor: "#95a5a6",
+//                                 data: ChartOfficeData
+//                             }
+//                             // {
+//                             //     label: 'Blank SBU',
+//                             //     backgroundColor: "#95cca6",
+//                             //     data: ChartBlankData
+//                             // }
+//                         ]
+//                     },
+//                     options: {
+//                         responsive: true,
+//                         scales: {
+//                             yAxes: [{
+//                                 ticks: {
+//                                 beginAtZero: true,
+//                                 }
+//                             }]
+//                         },
+//                         plugins: {
+//                             datalabels: {
+//                                 anchor: 'end',
+//                                 align: 'top',
+//                                 formatter: Math.round,
+//                                 font: {
+//                                 weight: 'bold'
+//                                 }
+//                             }
+//                         },
+//                         legend:{
+//                             position: 'bottom',
+//                             labels:{
+//                                 fontColor: "black",
+//                             },
+//                         },
+//                         layout: {
+//                             padding: {
+//                                 top: 30
+//                             }
+//                         },
+//                         animation: {
+//                             duration: 3000,
+//                         },
+//                     }
+//                 });
+//             }
+//         });
+//     }else{
+//         $.ajax({
+//             type: "GET",
+//             url: '/dashdata/'+window.location.pathname.split("/")[3]+'/'+window.location.pathname.split("/")[4],
+//             async: false,
+//             success: function(data){
+//                 const ChartLabels = [];
+//                 const ChartStoreData= [];
+//                 const ChartPlantData= [];
+//                 const ChartOfficeData= [];
+//                 const ChartBlankData= [];
+//                 for (let index = 0; index < data.data.length; index++) {
+//                     ChartLabels.push(data.data[index].Month);
+//                     ChartStoreData.push(data.data[index].Store.replace(/,/g, ''));
+//                     ChartPlantData.push(data.data[index].Plant.replace(/,/g, ''));
+//                     ChartOfficeData.push(data.data[index].Office.replace(/,/g, ''));
+//                     // ChartBlankData.push(data.data[index].Blank.replace(/,/g, ''));
+//                 }
+//                 var ctx = $('#dailyChart');
+//                 var myChart = new Chart(ctx, {
+//                     type: 'bar',
+//                     data: {
+//                     labels: ChartLabels,
+//                         datasets: [
+//                             {
+//                                 label: 'Store',
+//                                 backgroundColor: "#2ecc71",
+//                                 data: ChartStoreData
+//                             },
+//                             {
+//                                 label: 'Plant',
+//                                 backgroundColor: "#3498db",
+//                                 data: ChartPlantData
+//                             },
+//                             {
+//                                 label: 'Office',
+//                                 backgroundColor: "#95a5a6",
+//                                 data: ChartOfficeData
+//                             }
+//                             // {
+//                             //     label: 'Blank SBU',
+//                             //     backgroundColor: "#95cca6",
+//                             //     data: ChartBlankData
+//                             // }
+//                         ]
+//                     },
+//                     options: {
+//                         responsive: true,
+//                         scales: {
+//                             yAxes: [{
+//                                 ticks: {
+//                                 beginAtZero: true,
+//                                 }
+//                             }]
+//                         },
+//                         plugins: {
+//                             datalabels: {
+//                                 anchor: 'end',
+//                                 align: 'top',
+//                                 formatter: Math.round,
+//                                 font: {
+//                                 weight: 'bold'
+//                                 }
+//                             }
+//                         },
+//                         legend:{
+//                             position: 'bottom',
+//                             labels:{
+//                                 fontColor: "black"
+//                             },
+//                         },
+//                         layout: {
+//                             padding: {
+//                                 top: 30
+//                             }
+//                         },
+//                         animation: {
+//                             duration: 3000,
+//                         },
+//                     }
+//                 });
+//             }
+//         });
+//     }
+//     $('#loading').hide();
+// }
 $(document).ready(function()
 {
     // $('#loading').show();
@@ -227,249 +227,320 @@ $(document).ready(function()
             alert('Please do not try to alter this URL!!!')
         }
     }
-    setTimeout(function(){
-        updateGraph();
-    },500);
+    // setTimeout(function(){
+    //     updateGraph();
+    // },500);
+    $('#loading').hide();
     if (pathfrom == "default") {
-        gbitable =
-        $('table.gbiTable').DataTable({ 
-            "dom": 't',
-            "language": {
-                    "emptyTable": " ",
-                    // "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw"><span class="sr-only">Searching...</span></i>',
-                    "loadingRecords": "Please wait - loading..."
+        var range = monthshort[parseFloat($('#dfrom').val().split("-")[1])]+'. '+parseFloat($('#dfrom').val().split("-")[2])+' - '+monthshort[parseFloat($('#dto').val().split("-")[1])]+'. '+parseFloat($('#dto').val().split("-")[2]);
+        var from = new Date($('#dfrom').val().split("-")[1]+"-"+$('#dfrom').val().split("-")[2]+"-"+$('#dfrom').val().split("-")[0]);
+        var to = new Date($('#dto').val().split("-")[1]+"-"+$('#dto').val().split("-")[2]+"-"+$('#dto').val().split("-")[0]);
+        var Difference_In_Time = to.getTime() - from.getTime();
+        var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+        $('#range').text(range);
+        $('#days').text(Difference_In_Days+1);
+        $('#average').text(Math.trunc($('#total').text().split(",").join("")/$('#days').text()));
+        piechart = new Chart($('#pieChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Store','Office','Plant'],
+                datasets: [
+                    {
+                        backgroundColor: ["#2ecc71","#3498db","#95a5a6"],
+                        data: [$('#TStore').html().split(",").join(""),$('#TOffice').html().split(",").join(""),$('#TPlant').html().split(",").join("")]
+                    }
+                ]
+            },
+            options: {
+                tooltips: {
+                    enabled: true
                 },
-            "pageLength": 10,
-            "ordering": false,
-            processing: false,
-            serverSide: false,
-            ajax: {
-                url: '/dashdata/default/1',
-                statusCode: {
-                    401: function() {
-                        location.reload();
-                    }
-                }
-            },
-            "fnRowCallback": function(nRow, aData) {
-                var month = moment().month(aData.Month).format("M");
-                var d = new Date(aData.Year,month,0);
-                var today = new Date();
-                var curMonth = today.getMonth()+1;
-                if (month == curMonth) {
-                    $('td', nRow).eq(6).text(Math.trunc(aData.Tot / window.location.pathname.split("/")[4].split("-")[2]))
-                }else{
-                    $('td', nRow).eq(6).text(Math.trunc(aData.Tot / d.getDate()))
-                }
-            },
-            columns: [
-                { data: 'Month', name:'Month'},
-                { data: 'Store', name:'Store'},
-                { data: 'Plant', name:'Plant'},
-                { data: 'Office', name:'Office'},
-                { data: 'Total', name:'Total'},
-                { data: 'Tot', name:'Tot'}
-            ],
-            "footerCallback": function(row, data, start, end, display) {
-                var api = this.api(), data;
-                // Remove the formatting to get integer data for summation
-                var intVal = function ( i ) {
-                    return typeof i === 'string' ?
-                        i.replace(/[\$,]/g, '')*1 :
-                        typeof i === 'number' ?
-                            i : 0;
-                };
-                // Total over all pages
-                storesum = api
-                    .column( 1 )
-                    .data()
-                    .reduce( function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0 );
-
-                // Update footer
-                $( api.column( 1 ).footer() ).html(storesum.toLocaleString());
-                officesum = api
-                    .column( 2 )
-                    .data()
-                    .reduce( function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0 );
-                $( api.column( 2 ).footer() ).html(officesum.toLocaleString());
-                plantsum = api
-                    .column( 3 )
-                    .data()
-                    .reduce( function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0 );
-                $( api.column( 3 ).footer() ).html(plantsum.toLocaleString());
-                grandtotal = api
-                    .column( 4 )
-                    .data()
-                    .reduce( function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0 );
-                $( api.column( 4 ).footer() ).html(grandtotal.toLocaleString());
-            },
-            "initComplete": function(){
-                piechart = new Chart($('#pieChart'), {
-                    type: 'pie',
-                    data: {
-                        labels: ['Store','Office','Plant'],
-                        datasets: [
-                            {
-                                backgroundColor: ["#2ecc71","#3498db","#95a5a6"],
-                                data: [$('#TStore').html().split(",").join(""),$('#TOffice').html().split(",").join(""),$('#TPlant').html().split(",").join("")]
-                            }
-                        ]
+                plugins: {
+                    datalabels: {
+                    formatter: (value, ctx) => {
+                        return (value * 100 / $('#total').text().split(",").join("")).toFixed(2) + "%";
                     },
-                    options: {
-                        tooltips: {
-                            enabled: true
-                        },
-                        plugins: {
-                            datalabels: {
-                            formatter: (value, ctx) => {
-                                return (value * 100 / ctx.dataset._meta[0].total).toFixed(2) + "%";
-                            },
-                            color: '#41e',
-                            }
-                        },
-                        animation: {
-                            duration: 3000,
-                        },
-                        legend:{
-                            position: 'right',
-                        },
+                    color: '#41e',
                     }
-                });
+                },
+                animation: {
+                    duration: 3000,
+                },
+                legend:{
+                    position: 'right',
+                },
             }
         });
-    }else{
-        gbitable =
-        $('table.gbiTable').DataTable({ 
-            "dom": 't',
-            "language": {
-                    "emptyTable": " ",
-                    // "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw"><span class="sr-only">Searching...</span></i>',
-                    "loadingRecords": "Please wait - loading..."
+        var ctx = $('#dailyChart');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Store','Office','Plant'],
+                datasets: [
+                    {
+                        backgroundColor: ["#2ecc71","#3498db","#95a5a6"],
+                        data: [$('#TStore').html().split(",").join(""),$('#TOffice').html().split(",").join(""),$('#TPlant').html().split(",").join("")]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                        beginAtZero: true,
+                        }
+                    }]
                 },
-            "pageLength": 10,
-            "ordering": false,
-            processing: false,
-            serverSide: false,
-            ajax: {
-                url: '/dashdata/'+datefrom+'/'+dateto,
-                statusCode: {
-                    401: function() {
-                        location.reload();
+                plugins: {
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: Math.round,
+                        font: {
+                        weight: 'bold'
+                        }
                     }
-                }
-            },
-            "fnRowCallback": function(nRow, aData) {
-            //"createdRow": function ( nRow, aData ) {
-                var month = moment().month(aData.Month).format("M");
-                var d = new Date(aData.Year,month,0);
-                var today = new Date();
-                var curMonth = today.getMonth()+1;
-                start++;
-                if (start == 1) {
-                    if (window.location.pathname.split("/")[4].split("-")[1] ==  window.location.pathname.split("/")[3].split("-")[1]) {
-                        $('td', nRow).eq(5).text(Math.trunc(aData.Tot / ((window.location.pathname.split("/")[4].split("-")[2]-window.location.pathname.split("/")[3].split("-")[2])+1)))
-                    }else if (month == window.location.pathname.split("/")[3].split("-")[1]) {
-                        $('td', nRow).eq(5).text(Math.trunc(aData.Tot / ((d.getDate()-window.location.pathname.split("/")[3].split("-")[2])+1)))
-                    }
-                }else{
-                    if (month == curMonth) {
-                        $('td', nRow).eq(5).text(Math.trunc(aData.Tot / window.location.pathname.split("/")[4].split("-")[2]))
-                    }else{
-                        $('td', nRow).eq(5).text(Math.trunc(aData.Tot / d.getDate()))
-                    }
-                }
-            },
-            columns: [
-                { data: 'Month', name:'Month'},
-                { data: 'Store', name:'Store'},
-                { data: 'Plant', name:'Plant'},
-                { data: 'Office', name:'Office'},
-                { data: 'Total', name:'Total'},
-                { data: 'Tot', name:'Tot'}
-            ],
-            "footerCallback": function(row, data, start, end, display) {
-                var api = this.api(), data;
-                // Remove the formatting to get integer data for summation
-                var intVal = function ( i ) {
-                    return typeof i === 'string' ?
-                        i.replace(/[\$,]/g, '')*1 :
-                        typeof i === 'number' ?
-                            i : 0;
-                };
-                // Total over all pages
-                storesum = api
-                    .column( 1 )
-                    .data()
-                    .reduce( function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0 );
-
-                // Update footer
-                $( api.column( 1 ).footer() ).html(storesum.toLocaleString());
-                officesum = api
-                    .column( 2 )
-                    .data()
-                    .reduce( function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0 );
-                $( api.column( 2 ).footer() ).html(officesum.toLocaleString());
-                plantsum = api
-                    .column( 3 )
-                    .data()
-                    .reduce( function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0 );
-                $( api.column( 3 ).footer() ).html(plantsum.toLocaleString());
-                grandtotal = api
-                    .column( 4 )
-                    .data()
-                    .reduce( function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0 );
-                $( api.column( 4 ).footer() ).html(grandtotal.toLocaleString());
-            },
-            "initComplete": function(){
-                piechart = new Chart($('#pieChart'), {
-                    type: 'pie',
-                    data: {
-                        labels: ['Store','Office','Plant'],
-                        datasets: [
-                            {
-                                backgroundColor: ["#2ecc71","#3498db","#95a5a6"],
-                                data: [$('#TStore').html().split(",").join(""),$('#TOffice').html().split(",").join(""),$('#TPlant').html().split(",").join("")]
-                            }
-                        ]
+                },
+                legend:{
+                    position: 'bottom',
+                    labels:{
+                        fontColor: "black"
                     },
-                    options: {
-                        tooltips: {
-                            enabled: true
-                        },
-                        plugins: {
-                            datalabels: {
-                            formatter: (value, ctx) => {
-                                return (value * 100 / ctx.dataset._meta[0].total).toFixed(2) + "%";
-                            },
-                            color: '#41e',
-                            }
-                        },
-                        animation: {
-                            duration: 3000,
-                        },
-                        legend:{
-                            position: 'right',
-                        },
+                    display: false,
+                    labels: {
+                        display: false
                     }
-                });
+                },
+                layout: {
+                    padding: {
+                        top: 30
+                    }
+                },
+                animation: {
+                    duration: 3000,
+                },
             }
         });
+    }else{ 
+        var range = monthshort[window.location.pathname.split("/")[3].split("-")[1]]+'. '+window.location.pathname.split("/")[3].split("-")[2]+' - '+monthshort[window.location.pathname.split("/")[4].split("-")[1]]+'. '+window.location.pathname.split("/")[4].split("-")[2];
+        console.log(range);
+        var from = new Date(window.location.pathname.split("/")[3].split("-")[1]+"/"+window.location.pathname.split("/")[3].split("-")[2]+"/"+window.location.pathname.split("/")[3].split("-")[0]);
+        var to = new Date(window.location.pathname.split("/")[4].split("-")[1]+"/"+window.location.pathname.split("/")[4].split("-")[2]+"/"+window.location.pathname.split("/")[4].split("-")[0]);
+        var Difference_In_Time = to.getTime() - from.getTime();
+        var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+        $('#range').text(range);
+        $('#days').text(Difference_In_Days+1);
+        $('#average').text(Math.trunc($('#total').text()/$('#days').text()));
+        piechart = new Chart($('#pieChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Store','Office','Plant'],
+                datasets: [
+                    {
+                        backgroundColor: ["#2ecc71","#3498db","#95a5a6"],
+                        data: [$('#TStore').html().split(",").join(""),$('#TOffice').html().split(",").join(""),$('#TPlant').html().split(",").join("")]
+                    }
+                ]
+            },
+            options: {
+                tooltips: {
+                    enabled: true
+                },
+                plugins: {
+                    datalabels: {
+                    formatter: (value, ctx) => {
+                        return (value * 100 / $('#total').text().split(",").join("")).toFixed(2) + "%";
+                    },
+                    color: '#41e',
+                    }
+                },
+                animation: {
+                    duration: 3000,
+                },
+                legend:{
+                    position: 'right',
+                },
+            }
+        });
+        var ctx = $('#dailyChart');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Store','Office','Plant'],
+                datasets: [
+                    {
+                        backgroundColor: ["#2ecc71","#3498db","#95a5a6"],
+                        data: [$('#TStore').html().split(",").join(""),$('#TOffice').html().split(",").join(""),$('#TPlant').html().split(",").join("")]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                        beginAtZero: true,
+                        }
+                    }]
+                },
+                plugins: {
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: Math.round,
+                        font: {
+                        weight: 'bold'
+                        }
+                    }
+                },
+                legend:{
+                    position: 'bottom',
+                    labels:{
+                        fontColor: "black"
+                    },
+                    display: false,
+                    labels: {
+                        display: false
+                    }
+                },
+                layout: {
+                    padding: {
+                        top: 30
+                    }
+                },
+                animation: {
+                    duration: 3000,
+                },
+            }
+        });
+        // gbitable =
+        // $('table.gbiTable').DataTable({ 
+        //     "dom": 't',
+        //     "language": {
+        //             "emptyTable": " ",
+        //             // "processing": '<i class="fa fa-spinner fa-spin fa-2x fa-fw"><span class="sr-only">Searching...</span></i>',
+        //             "loadingRecords": "Please wait - loading..."
+        //         },
+        //     "pageLength": 10,
+        //     "ordering": false,
+        //     processing: false,
+        //     serverSide: false,
+        //     ajax: {
+        //         url: '/dashdata/'+datefrom+'/'+dateto,
+        //         statusCode: {
+        //             401: function() {
+        //                 location.reload();
+        //             }
+        //         }
+        //     },
+        //     "fnRowCallback": function(nRow, aData) {
+        //     //"createdRow": function ( nRow, aData ) {
+        //         var month = moment().month(aData.Month).format("M");
+        //         var d = new Date(aData.Year,month,0);
+        //         var today = new Date();
+        //         var curMonth = today.getMonth()+1;
+        //         start++;
+        //         if (start == 1) {
+        //             if (window.location.pathname.split("/")[4].split("-")[1] ==  window.location.pathname.split("/")[3].split("-")[1]) {
+        //                 $('td', nRow).eq(5).text(Math.trunc(aData.Tot / ((window.location.pathname.split("/")[4].split("-")[2]-window.location.pathname.split("/")[3].split("-")[2])+1)))
+        //             }else if (month == window.location.pathname.split("/")[3].split("-")[1]) {
+        //                 $('td', nRow).eq(5).text(Math.trunc(aData.Tot / ((d.getDate()-window.location.pathname.split("/")[3].split("-")[2])+1)))
+        //             }
+        //         }else{
+        //             if (month == curMonth) {
+        //                 $('td', nRow).eq(5).text(Math.trunc(aData.Tot / window.location.pathname.split("/")[4].split("-")[2]))
+        //             }else{
+        //                 $('td', nRow).eq(5).text(Math.trunc(aData.Tot / d.getDate()))
+        //             }
+        //         }
+        //     },
+        //     columns: [
+        //         { data: 'Month', name:'Month'},
+        //         { data: 'Store', name:'Store'},
+        //         { data: 'Plant', name:'Plant'},
+        //         { data: 'Office', name:'Office'},
+        //         { data: 'Total', name:'Total'},
+        //         { data: 'Tot', name:'Tot'}
+        //     ],
+        //     // "footerCallback": function(row, data, start, end, display) {
+        //     //     var api = this.api(), data;
+        //     //     // Remove the formatting to get integer data for summation
+        //     //     var intVal = function ( i ) {
+        //     //         return typeof i === 'string' ?
+        //     //             i.replace(/[\$,]/g, '')*1 :
+        //     //             typeof i === 'number' ?
+        //     //                 i : 0;
+        //     //     };
+        //     //     // Total over all pages
+        //     //     storesum = api
+        //     //         .column( 1 )
+        //     //         .data()
+        //     //         .reduce( function (a, b) {
+        //     //             return intVal(a) + intVal(b);
+        //     //         }, 0 );
+
+        //     //     // Update footer
+        //     //     $( api.column( 1 ).footer() ).html(storesum.toLocaleString());
+        //     //     officesum = api
+        //     //         .column( 2 )
+        //     //         .data()
+        //     //         .reduce( function (a, b) {
+        //     //             return intVal(a) + intVal(b);
+        //     //         }, 0 );
+        //     //     $( api.column( 2 ).footer() ).html(officesum.toLocaleString());
+        //     //     plantsum = api
+        //     //         .column( 3 )
+        //     //         .data()
+        //     //         .reduce( function (a, b) {
+        //     //             return intVal(a) + intVal(b);
+        //     //         }, 0 );
+        //     //     $( api.column( 3 ).footer() ).html(plantsum.toLocaleString());
+        //     //     grandtotal = api
+        //     //         .column( 4 )
+        //     //         .data()
+        //     //         .reduce( function (a, b) {
+        //     //             return intVal(a) + intVal(b);
+        //     //         }, 0 );
+        //     //     $( api.column( 4 ).footer() ).html(grandtotal.toLocaleString());
+        //     //     $( api.column( 0 ).footer() ).html(monthshort[window.location.pathname.split("/")[3].split("-")[1]]+'. '+window.location.pathname.split("/")[3].split("-")[2]+' - '+monthshort[window.location.pathname.split("/")[4].split("-")[1]]+'. '+window.location.pathname.split("/")[4].split("-")[2]);
+                
+        //     // },
+        //     "initComplete": function(){
+        //         var count = new Array();
+        //         piechart = new Chart($('#pieChart'), {
+        //             type: 'pie',
+        //             data: {
+        //                 labels: ['Store','Office','Plant'],
+        //                 datasets: [
+        //                     {
+        //                         backgroundColor: ["#2ecc71","#3498db","#95a5a6"],
+        //                         data: [$('#TStore').html().split(",").join(""),$('#TOffice').html().split(",").join(""),$('#TPlant').html().split(",").join("")]
+        //                     }
+        //                 ]
+        //             },
+        //             options: {
+        //                 tooltips: {
+        //                     enabled: true
+        //                 },
+        //                 plugins: {
+        //                     datalabels: {
+        //                     formatter: (value, ctx) => {
+        //                         return (value * 100 / ctx.dataset._meta[1].total).toFixed(2) + "%";
+        //                     },
+        //                     color: '#41e',
+        //                     }
+        //                 },
+        //                 animation: {
+        //                     duration: 3000,
+        //                 },
+        //                 legend:{
+        //                     position: 'right',
+        //                 },
+        //             }
+        //         });
+        //     }
+        // });
     }
 });
 

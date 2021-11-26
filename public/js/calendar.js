@@ -1,5 +1,7 @@
 var datefrom = 'from', dateto = 'to';
-
+var pathfrom = window.location.pathname.split("/")[3];
+var pathto = window.location.pathname.split("/")[4];
+var monthshort = ["0","Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 $(function() {
     $('#datefrom').datepicker( {
         changeMonth: true,
@@ -31,8 +33,6 @@ $(function() {
 });
 $(document).ready(function()
 {  
-    var pathfrom = window.location.pathname.split("/")[3];
-    var pathto = window.location.pathname.split("/")[4];
     if (pathfrom == "default") {
         $('#datefrom').val('from');
         $('#dateto').val('to');

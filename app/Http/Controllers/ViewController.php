@@ -873,9 +873,6 @@ class ViewController extends Controller
                 ),
                 DB::raw(
                     'SUM(CASE WHEN Priority = \'P3\' and SBU = \'Plant\' THEN 1 ELSE 0 END) as PlantP3'
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN Priority is not null and SBU is not null THEN 1 ELSE 0 END) as GrandTotal'
                 )
             )
             ->join('Data','Code','StoreCode')
@@ -887,8 +884,42 @@ class ViewController extends Controller
             ->groupBy('Month')
             ->get();
         }
+        $OfficeP1 = 0;
+        $OfficeP2 = 0;
+        $OfficeP3 = 0;
+        $StoreP1 = 0;
+        $StoreP2 = 0;
+        $StoreP3 = 0;
+        $PlantP1 = 0;
+        $PlantP2 = 0;
+        $PlantP3 = 0;
+        foreach ($PriorTickCount as $key) {
+            $OfficeP1 = $OfficeP1+$key->OfficeP1;
+            $OfficeP2 = $OfficeP2+$key->OfficeP2;
+            $OfficeP3 = $OfficeP3+$key->OfficeP3;
+            $StoreP1 = $StoreP1+$key->StoreP1;
+            $StoreP2 = $StoreP2+$key->StoreP2;
+            $StoreP3 = $StoreP3+$key->StoreP3;
+            $PlantP1 = $PlantP1+$key->PlantP1;
+            $PlantP2 = $PlantP2+$key->PlantP2;
+            $PlantP3 = $PlantP3+$key->PlantP3;
+        }
+        $GrandTotal = $OfficeP1+$OfficeP2+$OfficeP3+$StoreP1+$StoreP2+$StoreP3+$PlantP1+$PlantP2+$PlantP3;
+        $from = Carbon::now()->subMonths(3);
+        $to = Carbon::now();
         return view('dashpriorstatus', compact(
-            'PriorTickCount'
+            'OfficeP1',
+            'OfficeP2',
+            'OfficeP3',
+            'StoreP1',
+            'StoreP2',
+            'StoreP3',
+            'PlantP1',
+            'PlantP2',
+            'PlantP3',
+            'GrandTotal',
+            'from',
+            'to'
         ));
     }
 
@@ -945,8 +976,24 @@ class ViewController extends Controller
             ->groupBy('Month')
             ->get();
         }
+        $L1 = 0;
+        $L2 = 0;
+        $Escalated = 0;
+        foreach ($ResolverTickCount as $key) {
+            $L1 = $L1+$key->L1;
+            $L2 = $L2+$key->L2;
+            $Escalated = $Escalated+$key->Escalated;
+        }
+        $ResolverTotal = $L1+$L2+$Escalated;
+        $from = Carbon::now()->subMonths(3);
+        $to = Carbon::now();
         return view('dashresolvestatus', compact(
-            'ResolverTickCount'
+            'L1',
+            'L2',
+            'Escalated',
+            'ResolverTotal',
+            'from',
+            'to'
         ));
     }
     
@@ -1057,8 +1104,52 @@ class ViewController extends Controller
             ->groupBy('Month')
             ->get();
         }
+        $OfficeTotal = 0;
+        $PlantTotal = 0;
+        $StoreTotal = 0;
+        $OnsiteOffice = 0;
+        $PhoneAssistanceOffice = 0;
+        $RemoteOffice = 0;
+        $OnsitePlant = 0;
+        $PhoneAssistancePlant = 0;
+        $RemotePlant = 0;
+        $OnsiteStore = 0;
+        $PhoneAssistanceStore = 0;
+        $RemoteStore = 0;
+        foreach ($ResolutionTickCount as $key) {
+            $OfficeTotal = $OfficeTotal+$key->OfficeTotal;
+            $PlantTotal = $PlantTotal+$key->PlantTotal;
+            $StoreTotal = $StoreTotal+$key->StoreTotal;
+            $OnsiteOffice = $OnsiteOffice+$key->OnsiteOffice;
+            $PhoneAssistanceOffice = $PhoneAssistanceOffice+$key->PhoneAssistanceOffice;
+            $RemoteOffice = $RemoteOffice+$key->RemoteOffice;
+            $OnsitePlant = $OnsitePlant+$key->OnsitePlant;
+            $PhoneAssistancePlant = $PhoneAssistancePlant+$key->PhoneAssistancePlant;
+            $RemotePlant = $RemotePlant+$key->RemotePlant;
+            $OnsiteStore = $OnsiteStore+$key->OnsiteStore;
+            $PhoneAssistanceStore = $PhoneAssistanceStore+$key->PhoneAssistanceStore;
+            $RemoteStore = $RemoteStore+$key->RemoteStore;
+        }
+        $ResolutionTotal = $OfficeTotal+$PlantTotal+$StoreTotal+$OnsiteOffice+$PhoneAssistanceOffice+$RemoteOffice+$OnsitePlant+$PhoneAssistancePlant+$RemotePlant+$OnsiteStore;+$PhoneAssistanceStore;+$RemoteStore;
+        $from = Carbon::now()->subMonths(3);
+        $to = Carbon::now();
+
         return view('dashdependencies', compact(
-            'ResolutionTickCount'
+            'ResolutionTotal',
+            'OfficeTotal',
+            'PlantTotal',
+            'StoreTotal',
+            'OnsiteOffice',
+            'PhoneAssistanceOffice',
+            'RemoteOffice',
+            'OnsitePlant',
+            'PhoneAssistancePlant',
+            'RemotePlant',
+            'OnsiteStore',
+            'PhoneAssistanceStore',
+            'RemoteStore',
+            'from',
+            'to'
         ));
     }
     
@@ -1183,9 +1274,37 @@ class ViewController extends Controller
                 ->groupBy('Month')
                 ->get();
         }
-
+        $from = Carbon::now()->subMonths(3);
+        $to = Carbon::now();
+        $totalticket = 0;
+        $oneday = 0;
+        $twoday = 0;
+        $threeday = 0;
+        $fourday = 0;
+        $fiveday = 0;
+        $morethanfive = 0;
+        foreach ($ResTickCount as $key) {
+            $oneday = $oneday+$key->onedt+$key->onet;
+            $twoday = $twoday+$key->twodt+$key->twot;
+            $threeday = $threeday+$key->threedt+$key->threet;
+            $fourday = $fourday+$key->fourdt+$key->fourt;
+            $fiveday = $fiveday+$key->fivedt+$key->fivet;
+            $morethanfive = $morethanfive+$key->morethanfivedt+$key->morethanfivet;
+            $totalticket = $totalticket+$key->TotalTicket;
+        }
+        $closedticket = $oneday+$twoday+$threeday+$fourday+$fiveday+$morethanfive;
         return view('dashresolvetick', compact(
-            'ResTickCount'
+            'totalticket',
+            'oneday',
+            'twoday',
+            'threeday',
+            'fourday',
+            'fiveday',
+            'morethanfive',
+            'closedticket',
+            'ResTickCount',
+            'from',
+            'to'
         ));
     }
 
@@ -1695,6 +1814,32 @@ class ViewController extends Controller
                 }
             }
             $PlantTop = $Ptop->sortDesc();
+            $tickets = Ticket::query()
+                ->select(
+                    DB::raw("monthname(DateCreated) as Month"),
+                    DB::raw("max(Year(DateCreated)) as Year"),
+                    DB::raw('SUM(CASE WHEN SBU = \'Store\' THEN 1 ELSE 0 END) as Store'),
+                    DB::raw('SUM(CASE WHEN SBU = \'Plant\' THEN 1 ELSE 0 END) as Plant'),
+                    DB::raw('SUM(CASE WHEN SBU = \'Office\' THEN 1 ELSE 0 END) as Office'),
+                    DB::raw('max(DateCreated) as DateCreated')
+                )
+                ->join('Data', 'Code', 'StoreCode')
+                ->where('TaskStatus','!=','Closed')
+                ->whereMonth('DateCreated', '>=', Carbon::now()->subMonths(3))
+                ->whereMonth('DateCreated', '<', Carbon::now())
+                ->orderBy('DateCreated', 'asc')
+                ->groupBy('Month')
+                ->get();
+            $Store = 0;
+            $Plant = 0;
+            $Office = 0;
+            $from = Carbon::now()->subMonths(3);
+            $to = Carbon::now();
+            foreach ($tickets as $key) {
+                $Store = $Store+$key->Store;
+                $Plant = $Plant+$key->Plant;
+                $Office = $Office+$key->Office;
+            }
         }else{
             $StoreTopIssues = Ticket::query()->select('SubCategory', DB::raw('Count(SubCategory) as Total'))
                 ->join('Data','Code','StoreCode')
@@ -1738,12 +1883,45 @@ class ViewController extends Controller
                 }
             }
             $PlantTop = $Ptop->sortDesc();
+
+            $tickets = Ticket::query()
+                ->select(
+                    DB::raw("monthname(DateCreated) as Month"),
+                    DB::raw("max(Year(DateCreated)) as Year"),
+                    DB::raw('SUM(CASE WHEN SBU = \'Store\' THEN 1 ELSE 0 END) as Store'),
+                    DB::raw('SUM(CASE WHEN SBU = \'Plant\' THEN 1 ELSE 0 END) as Plant'),
+                    DB::raw('SUM(CASE WHEN SBU = \'Office\' THEN 1 ELSE 0 END) as Office'),
+                    DB::raw('max(DateCreated) as DateCreated')
+                )
+                ->join('Data', 'Code', 'StoreCode')
+                ->where('TaskStatus','!=','Closed')
+                ->whereDate('DateCreated', '>=', Carbon::parse($datefrom))
+                ->whereDate('DateCreated', '<=', Carbon::parse($dateto))
+                ->orderBy('DateCreated', 'asc')
+                ->groupBy('Month')
+                ->get();
+            $Store = 0;
+            $Plant = 0;
+            $Office = 0;
+
+            foreach ($tickets as $key) {
+                $Store = $Store+$key->Store;
+                $Plant = $Plant+$key->Plant;
+                $Office = $Office+$key->Office;
+            }
+            $from = '';
+            $to = '';
         }
 
         return view('dashtotalticket', compact(
             'StoreTop',
             'OfficeTop',
             'PlantTop',
+            'Store',
+            'Plant',
+            'Office',
+            'from',
+            'to'
         ));
     }
 

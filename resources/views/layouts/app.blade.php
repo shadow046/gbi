@@ -115,6 +115,9 @@
             .month{
                 min-width: 80px;
             }
+            .range{
+                min-width: 120px;
+            }
             .grand{
                 min-width: 110px;
             }.closedt{
