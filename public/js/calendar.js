@@ -49,6 +49,9 @@ $(document).ready(function()
         }
     }
 });
+$(document).on('click', '#logoutBtn', function () {
+    window.location.href = '/logout';
+})
 
 $(document).on('click', '#dashboardBtn', function () {
     window.location.href = '/dash/totalticket/default/1';
