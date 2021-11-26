@@ -5,6 +5,10 @@ $(document).on('click', '#goBtn', function () {
 var ProblemCatSoftTable, ProblemCatHardTable, ProblemCatInfraTable, CategoryTable;
 $(document).ready(function()
 { 
+    if (datefrom == 'default') {
+        datefrom = $('#dfrom').val().replaceAll('-', '/');
+        dateto= $('#dto').val().replaceAll('-', '/');
+    }
     CategoryTable =
         $('table.CategoryTable').DataTable({ 
             "dom": 't',

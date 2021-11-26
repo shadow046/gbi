@@ -2,6 +2,8 @@
 @section('content')
 @include('inc.nav-dashboard')
 <br>
+<input type="hidden" id='dfrom' value='{{strtok($from, ' ')}}'>
+<input type="hidden" id='dto' value='{{strtok($to, ' ')}}'>
     <div class="container-fluid row">
         <div class="table col" >
             <table class="table-hover CategoryTable display nowrap" id="CategoryTable" style="font-size:70%;width:100%;">

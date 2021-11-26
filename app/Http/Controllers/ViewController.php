@@ -1541,8 +1541,8 @@ class ViewController extends Controller
                 ->join('Data','Code','StoreCode')
                 ->whereNotNull('SubCategory')
                 ->where('ProblemCategory', 'Software/ Application')
-                ->whereDate('DateCreated', '>=', Carbon::parse($request->datefrom))
-                ->whereDate('DateCreated', '<=', Carbon::parse($request->dateto))
+                ->whereMonth('DateCreated', '>=', Carbon::now()->subMonths(3))
+                ->whereMonth('DateCreated', '>=', Carbon::now())
                 ->groupBy('SubCategory')
                 ->get();
                 
@@ -1585,6 +1585,8 @@ class ViewController extends Controller
                 ->join('Data','Code','StoreCode')
                 ->whereNotNull('SubCategory')
                 ->where('ProblemCategory', 'Hardware')
+                ->whereMonth('DateCreated', '>=', Carbon::now()->subMonths(3))
+                ->whereMonth('DateCreated', '>=', Carbon::now())
                 ->groupBy('SubCategory')
                 ->get();
                 
@@ -1627,6 +1629,8 @@ class ViewController extends Controller
                 ->join('Data','Code','StoreCode')
                 ->whereNotNull('SubCategory')
                 ->where('ProblemCategory', 'Infrastructure')
+                ->whereMonth('DateCreated', '>=', Carbon::now()->subMonths(3))
+                ->whereMonth('DateCreated', '>=', Carbon::now())
                 ->groupBy('SubCategory')
                 ->get();
                 
@@ -1668,6 +1672,8 @@ class ViewController extends Controller
             $TopIssuesOthers = Ticket::select('ProblemCategory', DB::raw('Count(ProblemCategory) as Total'))
                 ->join('Data','Code','StoreCode')
                 ->where('ProblemCategory', 'Others')
+                ->whereMonth('DateCreated', '>=', Carbon::now()->subMonths(3))
+                ->whereMonth('DateCreated', '>=', Carbon::now())
                 ->groupBy('ProblemCategory')
                 ->get();
                 
@@ -1746,6 +1752,8 @@ class ViewController extends Controller
                 }
             }
         }
+        $from = Carbon::now()->subMonths(3);
+        $to = Carbon::now();
         return view('dashpcategory', compact(
             'TopSoft',
             'TopHard',
@@ -1756,7 +1764,9 @@ class ViewController extends Controller
             'Hardwarekey',
             'Infrawareval',
             'Infrawarekey',
-            'TopOthers'
+            'TopOthers',
+            'from',
+            'to'
         ));
     }
 
