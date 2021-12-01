@@ -22,177 +22,6 @@ function getRandomColor() {
         }
         return color;
 }
-// function updateGraph() {
-    
-//     if (window.location.pathname.split("/")[3]== "default") {
-//         $.ajax({
-//             type: "GET",
-//             url: "/dashdata/default/1",
-//             async: false,
-//             success: function(data){
-//                 const ChartLabels = [];
-//                 const ChartStoreData= [];
-//                 const ChartPlantData= [];
-//                 const ChartOfficeData= [];
-//                 const ChartBlankData= [];
-//                 for (let index = 0; index < data.data.length; index++) {
-//                     ChartLabels.push(data.data[index].Month);
-//                     ChartStoreData.push(data.data[index].Store.replace(/,/g, ''))
-//                     ChartPlantData.push(data.data[index].Plant.replace(/,/g, ''))
-//                     ChartOfficeData.push(data.data[index].Office.replace(/,/g, ''))
-//                     // ChartBlankData.push(data.data[index].Blank.replace(/,/g, ''))
-//                 }
-//                 var ctx = $('#dailyChart');
-//                 var myChart = new Chart(ctx, {
-//                     type: 'bar',
-//                     data: {
-//                     labels: ChartLabels,
-//                         datasets: [
-//                             {
-//                                 label: 'Store',
-//                                 backgroundColor: "#2ecc71",
-//                                 data: ChartStoreData
-//                             },
-//                             {
-//                                 label: 'Plant',
-//                                 backgroundColor: "#3498db",
-//                                 data: ChartPlantData
-//                             },
-//                             {
-//                                 label: 'Office',
-//                                 backgroundColor: "#95a5a6",
-//                                 data: ChartOfficeData
-//                             }
-//                             // {
-//                             //     label: 'Blank SBU',
-//                             //     backgroundColor: "#95cca6",
-//                             //     data: ChartBlankData
-//                             // }
-//                         ]
-//                     },
-//                     options: {
-//                         responsive: true,
-//                         scales: {
-//                             yAxes: [{
-//                                 ticks: {
-//                                 beginAtZero: true,
-//                                 }
-//                             }]
-//                         },
-//                         plugins: {
-//                             datalabels: {
-//                                 anchor: 'end',
-//                                 align: 'top',
-//                                 formatter: Math.round,
-//                                 font: {
-//                                 weight: 'bold'
-//                                 }
-//                             }
-//                         },
-//                         legend:{
-//                             position: 'bottom',
-//                             labels:{
-//                                 fontColor: "black",
-//                             },
-//                         },
-//                         layout: {
-//                             padding: {
-//                                 top: 30
-//                             }
-//                         },
-//                         animation: {
-//                             duration: 3000,
-//                         },
-//                     }
-//                 });
-//             }
-//         });
-//     }else{
-//         $.ajax({
-//             type: "GET",
-//             url: '/dashdata/'+window.location.pathname.split("/")[3]+'/'+window.location.pathname.split("/")[4],
-//             async: false,
-//             success: function(data){
-//                 const ChartLabels = [];
-//                 const ChartStoreData= [];
-//                 const ChartPlantData= [];
-//                 const ChartOfficeData= [];
-//                 const ChartBlankData= [];
-//                 for (let index = 0; index < data.data.length; index++) {
-//                     ChartLabels.push(data.data[index].Month);
-//                     ChartStoreData.push(data.data[index].Store.replace(/,/g, ''));
-//                     ChartPlantData.push(data.data[index].Plant.replace(/,/g, ''));
-//                     ChartOfficeData.push(data.data[index].Office.replace(/,/g, ''));
-//                     // ChartBlankData.push(data.data[index].Blank.replace(/,/g, ''));
-//                 }
-//                 var ctx = $('#dailyChart');
-//                 var myChart = new Chart(ctx, {
-//                     type: 'bar',
-//                     data: {
-//                     labels: ChartLabels,
-//                         datasets: [
-//                             {
-//                                 label: 'Store',
-//                                 backgroundColor: "#2ecc71",
-//                                 data: ChartStoreData
-//                             },
-//                             {
-//                                 label: 'Plant',
-//                                 backgroundColor: "#3498db",
-//                                 data: ChartPlantData
-//                             },
-//                             {
-//                                 label: 'Office',
-//                                 backgroundColor: "#95a5a6",
-//                                 data: ChartOfficeData
-//                             }
-//                             // {
-//                             //     label: 'Blank SBU',
-//                             //     backgroundColor: "#95cca6",
-//                             //     data: ChartBlankData
-//                             // }
-//                         ]
-//                     },
-//                     options: {
-//                         responsive: true,
-//                         scales: {
-//                             yAxes: [{
-//                                 ticks: {
-//                                 beginAtZero: true,
-//                                 }
-//                             }]
-//                         },
-//                         plugins: {
-//                             datalabels: {
-//                                 anchor: 'end',
-//                                 align: 'top',
-//                                 formatter: Math.round,
-//                                 font: {
-//                                 weight: 'bold'
-//                                 }
-//                             }
-//                         },
-//                         legend:{
-//                             position: 'bottom',
-//                             labels:{
-//                                 fontColor: "black"
-//                             },
-//                         },
-//                         layout: {
-//                             padding: {
-//                                 top: 30
-//                             }
-//                         },
-//                         animation: {
-//                             duration: 3000,
-//                         },
-//                     }
-//                 });
-//             }
-//         });
-//     }
-//     $('#loading').hide();
-// }
 $(document).ready(function()
 {
     // $('#loading').show();
@@ -240,6 +69,7 @@ $(document).ready(function()
         $('#range').text(range);
         $('#days').text(Difference_In_Days+1);
         $('#average').text(Math.trunc($('#total').text().split(",").join("")/$('#days').text()));
+        console.log($('#total').text().split(",").join(""));
         piechart = new Chart($('#pieChart'), {
             type: 'pie',
             data: {
@@ -331,7 +161,8 @@ $(document).ready(function()
         var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
         $('#range').text(range);
         $('#days').text(Difference_In_Days+1);
-        $('#average').text(Math.trunc($('#total').text()/$('#days').text()));
+        $('#average').text(Math.trunc($('#total').text().split(",").join("")/$('#days').text()));
+
         piechart = new Chart($('#pieChart'), {
             type: 'pie',
             data: {
