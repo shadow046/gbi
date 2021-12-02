@@ -26,7 +26,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('email:ticket')->everyMinute();
+        $schedule->command('email:ticket')->everyMinute()->after(function () {
+            exec('cd /var/www/html/mssql1/ && php artisan remark:history');
+            // $schedule->command('remark:history')->everyMinute()->withoutOverlapping();
+        });
+        // $schedule->command('email:ticket')->everyMinute()->withoutOverlapping();
+        // $schedule->command('remark:history')->everyMinute()->withoutOverlapping();
     }
 
     /**

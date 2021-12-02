@@ -1,11 +1,12 @@
 <div>
-<p>Hi {{ $Store }},</p>
-<p>Good day!</p>
-<p>This is to acknowledge your reported concern.</p>
-<p>Your report has been logged and forwarded to technical support with <b>TICKET NO: {{$Ticket}}</b>.<br>
-A technical support representative will call you within the day for further diagnostic and resolution.</p>
+<p>Good day, Goldilocks - {{$StoreName}}</p>
+<p>Your issue has been RESOLVED. We will now close the ticket.</p>
+<p>TICKET NO: <b>{{$Ticket}}</b>.
+<br>
+PROBLEM REPORTED : {{$Problem}}</p>
 {{-- For any concern to this report, please use the Ticket Number as reference. --}}
-<p>Should you require futher information, you may contact Customer Support through any of the following:<br><br>
+<p>If there is anything else you need help with, please feel free to contact us.<br>
+Service Desk Contact Number<br>
 Hotline: (632) 88-652-420<br>
 Smart: 0999-220-5391<br>
 Globe: 0917-873-1801<br><br>
