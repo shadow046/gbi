@@ -125,6 +125,7 @@ class EmailNotification extends Command
             ]);
             $newlog->Save();
             $formid = Form::where('TaskId', $Pstat->TaskId)->first()->Id;
+            Ticket::where('TaskId', $Pstat->TaskId)->update(['TaskStatus'=>$Pstat->TaskStatus]);
             foreach ($fields as $field) {
                 if (!in_array($field->FieldId,$exclude)) {
                     if (!Schema::hasColumn('Ticket', substr($field->FieldId,3))) //check the column
@@ -166,9 +167,11 @@ class EmailNotification extends Command
                         'Problem'=>$notified->ProblemReported
                     ],
                     function( $message) use ($notified){ 
-                        $message->to($notified->Email, 'Goldilocks '.$notified->Store_Name)->subject('TICKET NO. '.$notified->TaskNumber); 
+                        $message->to($notified->Email, 'Goldilocks '.$notified->Store_Name)->subject('RESOLVED - '.$notified->TaskNumber); 
                         $message->from('noreply@apsoft.com.ph', 'NO REPLY');
-                        $message->bcc('jolopez@ideaserv.com.ph','jerome.lopez.aks2018@gmail.com','gerard.mallari@gmail.com','mallarig@apsoft.com.ph');
+                        $message->bcc(['kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph','tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
+                                // $message->cc(['tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
+                        // $message->bcc(['kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph']);
                     });
                     Ticket::where('TaskNumber', $notified->TaskNumber)->update(['Notified'=>'submitted']);
                     $this->info('Successfully sent emailss');
@@ -182,9 +185,11 @@ class EmailNotification extends Command
                             'Problem'=>$notified->ProblemReported
                         ],
                         function( $message) use ($notified){ 
-                            $message->to($notified->Email, 'Goldilocks '.$notified->Store_Name)->subject('TICKET NO. '.$notified->TaskNumber); 
+                            $message->to($notified->Email, 'Goldilocks '.$notified->Store_Name)->subject('NEW TICKET - '.$notified->TaskNumber); 
                             $message->from('noreply@apsoft.com.ph', 'NO REPLY');
-                            $message->bcc('jolopez@ideaserv.com.ph','jerome.lopez.aks2018@gmail.com','gerard.mallari@gmail.com','mallarig@apsoft.com.ph');
+                            // $message->cc(['tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
+                            $message->bcc(['kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph','tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
+                        // $message->bcc(['kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph']);
                         });
                         Ticket::where('TaskNumber', $notified->TaskNumber)->update(['Notified'=>'created']);
                         $this->info('Successfully sent emails');

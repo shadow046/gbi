@@ -94,6 +94,37 @@ class HistoryUpdate extends Command
                         'Status'=>$Remarks->Status
                     ]);
                     $newRemarks->Save();
+                    if ($newRemarks) {
+                        if ($Remarks->Message || $Remarks->Message != "") {
+                            $notified = Ticket::where('TaskId',$Remarks->TaskId)->join('Data', 'Code', 'StoreCode')->first();
+                            $config = array(
+                                'driver'     => \config('mailconf.driver'),
+                                'host'       => \config('mailconf.host'),
+                                'port'       => \config('mailconf.port'),
+                                'from'       => \config('mailconf.from'),
+                                'encryption' => \config('mailconf.encryption'),
+                                'username'   => \config('mailconf.username'),
+                                'password'   => \config('mailconf.password')
+                            );
+                            Config::set('mail', $config);
+                            Mail::send('update_ticket', [
+                                'StoreCode'=>$notified->StoreCode,
+                                'StoreName'=>$notified->Store_Name,
+                                'Ticket'=>$notified->TaskNumber,
+                                'Problem'=>$notified->ProblemReported,
+                                'Remarks'=>$Remarks->Message
+                            ],
+                            function( $message) use ($notified){ 
+                                $message->to($notified->Email, 'Goldilocks '.$notified->Store_Name)->subject('UPDATED - '.$notified->TaskNumber); 
+                                $message->from('noreply@apsoft.com.ph', 'NO REPLY');
+                                $message->bcc(['kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph','tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
+                                // $message->cc(['tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
+                            });
+                            Remark::where('Id', $Remarks->Id)->whereNull('Status')->update(['Status'=>'done']);
+                            $this->info('Update sent');
+                        }
+
+                    }
                 }
             }
             $RemarksId = Remark::orderBy('Id','desc')->first()->Id;
