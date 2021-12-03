@@ -173,7 +173,7 @@ class EmailNotification extends Command
                                 // $message->cc(['tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
                         // $message->bcc(['kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph']);
                     });
-                    Ticket::where('TaskNumber', $notified->TaskNumber)->update(['Notified'=>'submitted']);
+                    Ticket::where('TaskNumber', $notified->TaskNumber)->update(['Notified'=>$Pstat->TaskStatus]);
                     $this->info('Successfully sent emailss');
                 }else{
                     if (!$notified->Notified && $notified->Email) {
@@ -191,7 +191,7 @@ class EmailNotification extends Command
                             $message->bcc(['kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph','tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
                         // $message->bcc(['kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph']);
                         });
-                        Ticket::where('TaskNumber', $notified->TaskNumber)->update(['Notified'=>'created']);
+                        Ticket::where('TaskNumber', $notified->TaskNumber)->update(['Notified'=>$Pstat->TaskStatus]);
                         $this->info('Successfully sent emails');
                     }
                 }
