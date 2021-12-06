@@ -175,7 +175,7 @@ class EmailNotification extends Command
                     });
                     Ticket::where('TaskNumber', $notified->TaskNumber)->update(['Notified'=>$Pstat->TaskStatus]);
                     $this->info('Successfully sent emailss');
-                }else{
+                }else if ($Pstat->TaskStatus == "For Verification") {
                     if (!$notified->Notified && $notified->Email) {
                         $this->info('sending emails');
                         Mail::send('new_ticket', [
