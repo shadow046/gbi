@@ -95,8 +95,8 @@ class HistoryUpdate extends Command
                     ]);
                     $newRemarks->Save();
                     if ($newRemarks) {
-                        if ($Remarks->Message || $Remarks->Message != "") {
-                            $notified = Ticket::where('TaskId',$Remarks->TaskId)->join('Data', 'Code', 'StoreCode')->first();
+                        $notified = Ticket::where('TaskId',$Remarks->TaskId)->join('Data', 'Code', 'StoreCode')->first();
+                        if ($Remarks->Message || $Remarks->Message != "" || $Remarks->Message != "Done." || $Remarks->Message != "Done" || $Remarks->Message != $notified->ProblemReported) {
                             $config = array(
                                 'driver'     => \config('mailconf.driver'),
                                 'host'       => \config('mailconf.host'),
