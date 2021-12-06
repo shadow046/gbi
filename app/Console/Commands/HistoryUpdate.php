@@ -116,7 +116,7 @@ class HistoryUpdate extends Command
                             ],
                             function( $message) use ($notified){ 
                                 $message->to($notified->Email, 'Goldilocks '.$notified->Store_Name)->subject('UPDATED - '.$notified->TaskNumber); 
-                                $message->from('noreply@apsoft.com.ph', 'IT SERVICE DESK');
+                                $message->from(env('MAIL_FROM_ADDRESS'), 'IT SERVICE DESK');
                                 $message->bcc(['kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph','tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
                                 // $message->cc(['tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
                             });
