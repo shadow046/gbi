@@ -169,9 +169,9 @@ class EmailNotification extends Command
                     function( $message) use ($notified){ 
                         $message->to($notified->Email, 'Goldilocks '.$notified->Store_Name)->subject('RESOLVED - '.$notified->TaskNumber); 
                         $message->from(env('MAIL_FROM_ADDRESS'), 'IT SERVICE DESK');
-                        $message->bcc(['germelo.entrada@goldilocks.com','emorej046@gmail.com','demesac@apsoft.com.ph','kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph','tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
+                        // $message->bcc(['germelo.entrada@goldilocks.com','emorej046@gmail.com','demesac@apsoft.com.ph','kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph','tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
                                 // $message->cc(['tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
-                        // $message->bcc(['kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph']);
+                        $message->bcc(['emorej046@gmail.com','jolopez@ideaserv.com.ph']);
                     });
                     Ticket::where('TaskNumber', $notified->TaskNumber)->update(['Notified'=>$Pstat->TaskStatus]);
                     $this->info('Successfully sent emailss');
@@ -188,8 +188,8 @@ class EmailNotification extends Command
                             $message->to($notified->Email, 'Goldilocks '.$notified->Store_Name)->subject('NEW TICKET - '.$notified->TaskNumber); 
                             $message->from(env('MAIL_FROM_ADDRESS'), 'IT SERVICE DESK');
                             // $message->cc(['tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
-                            $message->bcc(['germelo.entrada@goldilocks.com','emorej046@gmail.com','demesac@apsoft.com.ph','kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph','tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
-                        // $message->bcc(['kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph']);
+                            // $message->bcc(['germelo.entrada@goldilocks.com','emorej046@gmail.com','demesac@apsoft.com.ph','kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph','tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
+                            $message->bcc(['emorej046@gmail.com','jolopez@ideaserv.com.ph']);
                         });
                         Ticket::where('TaskNumber', $notified->TaskNumber)->update(['Notified'=>$Pstat->TaskStatus]);
                         $this->info('Successfully sent emails');
