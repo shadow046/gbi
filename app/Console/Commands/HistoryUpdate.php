@@ -117,8 +117,8 @@ class HistoryUpdate extends Command
                             function( $message) use ($notified){ 
                                 $message->to($notified->Email, 'Goldilocks '.$notified->Store_Name)->subject('UPDATED - '.$notified->TaskNumber); 
                                 $message->from(env('MAIL_FROM_ADDRESS'), 'IT SERVICE DESK');
-                                // $message->bcc(['germelo.entrada@goldilocks.com','emorej046@gmail.com','demesac@apsoft.com.ph','kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph','tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
-                                $message->bcc(['emorej046@gmail.com','jolopez@ideaserv.com.ph']);
+                                $message->bcc(['germelo.entrada@goldilocks.com','emorej046@gmail.com','demesac@apsoft.com.ph','kdgonzales@ideaserv.com.ph','jolopez@ideaserv.com.ph','tony.tan@goldilocks.com','mira.decastro@goldilocks.com']);
+                                // $message->bcc(['emorej046@gmail.com','jolopez@ideaserv.com.ph']);
                             });
                             Remark::where('Id', $Remarks->Id)->whereNull('Status')->update(['Status'=>'done']);
                             $this->info('Update sent');
