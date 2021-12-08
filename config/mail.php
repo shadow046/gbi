@@ -39,6 +39,7 @@ return [
             'verify_peer_name' => false,
         ],
     ],
+    
     'mailers' => [
         'smtp' => [
             'transport' => 'smtp',
