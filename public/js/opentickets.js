@@ -265,7 +265,7 @@ $(document).on("click", "#gbiTable tbody tr", function () {
             $('#IncidentStatus').val(data.IncidentStatus);
             $('#StoreType').val(data.GBIStoreType);
             $('#ActionTaken').val(data.GBIActionTaken);
-            $('#latestNotes').val(data.Latest_Notes);
+            $('#LatestNotes').val(data.Latest_Notes);
             var remarks = ' ';
             if (data.Remarks.length > 0) {
                 for (let index = 0; index < data.Remarks.length; index++) {
