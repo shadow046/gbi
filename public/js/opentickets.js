@@ -265,14 +265,12 @@ $(document).on("click", "#gbiTable tbody tr", function () {
             $('#IncidentStatus').val(data.IncidentStatus);
             $('#StoreType').val(data.GBIStoreType);
             $('#ActionTaken').val(data.GBIActionTaken);
+            $('#LatestNotes').val(data.Latest_Notes);
             var remarks = ' ';
             if (data.Remarks.length > 0) {
                 for (let index = 0; index < data.Remarks.length; index++) {
                     var remarksdate = new Date(data.Remarks[index].Timestamp);
                     if (data.Remarks[index].Message) {
-                        if (index == data.Remarks.length-1) {
-                            $('#LatestNotes').val(data.Remarks[index].Message);
-                        }
                         remarks +='<div class="container row"><label class="col-sm-3 control-label">'+data.Remarks[index].Author+'<br><small>'+moment(remarksdate).format('lll')+'</small></label><div class="col-sm-9"><div class="text-break">'+data.Remarks[index].Message+'</div></div><hr></div>';
                     }
                 }
