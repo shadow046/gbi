@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 getscript() {
   pgrep -lf ".[ /]$1( |\$)"
 }
@@ -8,7 +9,7 @@ live(){
 clear
 dt=$(date '+%d/%m/%Y %H:%M:%S');
 
-if getscript "getfsr.sh" >/dev/null; then
+if getscript "Getfsr.sh" >/dev/null; then
     echo -e getfsr.sh is "\033[0;32mRUNNING\e[0m $dt"
 else
     cd /var/www/html/gbi
