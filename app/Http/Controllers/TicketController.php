@@ -13,6 +13,7 @@ use Spatie\Permission\Models\Role;
 use Carbon\Carbon;
 use App\Models\Ticket;
 use App\Models\Task;
+use App\Models\StatusLog;
 use DB;
 
 class TicketController extends Controller
@@ -118,6 +119,7 @@ class TicketController extends Controller
             ->select(
                 'DateCreated',
                 'TaskNumber',
+                'TaskId',
                 'TaskStatus',
                 'CreatedBy',
                 'IncidentStatus',
@@ -129,8 +131,8 @@ class TicketController extends Controller
                 'Status',
                 'Store_Name as StoreName',
                 'AdditionalStoreDetails',
-                'LatestNotes'
-                // 'TaskStatus'
+                'LatestNotes',
+                'ResolvedTime'
                 )
             ->join('Data', 'Code', 'StoreCode')
             ->where('TaskStatus','!=','Closed')

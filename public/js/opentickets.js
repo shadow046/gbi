@@ -105,25 +105,76 @@ $(document).ready(function()
                     }
                 }
             },
+            // "fnRowCallback": function(nRow, aData) {
+            //     if (aData.ResolvedTime != null) {
+            //         console.log(aData.ResolvedTime.split('.')[0]);
+            //         var d1 = moment(aData.DateCreated).add(8, 'hours');
+            //         var d2 = moment(aData.ResolvedTime.split('.')[0]).add(8, 'hours');
+            //         if (d2.diff(d1, 'days') <= 5) {
+            //             $('td', nRow).eq(2).text('Less than 5 days');
+            //         }else if (d2.diff(d1, 'days') >= 6 && d2.diff(d1, 'days') <= 10) {
+            //             $('td', nRow).eq(2).text('6 to 10 days1');
+            //         }else if (d2.diff(d1, 'days') >= 11 && d2.diff(d1, 'days') <= 15) {
+            //             $('td', nRow).eq(2).text('11 to 15 days');
+            //             console.log(aData.DateCreated+"--"+aData.ResolvedTime+'++'+d2.diff(d1, 'days'));
+            //         }else if (d2.diff(d1, 'days') >= 16 && d2.diff(d1, 'days') <= 20) {
+            //             $('td', nRow).eq(2).text('16 to 20 days');
+            //         }else if (d2.diff(d1, 'days') >= 21) {
+            //             $('td', nRow).eq(2).text('More than 20 days');
+            //         }
+            //     }else{
+            //         var d1 = moment(aData.DateCreated).add(8, 'hours');
+            //         var d2 = moment();
+            //         if (d2.diff(d1, 'days') <= 5) {
+            //             $('td', nRow).eq(2).text('Less than 5 days');
+            //         }else if (d2.diff(d1, 'days') >= 6 && d2.diff(d1, 'days') <= 10) {
+            //             $('td', nRow).eq(2).text('6 to 10 days');
+            //         }else if (d2.diff(d1, 'days') >= 11 && d2.diff(d1, 'days') <= 15) {
+            //             $('td', nRow).eq(2).text('11 to 15 days');
+            //         }else if (d2.diff(d1, 'days') >= 16 && d2.diff(d1, 'days') <= 20) {
+            //             $('td', nRow).eq(2).text('16 to 20 days');
+            //         }else if (d2.diff(d1, 'days') >= 21) {
+            //             $('td', nRow).eq(2).text('More than 20 days');
+            //         }
+            //     }
+            // },
             columns: [
                 { data: 'DateCreated', render: function ( data, type, row ) 
                     {
                         return moment(data).add(8, 'hours').format('lll');
                     }},
                 { data: 'TaskNumber', name:'TaskNumber'},
+                // { data: null, "width": "10%"},
                 { data: 'DateCreated', render: function ( data, type, row ) {
-                    var d1 = moment(data).add(8, 'hours');
-                    var d2 = moment();
-                    if (d2.diff(d1, 'days') <= 5) {
-                        return 'Less than 5 days';
-                    }else if (d2.diff(d1, 'days') >= 6 && d2.diff(d1, 'days') <= 10) {
-                        return '6 to 10 days';
-                    }else if (d2.diff(d1, 'days') >= 11 && d2.diff(d1, 'days') <= 15) {
-                        return '11 to 15 days';
-                    }else if (d2.diff(d1, 'days') >= 16 && d2.diff(d1, 'days') <= 20) {
-                        return '16 to 20 days';
-                    }else if (d2.diff(d1, 'days') >= 21) {
-                        return 'More than 20 days';
+                    if (row.ResolvedTime != null) {
+                        var d1 = moment(data).add(8, 'hours');
+                        var d2 = moment(row.ResolvedTime.split('.')[0]);
+                        if (d2.diff(d1, 'days') <= 5) {
+                            return 'Less than 5 days';
+                        }else if (d2.diff(d1, 'days') >= 6 && d2.diff(d1, 'days') <= 10) {
+                            return '6 to 10 days';
+                        }else if (d2.diff(d1, 'days') >= 11 && d2.diff(d1, 'days') <= 15) {
+                            console.log(data+"--"+row.ResolvedTime+'++'+d2.diff(d1, 'days'));
+                            return '11 to 15 days';
+                        }else if (d2.diff(d1, 'days') >= 16 && d2.diff(d1, 'days') <= 20) {
+                            return '16 to 20 days';
+                        }else if (d2.diff(d1, 'days') >= 21) {
+                            return 'More than 20 days';
+                        }
+                    }else{
+                        var d1 = moment(data).add(8, 'hours');
+                        var d2 = moment();
+                        if (d2.diff(d1, 'days') <= 5) {
+                            return 'Less than 5 days';
+                        }else if (d2.diff(d1, 'days') >= 6 && d2.diff(d1, 'days') <= 10) {
+                            return '6 to 10 days';
+                        }else if (d2.diff(d1, 'days') >= 11 && d2.diff(d1, 'days') <= 15) {
+                            return '11 to 15 days';
+                        }else if (d2.diff(d1, 'days') >= 16 && d2.diff(d1, 'days') <= 20) {
+                            return '16 to 20 days';
+                        }else if (d2.diff(d1, 'days') >= 21) {
+                            return 'More than 20 days';
+                        }
                     }
                 },"width": "10%"},
                 { data: 'CallType', name:'CallType'},
