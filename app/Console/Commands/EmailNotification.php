@@ -126,6 +126,9 @@ class EmailNotification extends Command
             $newlog->Save();
             $formid = Form::where('TaskId', $Pstat->TaskId)->first()->Id;
             Ticket::where('TaskId', $Pstat->TaskId)->update(['TaskStatus'=>$Pstat->TaskStatus]);
+            if ($Pstat->TaskStatus == "Submitted") {
+                Ticket::where('TaskId', $Pstat->TaskId)->update(['ResolvedTime'=>$Pstat->Timestamp]);
+            }
             foreach ($fields as $field) {
                 if (!in_array($field->FieldId,$exclude)) {
                     if (!Schema::hasColumn('Ticket', substr($field->FieldId,3))) //check the column
