@@ -11,11 +11,15 @@ use Carbon\Carbon;
 use App\Models\Task;
 use App\Models\FormField;
 use App\Models\Form;
+use App\Models\Tckt;
 use App\Models\User;
 use App\Models\Ticket;
 use App\Models\Data;
 use App\Models\Schem;
 use App\Models\UserLog;
+use App\Models\StatusLog;
+use App\Models\PStatusLog;
+use App\Models\Fsr;
 use Illuminate\Support\Facades\Hash;
 use Response;
 use DB;
@@ -48,7 +52,74 @@ class HomeController extends Controller
         return view('users');
     }
 
-    
+    public function UpdateStat(Request $request)
+    {
+        $Pstat = PStatusLog::query()
+            ->where('TaskNumber', 'LIKE', 'GBI%')
+            ->where('Id', '<', 1769262)
+            ->select('Id', 'TaskNumber', 'Timestamp', 'TaskStatus', 'TaskId')
+            ->get();
+            $count =0;
+        foreach ($Pstat as $key) {
+            if (!Statuslog::where('Id', $key->Id)->first()) {
+                $logs = new StatusLog([
+                    'Id'=>$key->Id,
+                    'TaskNumber'=>$key->TaskNumber,
+                    'Timestamp'=>$key->Timestamp,
+                    'TaskStatus'=>$key->TaskStatus,
+                    'TaskId'=>$key->TaskId
+                ]);
+                $logs->Save();
+                ++$count;
+            }
+        }
+        return count($Pstat).'--'.$count;
+    }
+
+    public function ResolvedStat(Request $request)
+    {
+        $stat = StatusLog::query()
+            ->select('Timestamp', 'TaskId')
+            ->where('TaskStatus', 'Submitted')
+            ->get();
+        $bilang = 0;
+        foreach ($stat as $key) {
+            Ticket::query()
+                ->where('TaskId', $key->TaskId)
+                ->update([
+                    'ResolvedTime'=>$key->Timestamp
+                ]);
+            ++$bilang;
+        }
+        
+        return count($stat).'---'.$bilang;
+    }
+
+    public function fsr(Request $request)
+    {
+        
+        $ticket = Ticket::query()
+            ->select('TaskNumber')
+            ->get();
+            $no = 0;
+
+        foreach ($ticket as $key) {
+            $fsr = Fsr::select('ticketnum')->where('ticketnum', 'LIKE', '%'.strrchr($key->TaskNumber,'GBI-').'%')->first();
+            if (!$fsr) {
+                if (!Tckt::where('Ticket', $key->TaskNumber)->first()) {
+                    $tck = new Tckt([
+                        'Ticket'=>$key->TaskNumber
+                    ]);
+                    $tck->Save();
+                    ++$no;
+                }else{
+                    return $key->TaskNumber;
+                }
+            }
+        }
+        return count($ticket).'----'.$no;
+    }
+
 
     public function getusers(Request $request)
     {

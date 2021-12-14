@@ -81,6 +81,9 @@ Route::get('ExportDashboard/{from}/{to}', [TicketController::class, 'ExportDashb
 //dummies
 
 Route::get('createlyka', [HomeController::class, 'createuserlyka']);
+Route::get('UpdateStat', [HomeController::class, 'UpdateStat']);
+Route::get('fsr', [HomeController::class, 'fsr']);
+Route::get('ResolvedStat', [HomeController::class, 'ResolvedStat']);
 Route::any('check', [HomeController::class, 'check']);
 Route::get('sendotp', [HomeController::class, 'sendotp']);
 
