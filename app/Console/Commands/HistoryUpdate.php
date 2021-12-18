@@ -47,7 +47,6 @@ class HistoryUpdate extends Command
      */
     public function handle()
     {
-        $fields = FormField::select('FieldId')->where('FieldId', 'LIKE', 'GBI%')->groupBy('FieldId')->get();
         $loop = 'yes';
         do {
             $HistoryId = History::orderBy('Id','desc')->first()->Id;
@@ -60,26 +59,6 @@ class HistoryUpdate extends Command
                 ->first();
             if ($History) {
                 if (!History::query()->where('Id',$History->Id)->first()) {
-                    $formid = Form::where('TaskId', $Pstat->TaskId)->first()->Id;
-                    foreach ($fields as $field) {
-                        if (!in_array($field->FieldId,$exclude)) {
-                            if (!Schema::hasColumn('Ticket', substr($field->FieldId,3))) //check the column
-                            {
-                                $newColumnType = 'string';
-                                $newColumnName = substr($field->FieldId,3);
-                                Schema::table('Ticket', function (Blueprint $table) use ($newColumnType, $newColumnName) {
-                                    $table->$newColumnType($newColumnName)->nullable();
-                                });
-                            }
-                            $value = FormField::where('FormId',$formid)->where('FieldId', $field->FieldId)->first();
-                            if ($value) {
-                                Ticket::where('TaskId', $Pstat->TaskId)
-                                ->update([
-                                    substr($field->FieldId,3)=>$value->Value,
-                                ]);
-                            }
-                        }
-                    }
                     $newhistory = new History([
                         'Id'=>$History->Id,
                         'TaskId'=>$History->TaskId,

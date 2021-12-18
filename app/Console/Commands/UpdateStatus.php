@@ -23,7 +23,7 @@ class UpdateStatus extends Command
      *
      * @var string
      */
-    protected $signature = 'update:status';
+    protected $signature = 'update:statu1s';
 
     /**
      * The console command description.
