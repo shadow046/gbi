@@ -26,8 +26,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('remark:history')->everyTwoMinutes()->after(function () {
-            exec('cd /var/www/html/gbi/ && php artisan email:ticket');
+        $schedule->command('email:ticket')->everyTwoMinutes()->after(function () {
+            exec('cd /var/www/html/gbi/ && php artisan remark:history');
             // $schedule->command('remark:history')->everyMinute()->withoutOverlapping();
         });
         // $schedule->command('email:ticket')->everyMinute()->withoutOverlapping();
