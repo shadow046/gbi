@@ -98,6 +98,8 @@ class HistoryUpdate extends Command
                         $formid = Form::where('TaskId', $Remarks->TaskId)->first()->Id;
                         $value = FormField::where('FormId',$formid)->where('FieldId', 'GBIStatus')->first();
                         Ticket::where('TaskId',$Remarks->TaskId)->Update(['Status'=>$value->Value]);
+                        $value = FormField::where('FormId',$formid)->where('FieldId', 'GBIIncidentStatus')->first();
+                        Ticket::where('TaskId',$Remarks->TaskId)->Update(['IncidentStatus'=>$value->Value]);
                         $notified = Ticket::where('TaskId',$Remarks->TaskId)->join('Data', 'Code', 'StoreCode')->first();
                         if ($Remarks->Message || $Remarks->Message != "" || $Remarks->Message != "Done." || $Remarks->Message != "Done" || $Remarks->Message != $notified->ProblemReported) {
                             $config = array(
