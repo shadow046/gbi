@@ -162,7 +162,7 @@ class EmailNotification extends Command
             );
             Config::set('mail', $config);
             if ($notified) {
-                if ($Pstat->TaskStatus == "Submitted" && $notified->Email) {
+                if ($Pstat->TaskStatus == "Submitted" && $notified->Email && $notified->Notified != "Submitted") {
                     Mail::send('closed_ticket', [
                         'StoreCode'=>$notified->StoreCode,
                         'StoreName'=>$notified->Store_Name,
