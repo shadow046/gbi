@@ -62,6 +62,7 @@ $(document).ready(function()
     $('#loading').hide();
     if (pathfrom == "default") {
         var range = monthshort[parseFloat($('#dfrom').val().split("-")[1])]+'. '+parseFloat($('#dfrom').val().split("-")[2])+' - '+monthshort[parseFloat($('#dto').val().split("-")[1])]+'. '+parseFloat($('#dto').val().split("-")[2]);
+        console.log(monthshort[parseFloat($('#dfrom').val().split("-")[1])]);
         var from = new Date($('#dfrom').val().split("-")[1]+"-"+$('#dfrom').val().split("-")[2]+"-"+$('#dfrom').val().split("-")[0]);
         var to = new Date($('#dto').val().split("-")[1]+"-"+$('#dto').val().split("-")[2]+"-"+$('#dto').val().split("-")[0]);
         var Difference_In_Time = to.getTime() - from.getTime();
@@ -153,8 +154,7 @@ $(document).ready(function()
             }
         });
     }else{ 
-        var range = monthshort[window.location.pathname.split("/")[3].split("-")[1]]+'. '+window.location.pathname.split("/")[3].split("-")[2]+' - '+monthshort[window.location.pathname.split("/")[4].split("-")[1]]+'. '+window.location.pathname.split("/")[4].split("-")[2];
-        console.log(range);
+        var range = monthshort[Number(window.location.pathname.split("/")[3].split("-")[1]).toString()]+'. '+window.location.pathname.split("/")[3].split("-")[2]+' - '+monthshort[Number(window.location.pathname.split("/")[4].split("-")[1]).toString()]+'. '+window.location.pathname.split("/")[4].split("-")[2];
         var from = new Date(window.location.pathname.split("/")[3].split("-")[1]+"/"+window.location.pathname.split("/")[3].split("-")[2]+"/"+window.location.pathname.split("/")[3].split("-")[0]);
         var to = new Date(window.location.pathname.split("/")[4].split("-")[1]+"/"+window.location.pathname.split("/")[4].split("-")[2]+"/"+window.location.pathname.split("/")[4].split("-")[0]);
         var Difference_In_Time = to.getTime() - from.getTime();

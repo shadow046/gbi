@@ -189,7 +189,6 @@ $(document).ready(function()
             ]
         });
     }
-    
 
     $('#gbiTable thead').on( 'keyup', ".column_search",function () {
         gbitable
